@@ -1,0 +1,22 @@
+#			Variables for Post Processing 
+# NOTES:
+#	- Default values should never be changed in this document.
+#	- Notes should be preceded with a # symbol.
+# 	- Variables should be formated as [VARIABLE = Value].
+#	- Variables that are a 'Default' value should be formated as
+#		[VARIABLE (Default) = Value]. Values listed as default are
+#		used by the 'restore_defaults' method to reset all values.
+#
+# VARIABLES:
+#	Bins - Bin size based on DEM elevation units
+#	BINSIZE - The vertical size of the elevation bins. If the DEM is in meters
+#		the bin size should be in meters, etc.
+BINSIZE = 50
+BINSIZE (Default) = 50
+#	Bin measured from base bin elevation i.e. 8800 is 8800-8850
+#	Minimum Bin elevation
+MINBIN = 0
+MINBIN (Default) = 0
+#	Maximum Bin elevation (8,800m would include Mt. Everest)
+MAXBIN = 8800
+MAXBIN (Default) = 8800 

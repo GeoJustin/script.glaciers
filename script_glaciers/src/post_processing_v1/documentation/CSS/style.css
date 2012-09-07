@@ -1,0 +1,38 @@
+.background {
+	background-color: #cccccc;
+	background-image: url(../Images/DropShadow.jpg);
+	background-repeat: repeat-y;
+	background-position:center
+}
+
+.header {
+	font-size:16.0pt;
+	line-height:115%;
+	color:#215968;
+	margin:0;
+	padding-left:20px;
+	padding-right:20px;
+	padding-top:20px
+}
+
+.div {
+	background-color:#ffffff;
+	height:100%; width:800px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.paragraph {
+	margin:0;
+	padding-top: 10px;
+	padding-left:20px;
+	padding-right:20px;
+	padding-bottom:10px
+}
+
+.listparagraph {
+	margin:0;
+	padding-left:60px;
+	padding-right:60px;
+	padding-bottom:10px
+}

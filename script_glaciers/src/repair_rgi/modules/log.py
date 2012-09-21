@@ -60,7 +60,7 @@ class Log ():
         if supress_ts == False: # No suppression of time stamp.
             __content = __content + str(__clock.get_elapsed_time()) + ' - ' + text + '\n'
         if supress_ts == True: # Time stamp suppressed. Used in 'print_break'
-            __content = __content + text + '\n'
+            __content = __content + '           ' + text + '\n'
         
         # Print old and new content to log file.
         self.print_to_logfile()

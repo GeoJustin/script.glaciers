@@ -1,6 +1,7 @@
 """****************************************************************************
  Name: repair_rgi.repair_rgi
- Purpose: 
+ Purpose: To repair any geometry error that may occur and to find errors in
+        area calculation, topology and find any multi-part / single-part polygons
  
 Created: Sep 21, 2012
 Author:  Justin Rich (justin.rich@gi.alaska.edu)
@@ -66,7 +67,13 @@ class rgi_process ():
             
             # Check Area for discrepancies
             area = self.check_area(working_shapefile, output_folder)
-            __log.print_line('   Area - ' + area[0] + 'Original , ' + area[1] +  'Final area')
+            __log.print_line('   Area - ' + area[2] + ' difference')
+            __log.print_line('         ' + 'Original area: ' + area[0] + ' , Final area: ' + area[1], True)
+            
+            # Check for topology errors
+            topology = self.check_topology (working_shapefile, output_folder)
+            __log.print_line('   Topology - ' + topology[0] + ' errors on ' + topology[1] + ' features')
+            __log.print_line('               Rule set - Must Not Overlap (Area)', True)
 
             __log.print_break()
             
@@ -134,14 +141,41 @@ class rgi_process ():
         ARCPY.Delete_management(reprojected) # Delete multi-part .shp part results.
         ARCPY.Delete_management(area_shapefile) # Delete multi-part .shp part results.
         
-        return [str(original_sum), str(final_sum)]
+        return [str(original_sum), str(final_sum), str(original_sum-final_sum)]
+    
+    
+    def check_topology (self, working_shapefile, output_folder):
+        """Create Database and check for overlapping features. This function
+        is based on one previously created by Christian Kienholz, University
+        of Alaska, Fairbanks, 03/2012"""
+        # Create Database, add a data set and upload the features
+        database = ARCPY.CreateFileGDB_management (output_folder, 'database.gdb')
+        dataset = ARCPY.CreateFeatureDataset_management (database, 'validation', working_shapefile)
+        feature = str(dataset) +'\\feature'
+        ARCPY.CopyFeatures_management (working_shapefile, feature)
+        
+        #Create topology and rules. Add feature to it
+        topology = ARCPY.CreateTopology_management (dataset, 'topology_rules')
+        ARCPY.AddFeatureClassToTopology_management (topology, feature, 1, 1)
+        ARCPY.AddRuleToTopology_management (topology, 'Must Not Overlap (Area)' , feature)
+        ARCPY.ValidateTopology_management (topology)
+        
+        # Export Errors
+        ARCPY.ExportTopologyErrors_management (topology, database, 'Errors')
+        error_count = ARCPY.GetCount_management (str(database)+ '\\Errors_poly')
+        original_count = ARCPY.GetCount_management (working_shapefile)
+        
+        ARCPY.Delete_management(database) # Delete database
+
+        return [str(error_count), str(original_count)]
         
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !
+
 def driver():
-    input_folder = 'A:\\Desktop\\Test'
-    output_folder = 'A:\\Desktop\\Ouput'
+    input_folder = 'A:\\Desktop\\RGI30'
+    output_folder = 'A:\\Desktop\\RGI30_repair'
 
     rgi_process (input_folder, output_folder)
 

@@ -33,7 +33,7 @@ class plot_glacier_elevation():
     against each other in order to derive a plot of elevation data."""
     
     def __init__ (self, map_date, modern_date, output_file, output_name, area_column_map_date, area_column_modern_date,
-                    elev_x_label, elev_y_label, elev_title, legend_map_date, legend_modern_date, coefficient, exponent, header):
+                    elev_x_label, elev_y_label, elev_title, legend_map_date, legend_modern_date, header):
         """This function auto runs the contents of the plot_glaciers class when run."""
         
         # Read in the map date (earlier) CSV file
@@ -94,16 +94,12 @@ def main():
     legend_map_date = '1950s'
     legend_modern_date = 'Late 2000s'
     elev_title =  ''
-
-    # Volume/Area scaling parameters
-    coefficient = 0.2055
-    exponent = 1.375
     
     # If a header is included in the input files set True if not set False
     header = True
     
     plot_glacier_elevation (map_date, modern_date, output_folder, output_name, area_column_map_date, area_column_modern_date,
-                     elev_x_label, elev_y_label, elev_title, legend_map_date, legend_modern_date, coefficient, exponent, header)
+                     elev_x_label, elev_y_label, elev_title, legend_map_date, legend_modern_date, header)
 
 if __name__ == '__main__':
     main()

@@ -53,9 +53,6 @@ class plot_glacier_area():
         if header == True: modern_data.next()
         for aRow in modern_data:    # For each row in the csv
             line = aRow.split(',')  # Split each row based on a comma
-            # If the first value in the row equals 'ID' then it is the head and should be skipped
-            if line[0] == "ID":  
-                continue # Skip rest of this iteration through the loop and move to next row
             # Add values from the current row to the appropriate modern data lists
             area_modern.append(float(line[area_column_modern_date])*1e6) # Add area to the area list
             

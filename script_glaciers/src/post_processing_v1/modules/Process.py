@@ -49,7 +49,7 @@ class process ():
         __Log.printLine("Output: " + Output)
         __Log.printBreak()
 
-        #Try and clear the workspace incase there are files in it.
+        #Try and clear the workspace in case there are files in it.
         self.clearWorkspace(Workspace)
 
 

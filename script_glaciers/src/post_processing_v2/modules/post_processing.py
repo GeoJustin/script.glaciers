@@ -19,9 +19,10 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
-import arcpy                                                #@UnresolvedImport
+import arcpy as ARCPY                                         #@UnresolvedImport
 import log
 import os
+import data_prep as DP
         
 class process ():
     
@@ -31,82 +32,83 @@ class process ():
         except: print 'ArcInfo license NOT available'
 
         try: # Check out Spatial Analyst extension if available.
-            if arcpy.CheckExtension('Spatial') == 'Available':
-                arcpy.CheckOutExtension('Spatial')
+            if ARCPY.CheckExtension('Spatial') == 'Available':
+                ARCPY.CheckOutExtension('Spatial')
                 print 'Spatial Analyst is available'
         except: print 'Spatial Analyst extension not available'
 
         # Set environment
-        from arcpy import env                               #@UnresolvedImport
-        env.workspace = Workspace
-        
-        # Try and clear the workspace in case there are files in it.
-        self.clearWorkspace(Workspace)
+        ARCPY.env.workspace = Workspace
                 
         # Start Log
-        __Log = log.Log(Output)
-        __Log.printBreak()
-        __Log.printLine("Input: " + os.path.basename(Input))
-        __Log.printLine("DEM: " + os.path.basename(DEM))
-        __Log.printLine("Output: " + Output)
-        __Log.printBreak()
+        log_path = os.path.dirname(os.path.abspath(Output))
+        __Log = log.Log(log_path)
+        __Log.print_break()
+        __Log.print_line("Input File: " + os.path.basename(Input))
+        __Log.print_line("Input DEM: " + os.path.basename(DEM))
+        __Log.print_line('Output Folder: ' + os.path.dirname(os.path.abspath(Output)))
+        __Log.print_line("Output File: " + os.path.basename(Output))
+        __Log.print_break()
         
-        #*******Input File Cleanup**********************************************
-        print 'Checking input polygons'
-        print '     Checking geometry'
-        arcpy.RepairGeometry_management(Input)  # Repair Geometry
-        
-        #Check for multi-part Polygons
-        print '     Check for multi-part polygons'
-        rows = arcpy.UpdateCursor(Input) #Count features in original Shp
-        originalCount = 0
-        for row in rows:
-            originalCount += 1
-        del row , rows #Delete cursors and remove locks
-
-        __output_multipart = Workspace + '\\Multipart.shp'
-        arcpy.MultipartToSinglepart_management(Input, __output_multipart)
-
-        rows = arcpy.UpdateCursor(__output_multipart) #Count features after multi-to-single
-        finalCount = 0
-        for row in rows:
-            finalCount += 1
-        del row , rows #Delete cursers and remove locks
-
-        if originalCount <> finalCount:
-            __Log.printLine ('Multi-part features found')
-            raw_input("Features are not single part. Stop script and run multipart to single part on features.")
-
-        else:
-            print '          No multi-part features found'
-            __Log.printLine ('No multi-part features found')
-            __Log.printBreak()
-
-        #Try and clear the workspace in case there are files in it.
-        self.clearWorkspace(Workspace)
+        # Create a copy of the input file in the output folder. This will be the
+        # actual result file after fields are updated. This is done so no changes
+        # are imposed on the original file.
+        input_copy = ARCPY.CopyFeatures_management(Input, Output)
         
         #_______________________________________________________________________
-        #*******Input File Cleanup**********************************************
+        #*******Input File Cleanup**********************************************   
+        print 'Checking input polygons'
+        print '     Checking geometry'
+        # Check geometries. If there are errors, correct them and print the
+        # results to the log file
+        repair = DP.repair_geometry(input_copy)
+        __Log.print_line('   Geometry - ' + repair[0] + ' errors found (Repaired ' + repair[1] + ')')
+           
+        # Check to see if there are any multi-part polygons in the input file. If
+        # so, prompt the user to stop and correct. Print to log file.
+        print '     Checking for Multi-part Polygons'
+        multipart = DP.check_multipart(input_copy, Workspace) # Check for multi-part Polygons
+        __Log.print_line('   Multi-Part Polygons - ' + multipart + ' found')
+        
+        # Check to see if the area from the AREA column matches the actual area
+        # calculated. If not signal the user to correct. Print results to log.
+        print '     Checking Area'
+        area = DP.check_area(input_copy, Workspace)
+        __Log.print_line('   Area - ' + area[2] + ' difference')
+        __Log.print_line('                   ' + 'Original area: ' + area[0] + ' , Final area: ' + area[1], True)
+        
+        # Check to see if there are any topology errors in the input file. If there 
+        # are signal the user to correct before moving forward. Print to log.
+        print '     Checking Topology'
+        topology = DP.check_topology(input_copy, Workspace)
+        __Log.print_line('   Topology - ' + topology[0] + ' errors on ' + topology[1] + ' features')
+        __Log.print_line('                   Rule set - Must Not Overlap (Area)', True)
+        
+        # Warnings: 
+        if multipart <> str(0): print "WARNING:  Multi-part features found.."
+        if area [2] > 1 or area[2] < -1: 'WARNING: The AREA difference exceeds the threshold.'
+        if topology[0] <> str(0): raw_input(str(topology[0]) + "WARNING: Topology errors found.")
+       
+        __Log.print_break() # Break for next section in the log file.
+     
+        #_______________________________________________________________________
+        #*******Prepare Input file*********************************************
         print 'Generating Glacier IDs'
+        glims_ids = DP.generate_GLIMSIDs(input_copy, Workspace) # Copy to Output
+        __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
+        
+        
+        
 
-        arcpy.AddField_management(Input, 'Lat', 'DOUBLE')
-        arcpy.AddField_management(Input, 'Lon', 'DOUBLE')
-        
-        # Create a copy of the input in WGS 84 for calculating Lat. / Lon.
-        output_wgs84 = Output + "\\" + os.path.basename(os.path.splitext(Input)[0]) + "_WGS84.shp"
-        projectioned = os.path.dirname(os.path.abspath(__file__)) + '\\WGS1984.prj'
-        arcpy.Project_management(Input, output_wgs84, projectioned)
-        
-        
-        
+        print 'Processing Complete'
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !
 def driver():
-    Input = 'C:\\Users\\glaciologist\\Desktop\\GINAFY\\Input\\GlacierBay_DRGs.shp'
-    Output = 'C:\\Users\\glaciologist\\Desktop\\TestOut'
-    Workspace = 'X:\\Programs\\PostProcess\\Workspace'
-    DEM = 'C:\Users\glaciologist\Desktop\GINAFY\DEMs\DEM_NED_Albers.tif'
+    Input = r'A:\Desktop\TestDataPrep\TestGlaciers.shp'
+    Output = r'A:\Desktop\TestDataPrep\Output\TestGlacier_Out.shp'
+    Workspace = r'A:\Desktop\TestDataPrep\Workspace'
+    DEM = r''
     #Bins - Bin size based on DEM elevation units
     binSize = 50 #Meters
     #Bin measured from base bin elevation i.e. 8800 is 8800-8850

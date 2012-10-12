@@ -129,7 +129,9 @@ def check_column_formate (input_file):
 
 def generate_GLIMSIDs (input_file, workspace):
     """Generate GLIMS id's for the input table. These are based on latitude
-    and longitude. File is re-projected into WGS84 to obtain these."""
+    and longitude. File is re-projected into WGS84 to obtain these. 
+    WARNING - ID's checked for Alaska but have NOT YET been verified in 
+    other regions."""
     # Create a copy of the input in WGS 84 for calculating Lat. / Lon.
     output_wgs84 = workspace + "\\Input_File_WGS84.shp"
     projection = os.path.dirname(os.path.abspath(__file__)) + '\\projection\\WGS1984.prj'
@@ -155,21 +157,25 @@ def generate_GLIMSIDs (input_file, workspace):
         elif Y >= 0 and Y < 10000: str(0) + str(Y) + "N" #Values 0-10 including 0
         else: Y = str(Y) + "N" # Values greater then or equal to 10
 
-        row.GLIMSID = "G"+ X + Y #GLIMS ID is concatenated
+        row.GLIMSID = "G"+ X + Y # GLIMS ID is concatenated
         glims_values.append(str("G"+ X + Y))
         rows.updateRow(row) # The information is saved for the polygon shapefile (like save edits)
-    #Delete cursors and remove locks
-    del row
+    
+    ARCPY.Delete_management(output_wgs84) # Delete temporary re-projected file
+    del row     #Delete cursors and remove locks
     del rows
+    
+    # Get ID count to return. i.e. number of glaciers
+    id_count = str(len(glims_values))
     
     # Transfer calculated GLIMS IDs to the original input file
     rows = ARCPY.UpdateCursor (input_file)
     for row in rows:
-        row.GLIMSID = glims_values.pop()
-        rows.updateRow(row)
-    del row
+        row.GLIMSID = glims_values.pop() # pop next value and print it to file.
+        rows.updateRow(row) # Update the new entry
+    del row #Delete cursors and remove locks
     del rows    
     
-    ARCPY.Delete_management(output_wgs84) # Delete database
-    
-    return str(len(glims_values))
+    return id_count # Return number of IDs generated
+
+

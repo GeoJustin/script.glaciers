@@ -20,10 +20,11 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 import arcpy as ARCPY                                         #@UnresolvedImport
-import log
-import os
 import data_prep as DP
-        
+import log
+import csv
+import os
+
 class process ():
     
     def __init__ (self, Input, Output, DEM, Workspace, binSize, minBin, maxBin):
@@ -54,7 +55,7 @@ class process ():
         # actual result file after fields are updated. This is done so no changes
         # are imposed on the original file.
         input_copy = ARCPY.CopyFeatures_management(Input, Output)
-        
+        """
         #_______________________________________________________________________
         #*******Input File Cleanup**********************************************   
         print 'Checking input polygons'
@@ -97,8 +98,21 @@ class process ():
         glims_ids = DP.generate_GLIMSIDs(input_copy, Workspace) # Copy to Output
         __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
         
+        """
+        #_______________________________________________________________________
+        #*******Calculate Statistics********************************************
         
         
+        table_output = os.path.dirname(os.path.abspath(Output))
+        
+        #Calculate Hypsometry
+        hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', [])
+
+        #Calculate Binned Slope
+        slope_csv = csv.csv(table_output, 'Stats_Hypsometry', [])
+
+        #Calculate Binned Aspect
+        aspect_csv = csv.csv(table_output, 'Stats_Hypsometry', [])
 
         print 'Processing Complete'
 #_______________________________________________________________________________
@@ -108,7 +122,7 @@ def driver():
     Input = r'A:\Desktop\TestDataPrep\TestGlaciers.shp'
     Output = r'A:\Desktop\TestDataPrep\Output\TestGlacier_Out.shp'
     Workspace = r'A:\Desktop\TestDataPrep\Workspace'
-    DEM = r''
+    DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
     #Bins - Bin size based on DEM elevation units
     binSize = 50 #Meters
     #Bin measured from base bin elevation i.e. 8800 is 8800-8850

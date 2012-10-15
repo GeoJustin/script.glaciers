@@ -20,14 +20,15 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 import arcpy as ARCPY                                         #@UnresolvedImport
-import data_prep as DP
+import functions_data_prep as DP
+import functions_data_calc as DC
 import log
 import csv
 import os
 
 class process ():
     
-    def __init__ (self, Input, Output, DEM, Workspace, binSize, minBin, maxBin):
+    def __init__ (self, Input, Output, DEM, Workspace, variables):
         
         try: import arcinfo # Get ArcInfo License - @UnresolvedImport @UnusedImport
         except: print 'ArcInfo license NOT available'
@@ -102,17 +103,26 @@ class process ():
         #_______________________________________________________________________
         #*******Calculate Statistics********************************************
         
-        
+        # Create output tables.
         table_output = os.path.dirname(os.path.abspath(Output))
+        table_header = DP.generate_header(variables.read_variable('RGITABLE'), variables.read_variable('MAXBIN'), variables.read_variable('MINBIN'), variables.read_variable('BINSIZE'))
+
+        hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header)
+        slope_csv = csv.csv(table_output, 'Stats_Slope', table_header)
+        aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)
+
+        # For Each Glacier
         
-        #Calculate Hypsometry
-        hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', [])
+            # Get Attributes
+        
+            # Get Basic Statistics
+            
+            # Get hypsometry
+            
+            # Get Aspect
+            
+            # Get Slope    
 
-        #Calculate Binned Slope
-        slope_csv = csv.csv(table_output, 'Stats_Hypsometry', [])
-
-        #Calculate Binned Aspect
-        aspect_csv = csv.csv(table_output, 'Stats_Hypsometry', [])
 
         print 'Processing Complete'
 #_______________________________________________________________________________
@@ -123,13 +133,12 @@ def driver():
     Output = r'A:\Desktop\TestDataPrep\Output\TestGlacier_Out.shp'
     Workspace = r'A:\Desktop\TestDataPrep\Workspace'
     DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
-    #Bins - Bin size based on DEM elevation units
-    binSize = 50 #Meters
-    #Bin measured from base bin elevation i.e. 8800 is 8800-8850
-    maxBin = 8800 #Based on Everest.
-    minBin = 0
+    
+    #Variables - WARNING: Use caution manually changing variables.
+    import variables
+    variables = variables.Variables()
 
-    process (Input, Output, DEM, Workspace, binSize, minBin, maxBin)
+    process (Input, Output, DEM, Workspace, variables)
 
 if __name__ == '__main__':
     driver()

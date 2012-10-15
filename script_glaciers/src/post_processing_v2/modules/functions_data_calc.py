@@ -1,5 +1,5 @@
 """****************************************************************************
- Name: data_statistics
+ Name: functions_data_calc
  Purpose: 
  
 Created: Oct 12, 2012
@@ -27,3 +27,15 @@ def get_properties (raster, prop = ''):
     MINIMUM, MAXIMUM, MEAN, STD, ... etc."""
     return str(ARCPY.GetRasterProperties_management(raster, prop))
 
+
+
+
+# Get Attributes
+
+# Get Basic Statistics
+
+# Get hypsometry
+
+# Get Aspect
+
+# Get Slope  

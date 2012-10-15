@@ -1,5 +1,5 @@
 """****************************************************************************
- Name: repair_checks
+ Name: functions_data_prep
  Purpose: To repair any geometry error that may occur and to find errors in
         area calculation, topology and find any multi-part / single-part
         polygons. Module also generates values to populate fields which should
@@ -24,6 +24,7 @@ License:     Although this application has been produced and tested
 ****************************************************************************"""
 import arcpy as ARCPY                                        #@UnresolvedImport
 import os
+import math
 
 def repair_geometry (input_file):
     """Repair geometry error and report the number of errors if any."""
@@ -179,3 +180,15 @@ def generate_GLIMSIDs (input_file, workspace):
     return id_count # Return number of IDs generated
 
 
+def generate_header (initial_header, max_bin = 8850, min_bin = 0, bin_size = 50):
+    """Generate a table list containing table header information by combining
+    the initial header information, found in the .var file, with bins, calculated
+    here from minimum elevation, maximum elevation and bin size."""
+    header = initial_header # Header info given. 
+    # Calculate number of bins. A ceiling function is used to ensure that the 
+    # number of bins is inclusive so the number does not come up short and rounded to 
+    # produce an integer.
+    total_bins = round(math.ceil(float(max_bin - min_bin) / float(bin_size)), 0)
+    for count in range (0, int(total_bins)):                           
+            header.append('B' + str(min_bin + (count * bin_size)))
+    return header # List of column headers is returned.

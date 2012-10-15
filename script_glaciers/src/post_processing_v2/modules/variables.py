@@ -52,13 +52,21 @@ class Variables ():
                 # Remove spaces and page breaks in order to create a list of
                 # just variable name and value.
                 var_line = (line.replace(' ', '').replace('\n', '')).split ('=')
-                if var_line [0] == var_name:
-                    return var_line [1] # Return the value when found and break.
-                    break
+                if var_line [0] == var_name: 
+                    if var_line [1] == 'STRING': # Return the value as a string
+                        return var_line [2] 
+                        break
+                    if var_line [1] == 'INTEGER': # Return the value as an int
+                        return int(var_line [2]) 
+                        break 
+                    if var_line [1] == 'LIST': # Return the value as a list
+                        return var_line [2].replace(' ', '').split (',')
+                        break
         variables.close() # Close the file and discard reference.
         return 'VARIABLE NOT FOUND' # Return value if no variable is found.
+
         
-    def set_variable (self, var_name, var_value):
+    def set_variable (self, var_name, var_value, var_type = 'STRING'):
         """Write a new variable to the .var file, replacing the original."""
         variables = open (__variables, 'r')
         var_list = [] #List to hold contents of .var file.
@@ -74,11 +82,12 @@ class Variables ():
                 # just variable name and value.
                 var_line = (item.replace(' ', '').replace('\n', '')).split ('=')
                 if var_line [0] == var_name: # If value is found replace with new
-                    item = str(var_name) + ' = ' + str(var_value) + '\n'
+                    item = str(var_name) + ' = ' + var_type + ' = ' + str(var_value) + '\n'
                     result = "VALUE SET"
             new_variables.write(item) # Write line to file.
         new_variables.close() # Close the file and discard reference.
         return result
+    
     
     def reset_defaults (self):
         """Iterate through the .var document and reset the default values of
@@ -89,6 +98,7 @@ class Variables ():
             var_list.append(line) # Add items (lines) to var_list.
         variables.close() # Close the file and discard reference.
         
+        
         for item in var_list:
             if item[0] <> '#': # Don't bother reading note lines
                 # Remove spaces and page breaks in order to create a list of
@@ -97,9 +107,10 @@ class Variables ():
                 # If value is found replace with new value (-1 is not found)
                 if var_line [0].find('(Default)') <> -1:
                     #Reset the default value using the set_variable method
-                    self.set_variable(var_line[0].replace('(Default)', ''), var_line[1])
+                    self.set_variable(var_line[0].replace('(Default)', ''), var_line[1], var_line[2])
         return "RESET COMPLETE"
-   
+        
+        
 #Driver
 def main():
     pass

@@ -3,20 +3,26 @@
 #	- Default values should never be changed in this document.
 #	- Notes should be preceded with a # symbol.
 # 	- Variables should be formated as [VARIABLE = Value].
-#	- Variables that are a 'Default' value should be formated as
+#	- Variables that are a Default value should be formated as
 #		[VARIABLE (Default) = Value]. Values listed as default are
-#		used by the 'restore_defaults' method to reset all values.
+#		used by the restore_defaults method to reset all values.
 #
 # VARIABLES:
 #	Bins - Bin size based on DEM elevation units
 #	BINSIZE - The vertical size of the elevation bins. If the DEM is in meters
 #		the bin size should be in meters, etc.
-BINSIZE = 50
-BINSIZE (Default) = 50
+BINSIZE = INTEGER = 50
+BINSIZE (Default) = INTEGER = 50
 #	Bin measured from base bin elevation i.e. 8800 is 8800-8850
 #	Minimum Bin elevation
-MINBIN = 0
-MINBIN (Default) = 0
+MINBIN = INTEGER = 0
+MINBIN (Default) = INTEGER = 0
 #	Maximum Bin elevation (8,800m would include Mt. Everest)
-MAXBIN = 8800
-MAXBIN (Default) = 8800 
+MAXBIN = INTEGER = 8850
+MAXBIN (Default) = INTEGER = 8850 
+#	Header Information - RGI Headers
+RGIHEADER = LIST = RGIID, GLIMSID, RGIFLAG, BGNDATE, ENDDATE, CENLON, CENLAT, 01REGION, 02REGION, AREA, GLACTYPE, NAME
+RGIHEADER (Default) = LIST = RGIID, GLIMSID, RGIFLAG, BGNDATE, ENDDATE, CENLON, CENLAT, 01REGION, 02REGION, AREA, GLACTYPE, NAME
+#	Header Information - RGI Compatible Table Headers
+RGITABLE = LIST = GLIMSID, NAME, GLACTYPE, BGNDATE, ENDDATE, CENLON, CENLAT, AREA, MIN_ELEV, MAX_ELEV, MEDIAN_ELEV, MEAN_ELEV
+RGITABLE (Default) = LIST = GLIMSID, NAME, GLACTYPE, BGNDATE, ENDDATE, CENLON, CENLAT, AREA, MIN_ELEV, MAX_ELEV, MEDIAN_ELEV, MEAN_ELEV

@@ -24,29 +24,28 @@ License:     Although this application has been produced and tested
 import os
 import glob
 
-class Variables ():
+class Variables (object):
     """Stores and calls variables to be used by the application. This module
        works with a configuration file and stores the information perminatly
        so that changes are remembered between runs."""
-       
-    __variables = '' #Store the path of the variables file
   
     def __init__ (self):
         """ init starts the variables module and locates the associated .var
         file to be used. The .var file must be located at the same path as the
         module or an error will be generated."""
-        global __variables
+        
+        self.__variables = '' #Store the path of the variables file
         
         path = os.path.dirname(os.path.abspath(__file__)) # Get modules path.
         # Search files in path with the extension .var and add the path to it.
         for f in glob.glob (os.path.join (path, '*.var')): 
-            __variables = path + '\\' + os.path.basename(f) 
+            self.__variables = path + '\\' + os.path.basename(f) 
         
 #______________________________________________________________________________
 #***Methods********************************************************************
     def read_variable (self, var_name):
         """Read a variable from the .var file and return its value."""
-        variables = open (__variables, 'r')
+        variables = open (self.__variables, 'r')
         for line in variables:
             if line[0] <> '#': # Don't bother reading note lines
                 # Remove spaces and page breaks in order to create a list of
@@ -68,14 +67,14 @@ class Variables ():
         
     def set_variable (self, var_name, var_value, var_type = 'STRING'):
         """Write a new variable to the .var file, replacing the original."""
-        variables = open (__variables, 'r')
+        variables = open (self.__variables, 'r')
         var_list = [] #List to hold contents of .var file.
         result = "VALUE NOT SET" # Return value
         for line in variables:
             var_list.append(line) # Add items (lines) to var_list.
         variables.close() # Close the file and discard reference.
           
-        new_variables = open (__variables, 'w')  
+        new_variables = open (self.__variables, 'w')  
         for item in var_list:
             if item[0] <> '#': # Don't bother reading note lines
                 # Remove spaces and page breaks in order to create a list of
@@ -92,7 +91,7 @@ class Variables ():
     def reset_defaults (self):
         """Iterate through the .var document and reset the default values of
         all variables to their original state using the set_variables method.""" 
-        variables = open (__variables, 'r')
+        variables = open (self.__variables, 'r')
         var_list = [] #List to hold contents of .var file.
         for line in variables:
             var_list.append(line) # Add items (lines) to var_list.

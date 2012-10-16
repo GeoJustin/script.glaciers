@@ -92,38 +92,53 @@ class process ():
         if topology[0] <> str(0): raw_input(str(topology[0]) + "WARNING: Topology errors found.")
        
         __Log.print_break() # Break for next section in the log file.
-     
+        """
         #_______________________________________________________________________
         #*******Prepare Input file*********************************************
         print 'Generating Glacier IDs'
         glims_ids = DP.generate_GLIMSIDs(input_copy, Workspace) # Copy to Output
         __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
         
-        """
+        
         #_______________________________________________________________________
         #*******Calculate Statistics********************************************
         
         # Create output tables.
         table_output = os.path.dirname(os.path.abspath(Output))
-        table_header = DP.generate_header(variables.read_variable('RGITABLE'), variables.read_variable('MAXBIN'), variables.read_variable('MINBIN'), variables.read_variable('BINSIZE'))
+        header = variables.read_variable('RGITABLE')
+        max_bin = variables.read_variable('MAXBIN')
+        min_bin =  variables.read_variable('MINBIN')
+        bin_size = variables.read_variable('BINSIZE')
+        table_header = DP.generate_header(header, max_bin, min_bin, bin_size)
 
         hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header)
         slope_csv = csv.csv(table_output, 'Stats_Slope', table_header)
         aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)
 
-        # For Each Glacier
+        rows = ARCPY.UpdateCursor(input_copy)
+        for row in rows:
+            
+            attribute_info = DC.get_attributes(row) # Get Attributes
+            
+            DC.get_statistics(row, DEM) # Get Basic Statistics
         
-            # Get Attributes
+            DC.get_hypsometry(row, DEM, max_bin, min_bin, bin_size) # Get hypsometry
+            
+            DC.get_aspect(row, DEM, max_bin, min_bin, bin_size) # Get Aspect
+            
+            DC.get_slope(row, DEM, max_bin, min_bin, bin_size) # Get Slope    
+            
+            print attribute_info
+            print hypso_csv.get_rows()
+            print hypso_csv.get_records()
+            
+            # Print row data to csv files as appropriate. 
+            hypso_csv.print_line(attribute_info)
+            slope_csv.print_line(attribute_info)
+            aspect_csv.print_line(attribute_info)
+
+        del row , rows #Delete cursors and remove locks
         
-            # Get Basic Statistics
-            
-            # Get hypsometry
-            
-            # Get Aspect
-            
-            # Get Slope    
-
-
         print 'Processing Complete'
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************

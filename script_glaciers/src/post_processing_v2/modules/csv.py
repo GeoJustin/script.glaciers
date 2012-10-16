@@ -20,28 +20,26 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 
-class csv ():
+class csv (object):
     """csv is used to create, update and print information to a csv file.
     Attributes:
         csv Name (optional): A String for the name of the csv file.
         headers (optional): A list of headers to populate the csv file."""
-    
-    __csvfile = '' # Global variable - csv file name.
-    __header = []  # Global variable - The header of the csv file.
-    __content = [] # List of Lists. Each internal list contains one row.
-    __records = 0
     
     # Create the csv file (.csv file) and populate the first line with headers.
     def __init__ (self, output, csv_name = 'csv', headers = []):
         """init starts the stop watch, creates the Log '.txt' file and populates 
         it with the current date and time."""
         
-        global __csvfile, __header # Accessed Globals
-        __csvfile = output + '\\' + csv_name  + '.csv'
-        __header = headers
+        # initialize instance variables
+        # Global variable - csv file name.
+        self.__csvfile = output + '\\' + csv_name  + '.csv'
+        self.__header = headers # Global variable - The header of the csv file.
+        self.__content = [] # List of Lists. Each internal list contains one row.
+        self.__records = 0
         
-        output_file = open (__csvfile, 'w') # Open CSV hard copy
-        for item in __header:    # Print the header to the CSV.
+        output_file = open (self.__csvfile, 'w') # Open CSV hard copy
+        for item in self.__header:    # Print the header to the CSV.
             output_file.write(item + ',')
         output_file.close() # Close the csv hard copy
         
@@ -49,37 +47,41 @@ class csv ():
 #***Methods********************************************************************
     def get_header (self):
         """Return the csv header as a list."""
-        return __header
+        return self.__header
     
     
     def get_name (self):
         """Return the csv path and name."""
-        return __csvfile
+        return self.__csvfile
     
     
     def get_records (self):
+        """Returns a list of lists. Each internal list represents a record"""
+        return self.__content
+    
+    
+    def get_rows (self):
         """Return the number of records in the csv."""
-        return __records
+        return self.__records
     
     
     def print_line (self, row_list):
         """Prints a line to the csv file."""
-        global __content, __records    # Accessed Globals
-        __content.append(row_list)
+        self.__content.append(row_list) # Append new row to content.
         
-        output_file = open (__csvfile, 'w') # Open CSV hard copy
-        for item in __header: # Print the header to the CSV.
+        output_file = open (self.__csvfile, 'w') # Open CSV hard copy
+        for item in self.__header: # Print the header to the CSV.
             output_file.write(item + ',')
         output_file.write('\n') # Move cursor to next line
         
         # Write __content to the CSV. 
-        for each_list in __content: # Iterate through each List
+        for each_list in self.__content: # Iterate through each List
             for each_item in each_list: # Iterate through Items
                 output_file.write(each_item + ',')
             output_file.write('\n') # Move cursor to next row in CSV
         
         output_file.close() # Close the csv hard copy
-        __records += 1 # Increase the Record Count by 1
+        self.__records += 1 # Increase the Record Count by 1
         return "PRINTED TO CSV"
 
              

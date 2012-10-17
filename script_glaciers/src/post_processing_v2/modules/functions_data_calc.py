@@ -30,9 +30,11 @@ def get_aspect (feature, dem, max_bin = 8850, min_bin = 0, bin_size = 50):
     fails at runtime an error is returned for recording in the log file."""
     slope = []
     try:
-        return slope
+        # NOT WRITTEN 
+        # NOT WRITTEN 
+        return slope, False
     except:
-        return 'ERROR'
+        return 'ERROR - Could not generate binned aspect data', True
     
 
 def get_attributes (feature):
@@ -43,6 +45,13 @@ def get_attributes (feature):
     attributes = []
     try:
         attributes.append(str(feature.GLIMSID))
+        attributes.append(str(feature.NAME))
+        attributes.append(str(feature.GLACTYPE))
+        attributes.append(str(feature.BGNDATE))
+        attributes.append(str(feature.ENDDATE))
+        attributes.append(str(feature.CENLON))
+        attributes.append(str(feature.CENLAT))
+        attributes.append(str(feature.AREA))
         return attributes
     except:
         return 'ERROR'
@@ -54,9 +63,11 @@ def get_hypsometry (feature, dem, max_bin = 8850, min_bin = 0, bin_size = 50):
     is returned for recording in the log file."""
     hypsometry = []
     try:
-        return hypsometry
+        # NOT WRITTEN 
+        # NOT WRITTEN 
+        return hypsometry, False
     except:
-        return 'ERROR'
+        return 'ERROR - Could not generate hypsometry data', True
 
     
 def get_properties (raster, prop = ''):
@@ -72,9 +83,11 @@ def get_slope (feature, dem, max_bin = 8850, min_bin = 0, bin_size = 50):
     fails at runtime an error is returned for recording in the log file."""
     aspect = []
     try:
-        return aspect
+        # NOT WRITTEN 
+        # NOT WRITTEN 
+        return aspect, True
     except:
-        return 'ERROR'
+        return 'ERROR - Could not generate binned slope data' , False
         
         
 def get_statistics (feature, dem):
@@ -83,19 +96,33 @@ def get_statistics (feature, dem):
     fails at runtime an error is returned for recording in the log file."""
     statistics = []
     try:
-        return statistics
+        # NOT WRITTEN 
+        # NOT WRITTEN 
+        return statistics, False
     except:
-        return 'ERROR'
+        return 'ERROR - Could not generate basic statistics', True
         
 
-def subset (feature, raster):
+def subset (feature, raster, workspace, buffer_scale = 2):
     """Subset a raster based on an input features boundaries plus a buffer
     which should be greater then the size of the pixels in the given raster.
     This is to ensure there are no gaps between where the raster ends and the
     input feature begins. Any excess raster will be clipped later after it is
     converted to a feature class."""
-    subset = 'SUBSET'
-    return subset
+    subset = workspace + '\\' + 'raster_subset_' + str(feature.GLIMSID) + '.img'
+    try:
+        cellsize = float(get_properties(raster, 'CELLSIZEX')) * buffer_scale
+        
+        # Buffer the input features geometry
+        mask = ARCPY.Buffer_analysis(feature.shape, ARCPY.Geometry(), cellsize)
+        
+        # Extract by mask using the buffered feature geometry
+        extract = ARCPY.sa.ExtractByMask (raster, mask[0])
+        extract.save(subset) # Save extracted mask as subset
+        
+        return subset, False # Return path to subset location in the workspace
+    except:
+        return 'ERROR - Could not subset feature', True
     
     
     

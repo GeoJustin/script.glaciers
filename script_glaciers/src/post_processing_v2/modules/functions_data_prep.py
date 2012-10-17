@@ -84,7 +84,7 @@ def check_area (input_file, workspace):
         final_sum += (row.F_AREA/1000000)
         
     ARCPY.Delete_management(reprojected) # Delete multi-part .shp part results.
-    ARCPY.Delete_management(area_shapefile) # Delete multi-part .shp part results.
+    ARCPY.Delete_management(area_shapefile) # Delete Area Statistics .shp part results.
     
     return [str(original_sum), str(final_sum), str(original_sum-final_sum)]
 

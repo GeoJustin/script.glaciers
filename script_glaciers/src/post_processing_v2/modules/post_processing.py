@@ -28,7 +28,7 @@ import os
 
 class process ():
     
-    def __init__ (self, Input, Output, DEM, Workspace, variables):
+    def __init__ (self, Input, Output, DEM, workspace, variables):
         
         try: import arcinfo # Get ArcInfo License - @UnresolvedImport @UnusedImport
         except: print 'ArcInfo license NOT available'
@@ -40,7 +40,7 @@ class process ():
         except: print 'Spatial Analyst extension not available'
 
         # Set environment
-        ARCPY.env.workspace = Workspace
+        ARCPY.env.workspace = workspace
                 
         # Start Log
         log_path = os.path.dirname(os.path.abspath(Output))
@@ -69,20 +69,20 @@ class process ():
         # Check to see if there are any multi-part polygons in the input file. If
         # so, prompt the user to stop and correct. Print to log file.
         print '     Checking for Multi-part Polygons'
-        multipart = DP.check_multipart(input_copy, Workspace) # Check for multi-part Polygons
+        multipart = DP.check_multipart(input_copy, workspace) # Check for multi-part Polygons
         __Log.print_line('   Multi-Part Polygons - ' + multipart + ' found')
         
         # Check to see if the area from the AREA column matches the actual area
         # calculated. If not signal the user to correct. Print results to log.
         print '     Checking Area'
-        area = DP.check_area(input_copy, Workspace)
+        area = DP.check_area(input_copy, workspace)
         __Log.print_line('   Area - ' + area[2] + ' difference')
         __Log.print_line('                   ' + 'Original area: ' + area[0] + ' , Final area: ' + area[1], True)
         
         # Check to see if there are any topology errors in the input file. If there 
         # are signal the user to correct before moving forward. Print to log.
         print '     Checking Topology'
-        topology = DP.check_topology(input_copy, Workspace)
+        topology = DP.check_topology(input_copy, workspace)
         __Log.print_line('   Topology - ' + topology[0] + ' errors on ' + topology[1] + ' features')
         __Log.print_line('                   Rule set - Must Not Overlap (Area)', True)
         
@@ -96,14 +96,14 @@ class process ():
         #_______________________________________________________________________
         #*******Prepare Input file*********************************************
         print 'Generating Glacier IDs'
-        glims_ids = DP.generate_GLIMSIDs(input_copy, Workspace) # Copy to Output
+        glims_ids = DP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
         __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
         
         
         #_______________________________________________________________________
         #*******Calculate Statistics********************************************
         
-        # Create output tables.
+        # Create output table header information to populate the tables with
         table_output = os.path.dirname(os.path.abspath(Output))
         header = variables.read_variable('RGITABLE')
         max_bin = variables.read_variable('MAXBIN')
@@ -111,31 +111,32 @@ class process ():
         bin_size = variables.read_variable('BINSIZE')
         table_header = DP.generate_header(header, max_bin, min_bin, bin_size)
 
+        # Create an instance of each table
         hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header)
         slope_csv = csv.csv(table_output, 'Stats_Slope', table_header)
         aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)
 
-        rows = ARCPY.UpdateCursor(input_copy)
-        for row in rows:
+        rows = ARCPY.SearchCursor(input_copy) # Open shapefile to read features
+        for row in rows: # For each feature in the shapefile
             
-            attribute_info = DC.get_attributes(row) # Get Attributes
+            attribute_info = DC.get_attributes(row) # Get Attributes 
             
-            DC.get_statistics(row, DEM) # Get Basic Statistics
-        
-            DC.get_hypsometry(row, DEM, max_bin, min_bin, bin_size) # Get hypsometry
+            subset, subset_error = DC.subset(row, DEM, workspace)
+            if subset_error == True: __Log.print_line(str(row.GLIMSID) + ' - ' + subset)
             
-            DC.get_aspect(row, DEM, max_bin, min_bin, bin_size) # Get Aspect
+            statistics_info = DC.get_statistics(row, subset) # Get Basic Statistics
+            hypsometry_info = DC.get_hypsometry(row, subset, max_bin, min_bin, bin_size) # Get hypsometry
+            aspect_info = DC.get_aspect(row, subset, max_bin, min_bin, bin_size) # Get Aspect
+            slope_info = DC.get_slope(row, subset, max_bin, min_bin, bin_size) # Get Slope    
             
-            DC.get_slope(row, DEM, max_bin, min_bin, bin_size) # Get Slope    
-            
-            print attribute_info
-            print hypso_csv.get_rows()
-            print hypso_csv.get_records()
+            print hypso_csv.get_rows(), subset_error
             
             # Print row data to csv files as appropriate. 
             hypso_csv.print_line(attribute_info)
             slope_csv.print_line(attribute_info)
             aspect_csv.print_line(attribute_info)
+            
+            ARCPY.Delete_management(subset)
 
         del row , rows #Delete cursors and remove locks
         

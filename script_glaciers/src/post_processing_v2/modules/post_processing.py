@@ -99,7 +99,7 @@ class process ():
         glims_ids = DP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
         __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
         
-        
+          
         #_______________________________________________________________________
         #*******Calculate Statistics********************************************
         
@@ -119,25 +119,43 @@ class process ():
         rows = ARCPY.SearchCursor(input_copy) # Open shapefile to read features
         for row in rows: # For each feature in the shapefile
             
-            attribute_info = DC.get_attributes(row) # Get Attributes 
+            # Get Attributes information such as GLIMS ID, Lat, Lon, area... etc.
+            attribute_info, attribute_error = DC.get_attributes(row)  
+            if attribute_error == True: # If function failed
+                print attribute_info    # Print Error to prompt and log file
+                __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not read attributes')
             
-            subset, subset_error = DC.subset(row, DEM, workspace)
-            if subset_error == True: __Log.print_line(str(row.GLIMSID) + ' - ' + subset)
+            # Subset the DEM based on a single buffered glacier outline
+            subset, subset_error = DC.subset(row, DEM, workspace, 2)
+            if subset_error == True:    # If function failed
+                print subset            # Print Error to prompt and log file
+                __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
             
-            statistics_info = DC.get_statistics(row, subset) # Get Basic Statistics
-            hypsometry_info = DC.get_hypsometry(row, subset, max_bin, min_bin, bin_size) # Get hypsometry
-            aspect_info = DC.get_aspect(row, subset, max_bin, min_bin, bin_size) # Get Aspect
-            slope_info = DC.get_slope(row, subset, max_bin, min_bin, bin_size) # Get Slope    
+            # Get basic statistics such as minimum elevation, mean... etc.
+            statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, 1000) 
+            if statistics_error == True:    # If function failed
+                print statistics_info       # Print Error to prompt and log file
+                __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
             
-            print hypso_csv.get_rows(), subset_error
+            
+            hypsometry_info, hypso_error = DC.get_hypsometry(row, subset, max_bin, min_bin, bin_size)
+            #'ERROR - Could not generate hypsometry data'
+            slope_info, slope_error = DC.get_slope(row, subset, max_bin, min_bin, bin_size)
+            #'ERROR - Could not generate binned aspect data'
+            aspect_info, aspect_error = DC.get_aspect(row, subset, max_bin, min_bin, bin_size) 
+            #'ERROR - Could not generate binned slope data'
+            
+    
+            print hypso_csv.get_rows(), row.GLIMSID, subset_error, statistics_error
             
             # Print row data to csv files as appropriate. 
-            hypso_csv.print_line(attribute_info)
-            slope_csv.print_line(attribute_info)
-            aspect_csv.print_line(attribute_info)
+            hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info)
+            slope_csv.print_line(attribute_info + statistics_info + slope_info)
+            aspect_csv.print_line(attribute_info + statistics_info + aspect_info)
             
-            ARCPY.Delete_management(subset)
-
+            try: ARCPY.Delete_management(subset)
+            except: pass
+            
         del row , rows #Delete cursors and remove locks
         
         print 'Processing Complete'

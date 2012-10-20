@@ -65,7 +65,7 @@ class Variables (object):
         return 'VARIABLE NOT FOUND' # Return value if no variable is found.
 
         
-    def set_variable (self, var_name, var_value, var_type = 'STRING'):
+    def set_variable (self, var_name, var_type, var_value):
         """Write a new variable to the .var file, replacing the original."""
         variables = open (self.__variables, 'r')
         var_list = [] #List to hold contents of .var file.

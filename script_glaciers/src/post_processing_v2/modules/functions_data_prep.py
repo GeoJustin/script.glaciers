@@ -8,7 +8,7 @@
 Created: Sep 21, 2012
 Author:  Justin Rich (justin.rich@gi.alaska.edu)
 Location: Geophysical Institute | University of Alaska, Fairbanks
-Contributors:
+Contributors:  
 
 Copyright:   (c) Justin L. Rich 2012
 License:     Although this application has been produced and tested

@@ -110,6 +110,9 @@ class process ():
         min_bin =  variables.read_variable('MINBIN')
         bin_size = variables.read_variable('BINSIZE')
         table_header = DP.generate_header(header, max_bin, min_bin, bin_size)
+        
+        # Read other variables
+        scaling = variables.read_variable('SCALING')
 
         # Create an instance of each table
         hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header)
@@ -132,13 +135,13 @@ class process ():
                 __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
             
             # Get basic statistics such as minimum elevation, mean... etc.
-            statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, 1000) 
+            statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, scaling) 
             if statistics_error == True:    # If function failed
                 print statistics_info       # Print Error to prompt and log file
                 __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
             
             
-            hypsometry_info, hypso_error = DC.get_hypsometry(row, subset, max_bin, min_bin, bin_size)
+            hypsometry_info, hypso_error = DC.get_hypsometry(row, subset, workspace, max_bin, min_bin, bin_size, scaling)
             #'ERROR - Could not generate hypsometry data'
             slope_info, slope_error = DC.get_slope(row, subset, max_bin, min_bin, bin_size)
             #'ERROR - Could not generate binned aspect data'

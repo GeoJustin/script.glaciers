@@ -125,31 +125,33 @@ class process ():
             # Get Attributes information such as GLIMS ID, Lat, Lon, area... etc.
             attribute_info, attribute_error = DC.get_attributes(row)  
             if attribute_error == True: # If function failed
-                print attribute_info    # Print Error to prompt and log file
+                print ' - ERROR - Could not read attributes' # Print Error to prompt and log file
                 __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not read attributes')
             
             # Subset the DEM based on a single buffered glacier outline
             subset, subset_error = DC.subset(row, DEM, workspace, 2)
-            if subset_error == True:    # If function failed
-                print subset            # Print Error to prompt and log file
+            if subset_error == True: # If function failed
+                print 'ERROR - Could not subset feature' # Print Error to prompt and log file
                 __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
             
             # Get basic statistics such as minimum elevation, mean... etc.
             statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, scaling) 
-            if statistics_error == True:    # If function failed
-                print statistics_info       # Print Error to prompt and log file
+            if statistics_error == True: # If function failed
+                print 'ERROR - Could not generate basic statistics' # Print Error to prompt and log file
                 __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
             
+            hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, max_bin, min_bin, bin_size, scaling)
+            if hypso_error == True:
+                print 'ERROR - Could not generate hypsometry data'
+                __Log.print_line('ERROR - Could not generate hypsometry data')
             
-            hypsometry_info, hypso_error = DC.get_hypsometry(row, subset, workspace, max_bin, min_bin, bin_size, scaling)
-            #'ERROR - Could not generate hypsometry data'
-            slope_info, slope_error = DC.get_slope(row, subset, max_bin, min_bin, bin_size)
+            slope_info, slope_error = DC.get_slope(row, subset, bin_mask, max_bin, min_bin, bin_size)
             #'ERROR - Could not generate binned aspect data'
-            aspect_info, aspect_error = DC.get_aspect(row, subset, max_bin, min_bin, bin_size) 
+            aspect_info, aspect_error = DC.get_aspect(row, subset, bin_mask, max_bin, min_bin, bin_size) 
             #'ERROR - Could not generate binned slope data'
             
     
-            print hypso_csv.get_rows(), row.GLIMSID, subset_error, statistics_error
+            print hypso_csv.get_rows(), row.GLIMSID, subset_error, statistics_error, hypso_error, slope_error, aspect_error
             
             # Print row data to csv files as appropriate. 
             hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info)

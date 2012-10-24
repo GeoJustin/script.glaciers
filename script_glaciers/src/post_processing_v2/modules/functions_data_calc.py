@@ -25,18 +25,18 @@ import arcpy as ARCPY                                        #@UnresolvedImport
 import math
 import random
 
-def get_aspect (feature, dem, max_bin = 8850, min_bin = 0, bin_size = 50):
+def get_aspect (feature, dem, bin_mask, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate aspect information from the given aspect raster generated from 
     a DEM and return bin statistics. Each aspect bin is defined by elevation
     and shares the same spatial area is hypsometry bins. If this function 
     fails at runtime an error is returned for recording in the log file."""
-    slope = []
+    aspect = []
     try:
         # NOT WRITTEN 
         # NOT WRITTEN 
-        return slope, False
+        return aspect, False
     except:
-        return slope, True
+        return aspect, True
     
 
 def get_attributes (feature):
@@ -64,64 +64,54 @@ def get_hypsometry (feature, dem, workspace, max_bin = 8850, min_bin = 0, bin_si
     (DEM) and return bin statistics. If this function fails at runtime an error
     is returned for recording in the log file."""
     hypsometry = []
-#    try:
-    reclassify_range = ''
-    elevation_list = []
-        
-        
-    total_bins = round(math.ceil(float(max_bin - min_bin) / float(bin_size)), 0)
-    for bin_num in range (0, int(total_bins)):  
-        low = float(bin_num * bin_size)
-        high = float((bin_num + 1) * bin_size)
-        value = bin_num * bin_size
-        reclassify_range += str(low) + " " + str(high) + " " + str(value) + ";"
-        
-        hypsometry.append(low)
-
-    reclassify =  workspace + '\\' + 'Reclassify_Raster_' + str(feature.GLIMSID) + '.img'
-    reclass_raster = ARCPY.sa.Reclassify (dem, "Value", reclassify_range, "NODATA")
-    reclass_raster.save(reclassify)
-    
-    raster_feature = raster_to_polygon(feature, reclassify, workspace, raster_scaling)
-    
-    rows = ARCPY.SearchCursor(raster_feature)
-    for row in rows:
-        elevation_list.append([float(row.GRIDCODE/raster_scaling), float(row.F_AREA)])
-        
-    print ''
-    print 'AREA = ', elevation_list
-    print hypsometry
-
-        
-    item_found = False
-    
-    for index, hypso_bin in enumerate (hypsometry):
-        for item in elevation_list:
-            if item[0] == hypso_bin:
-                
-                hypsometry[index] += item[1]
-                elevation_list.remove(item)
-                
-                item_found = True
-                
-                print elevation_list
-                
-        if item_found == False:
-            hypsometry[index] = 0.0
-        item_found = False
-    
+    try:
+        reclassify_range = '' # re-map string
+        elevation_list = []   # List containing the area and elevation values
             
-    print elevation_list
-    print hypsometry
-    print ''
+        # Generate re-map string for the reclassify function. This done by first
+        # calculating the number of bins and then finding the low and high values
+        # for each bin and then giving it a label.
+        total_bins = round(math.ceil(float(max_bin - min_bin) / float(bin_size)), 0)
+        for bin_num in range (0, int(total_bins)):  # For each bin...
+            low_value =  bin_num * bin_size         # Low value in range and re-map value
+            high = float((bin_num + 1) * bin_size)  # High value in range
+            reclassify_range += str(float(low_value)) + " " + str(high) + " " + str(low_value) + ";"
+            
+            hypsometry.append(float(low_value)) # Append the bin value to the hypsometry list
     
-    
-    
-    ARCPY.Delete_management(reclassify)
-    
-    return hypsometry, False
-#    except:
-#        return hypsometry, True
+        # Reclassify the DEM based on bins
+        reclassify =  workspace + '\\' + 'Reclassify_Raster_' + str(feature.GLIMSID) + '.img'
+        reclass_raster = ARCPY.sa.Reclassify (dem, "Value", reclassify_range, "NODATA")
+        reclass_raster.save(reclassify)
+        
+        # Create a clipped feature from the input raster.
+        bin_features = raster_to_polygon(feature, reclassify, workspace, raster_scaling)
+        
+        # Iterate over the feature table and generate a list of bin values and area of each
+        rows = ARCPY.SearchCursor(bin_features)
+        for row in rows:
+            elevation_list.append([float(row.GRIDCODE/raster_scaling), float(row.F_AREA)])
+            
+        item_found = False # Switch to identify if an element exists or not
+        current_bin = 0.0 # Bin value to print
+        for index, hypso_bin in enumerate (hypsometry): # For each hypsometry bin
+            for item in elevation_list:      # Loop through the elevation list 
+                if item[0] == hypso_bin:        # If the value in elev. List is found...
+                    current_bin += item[1]      # ... add it to the hypsometry list
+                    item_found = True
+                    
+            if item_found == False: # If an element is NOT found in elevation list...
+                hypsometry[index] = str(0.0) # set elevation bin to 0.0
+            else:                   # If an element is found
+                # Set elevation bin to sum of values and remove decimals by rounding
+                hypsometry[index] = str(round(current_bin, 0)) 
+                item_found = False  # Reset the switch
+                current_bin = 0.0   # Reset bin value to print
+        
+        ARCPY.Delete_management(reclassify) # Remove the reclassified raster from workspace
+        return hypsometry, False, bin_features
+    except:
+        return hypsometry, True, bin_features
 
     
 def get_properties (raster, prop = ''):
@@ -130,18 +120,18 @@ def get_properties (raster, prop = ''):
     return str(ARCPY.GetRasterProperties_management(raster, prop))
 
 
-def get_slope (feature, dem, max_bin = 8850, min_bin = 0, bin_size = 50):
+def get_slope (feature, dem, bin_mask, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate slope information from the given slope raster generated from 
     a DEM and return bin statistics. Each slope bin is defined by elevation
     and shares the same spatial area is hypsometry bins. If this function 
     fails at runtime an error is returned for recording in the log file."""
-    aspect = []
+    slope = []
     try:
         # NOT WRITTEN 
         # NOT WRITTEN 
-        return aspect, True
+        return slope, True
     except:
-        return  aspect, False
+        return  slope, False
         
         
 def get_statistics (feature, dem, workspace, raster_scaling = 1000):

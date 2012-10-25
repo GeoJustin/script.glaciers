@@ -58,6 +58,9 @@ class Variables (object):
                     if var_line [1] == 'INTEGER': # Return the value as an int
                         return int(var_line [2]) 
                         break 
+                    if var_line [1] == 'FLOAT': # Return the value as a float
+                        return float(var_line[2])
+                        break
                     if var_line [1] == 'LIST': # Return the value as a list
                         return var_line [2].replace(' ', '').split (',')
                         break

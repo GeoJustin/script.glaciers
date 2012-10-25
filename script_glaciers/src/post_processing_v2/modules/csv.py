@@ -67,22 +67,25 @@ class csv (object):
     
     def print_line (self, row_list):
         """Prints a line to the csv file."""
-        self.__content.append(row_list) # Append new row to content.
-        
-        output_file = open (self.__csvfile, 'w') # Open CSV hard copy
-        for item in self.__header: # Print the header to the CSV.
-            output_file.write(item + ',')
-        output_file.write('\n') # Move cursor to next line
-        
-        # Write __content to the CSV. 
-        for each_list in self.__content: # Iterate through each List
-            for each_item in each_list: # Iterate through Items
-                output_file.write(each_item + ',')
-            output_file.write('\n') # Move cursor to next row in CSV
-        
-        output_file.close() # Close the csv hard copy
-        self.__records += 1 # Increase the Record Count by 1
-        return "PRINTED TO CSV"
+        try:
+            self.__content.append(row_list) # Append new row to content.
+            
+            output_file = open (self.__csvfile, 'w') # Open CSV hard copy
+            for item in self.__header: # Print the header to the CSV.
+                output_file.write(item + ',')
+            output_file.write('\n') # Move cursor to next line
+            
+            # Write __content to the CSV. 
+            for each_list in self.__content: # Iterate through each List
+                for each_item in each_list: # Iterate through Items
+                    output_file.write(each_item + ',')
+                output_file.write('\n') # Move cursor to next row in CSV
+            
+            output_file.close() # Close the csv hard copy
+            self.__records += 1 # Increase the Record Count by 1
+            return "PRINTED TO CSV"
+        except:
+            return "COULD NOT PRINT TO CSV"
 
              
 #Driver

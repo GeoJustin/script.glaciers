@@ -113,6 +113,7 @@ class process ():
         
         # Read other variables
         scaling = variables.read_variable('SCALING')
+        z_value = variables.read_variable('ZVALUE')
 
         # Create an instance of each table
         hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header)
@@ -140,12 +141,12 @@ class process ():
                 print 'ERROR - Could not generate basic statistics' # Print Error to prompt and log file
                 __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
             
-            hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, max_bin, min_bin, bin_size, scaling)
+            hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, scaling, max_bin, min_bin, bin_size)
             if hypso_error == True:
                 print 'ERROR - Could not generate hypsometry data'
                 __Log.print_line('ERROR - Could not generate hypsometry data')
             
-            slope_info, slope_error = DC.get_slope(row, subset, bin_mask, max_bin, min_bin, bin_size)
+            slope_info, slope_error = DC.get_slope(row, subset, bin_mask, workspace, scaling, z_value, max_bin, min_bin, bin_size)
             #'ERROR - Could not generate binned aspect data'
             aspect_info, aspect_error = DC.get_aspect(row, subset, bin_mask, max_bin, min_bin, bin_size) 
             #'ERROR - Could not generate binned slope data'

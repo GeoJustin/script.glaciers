@@ -58,6 +58,16 @@ def get_attributes (feature):
     except:
         return attributes, True
     
+    
+def get_centerline (features, dem, workspace, output, min_bin = 0, bin_size = 50):
+    """Returns a center line feature of the given polygon feature based
+     on elevation. Center line determined by contour line centroid. If 
+     there are multiple contours are found at a bin location then the 
+     largest is selected. """
+    centerline = output + '\\centerline.shp'
+
+    
+    return centerline
 
 def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate hypsometry information from the given digital elevation model
@@ -129,56 +139,7 @@ def get_slope (feature, dem, bin_mask, workspace, raster_scaling = 0, z_value = 
     fails at runtime an error is returned for recording in the log file."""
     
     slope_list = []
-    slope_bins = []
-    header_list = []
-    # try:
-    
-    total_bins = round(math.ceil(float(max_bin - min_bin) / float(bin_size)), 0)
-    for bin_num in range (0, int(total_bins)):  # For each bin...
-        header_list.append(float(bin_num * bin_size)) # Append the bin value to the header list
- 
- 
-    slope_raster =  workspace + '\\' + 'slope_Raster_' + str(feature.GLIMSID) + '.img'
-    slope = ARCPY.sa.Slope (dem, "DEGREE", z_value)
-    slope.save(slope_raster)
-    
-    # <<<<< SLOW BLOCK HERE ----------------------
-    rows = ARCPY.SearchCursor(bin_mask) # Open shapefile to read features
-    for row in rows: # For each feature in the shapefile
-        slope_bin = raster_to_polygon (row, slope_raster, workspace, 1000)
-        # Iterate over the feature table and generate a list of bin values and area of each
-        bin_rows = ARCPY.SearchCursor(slope_bin)
-        for bin_row in bin_rows:
-            slope_bins.append([float(row.GRIDCODE/raster_scaling), float(bin_row.GRIDCODE/raster_scaling), float(row.F_AREA)])
-        del bin_row
-        del bin_rows
-    # -----------------------SLOW BLOCK HERE >>>>>
 
-    
-    item_found = False # Switch to identify if an element exists or not
-    current_bin = 0.0 # Bin value to print
-    current_bin_area = 0.0
-    
-    for header in header_list: # For each hypsometry bin
-        for item in slope_bins:      # Loop through the elevation list 
-            if item[0] == header:        # If the value in elev. List is found...
-                current_bin += item[1] * item[2] # ... add it to the hypsometry list
-                current_bin_area += item[2]
-                item_found = True
-                
-        if item_found == False: # If an element is NOT found in elevation list...
-            slope_list.append(str(0.0)) # set elevation bin to 0.0
-        else:                   # If an element is found
-            # Set elevation bin to sum of values and remove decimals by rounding
-            slope_list.append(str(round(current_bin/current_bin_area, 2))) 
-            item_found = False  # Reset the switch
-            current_bin = 0.0   # Reset bin value to print
-            current_bin_area = 0.0
-    
-    ARCPY.Delete_management(slope_raster) # Remove the reclassified raster from workspace
-    del row
-    del rows
-        
     return slope_list, False
     #except:
     #   return  slope, True

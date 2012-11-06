@@ -28,7 +28,7 @@ import os
 
 class process ():
     
-    def __init__ (self, Input, Output, DEM, workspace, variables):
+    def __init__ (self, Input, Output, DEM, workspace, variables, hypsometry, slope, aspect):
         
         try: import arcinfo # Get ArcInfo License - @UnresolvedImport @UnusedImport
         except: print 'ArcInfo license NOT available'
@@ -115,61 +115,71 @@ class process ():
         scaling = variables.read_variable('SCALING')
         z_value = variables.read_variable('ZVALUE')
 
-        # Create an instance of each table
-        hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header)
-        slope_csv = csv.csv(table_output, 'Stats_Slope', table_header)
-        aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)
+        # Generate center lines if slope or aspect are to be generated
+        #if slope == True or aspect == True:
+        centerline = DC.get_centerline(Input, DEM, workspace, Output, min_bin, bin_size)
 
-        rows = ARCPY.SearchCursor(input_copy) # Open shapefile to read features
-        for row in rows: # For each feature in the shapefile
-            
-            # Get Attributes information such as GLIMS ID, Lat, Lon, area... etc.
-            attribute_info, attribute_error = DC.get_attributes(row)  
-            if attribute_error == True: # If function failed
-                print ' - ERROR - Could not read attributes' # Print Error to prompt and log file
-                __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not read attributes')
-            
-            # Subset the DEM based on a single buffered glacier outline
-            subset, subset_error = DC.subset(row, DEM, workspace, 2)
-            if subset_error == True: # If function failed
-                print 'ERROR - Could not subset feature' # Print Error to prompt and log file
-                __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
-            
-            # Get basic statistics such as minimum elevation, mean... etc.
-            statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, scaling) 
-            if statistics_error == True: # If function failed
-                print 'ERROR - Could not generate basic statistics' # Print Error to prompt and log file
-                __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
-            
-            hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, scaling, max_bin, min_bin, bin_size)
-            if hypso_error == True:
-                print 'ERROR - Could not generate hypsometry data'
-                __Log.print_line('ERROR - Could not generate hypsometry data')
-            
-            slope_info, slope_error = DC.get_slope(row, subset, bin_mask, workspace, scaling, z_value, max_bin, min_bin, bin_size)
-            #'ERROR - Could not generate binned aspect data'
-            aspect_info, aspect_error = DC.get_aspect(row, subset, bin_mask, max_bin, min_bin, bin_size) 
-            #'ERROR - Could not generate binned slope data'
-            
-    
-            print hypso_csv.get_rows(), row.GLIMSID, subset_error, statistics_error, hypso_error, slope_error, aspect_error
-            
-            # Print row data to csv files as appropriate. 
-            hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info)
-            slope_csv.print_line(attribute_info + statistics_info + slope_info)
-            aspect_csv.print_line(attribute_info + statistics_info + aspect_info)
-            
-            try: ARCPY.Delete_management(subset)
-            except: pass
-            
-        del row , rows #Delete cursors and remove locks
+        if hypsometry == True or slope == True or aspect == True:
+            rows = ARCPY.SearchCursor(input_copy) # Open shapefile to read features
+            for row in rows: # For each feature in the shapefile
+                
+                # Get Attributes information such as GLIMS ID, Lat, Lon, area... etc.
+                attribute_info, attribute_error = DC.get_attributes(row)  
+                if attribute_error == True: # If function failed
+                    print ' - ERROR - Could not read attributes' # Print Error to prompt and log file
+                    __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not read attributes')
+                
+                # Subset the DEM based on a single buffered glacier outline
+                subset, subset_error = DC.subset(row, DEM, workspace, 2)
+                if subset_error == True: # If function failed
+                    print 'ERROR - Could not subset feature' # Print Error to prompt and log file
+                    __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
+                
+                # Get basic statistics such as minimum elevation, mean... etc.
+                statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, scaling) 
+                if statistics_error == True: # If function failed
+                    print 'ERROR - Could not generate basic statistics' # Print Error to prompt and log file
+                    __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
+                
+                
+                if hypsometry == True:
+                    hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', table_header) # Create an instance of hypsometry table
+                    hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, scaling, max_bin, min_bin, bin_size)
+                    # Print hypsometry data.
+                    hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info)
+                    if hypso_error == True:
+                        print 'ERROR - Could not generate hypsometry data' # Print Error to prompt and log file
+                        __Log.print_line(str(row.GLIMSID) + 'ERROR - Could not generate hypsometry data')
+                
+                
+                if slope == True:
+                    # Create an instance of slope table
+                    slope_csv = csv.csv(table_output, 'Stats_Slope', table_header)
+                    slope_info, slope_error = DC.get_slope(row, subset, bin_mask, workspace, scaling, z_value, max_bin, min_bin, bin_size)
+                    slope_csv.print_line(attribute_info + statistics_info + slope_info)
+                    #'ERROR - Could not generate binned aspect data'
+                
+                if aspect == True:
+                    # Create an instance of aspect table
+                    aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)
+                    aspect_info, aspect_error = DC.get_aspect(row, subset, bin_mask, max_bin, min_bin, bin_size)        
+                    aspect_csv.print_line(attribute_info + statistics_info + aspect_info)
+                    #'ERROR - Could not generate binned slope data'
+                    
         
+                print hypso_csv.get_rows(), row.GLIMSID, subset_error, statistics_error, hypso_error, slope_error, aspect_error
+                
+                try: ARCPY.Delete_management(subset)
+                except: pass
+                
+            del row , rows #Delete cursors and remove locks
+            
         print 'Processing Complete'
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !
 def driver():
-    Input = r'A:\Desktop\TestDataPrep\TestGlaciers.shp'
+    Input = r'A:\Desktop\TestDataPrep\TestGlacier_Single.shp'
     Output = r'A:\Desktop\TestDataPrep\Output\TestGlacier_Out.shp'
     Workspace = r'A:\Desktop\TestDataPrep\Workspace'
     DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
@@ -177,8 +187,12 @@ def driver():
     #Variables - WARNING: Use caution manually changing variables.
     import variables
     variables = variables.Variables()
+    
+    hypsometry = False
+    slope = False
+    aspect = False
 
-    process (Input, Output, DEM, Workspace, variables)
+    process (Input, Output, DEM, Workspace, variables, hypsometry, slope, aspect)
 
 if __name__ == '__main__':
     driver()

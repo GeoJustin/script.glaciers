@@ -61,6 +61,9 @@ class Variables (object):
                     if var_line [1] == 'FLOAT': # Return the value as a float
                         return float(var_line[2])
                         break
+                    if var_line [1] == 'BOOLEAN': # Return the value as boolean
+                        return var_line[2] in ('True', '1')
+                        break
                     if var_line [1] == 'LIST': # Return the value as a list
                         return var_line [2].replace(' ', '').split (',')
                         break

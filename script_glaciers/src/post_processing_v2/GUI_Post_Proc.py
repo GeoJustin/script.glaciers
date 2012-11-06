@@ -25,13 +25,16 @@ import os
 sys.path.append (os.path.dirname(os.path.abspath(__file__)) + '\\modules')
 
 import Tkinter as TK
-import variables as VAR                                     #@UnresolvedImport
+import variables                                        #@UnresolvedImport
 
 class GUI ():
     """Graphical User Interface (GUI) for Post Process application."""
 
     def __init__ (self, master):
         """Setup the main GUI window and load default or starting settings."""
+        
+        VAR = variables.Variables() # Start the variables reader
+        
         #______________________________________________________________________
         #*******Menu Bar*******************************************************
         def __callback_Help (): #This is also used by 'Help' button.
@@ -114,8 +117,23 @@ class GUI ():
         options_frame = TK.LabelFrame(master, text= 'Parameters')
         options_frame.grid (row =3, column =0, columnspan = 2, padx =6, pady = 6)
         
+        function_frame = TK.Frame (options_frame, relief = TK.RIDGE, bd = 1)
+        function_frame.grid (row =0, column =0, columnspan = 2, padx = 20, pady = (6,3))
+        
+        
+        hypsometry_Boolean = TK.BooleanVar()
+        check_hypsometry = TK.Checkbutton(function_frame, text='Hypsometry', variable = hypsometry_Boolean, onvalue = True, offvalue = False)
+        check_hypsometry.pack(side=TK.LEFT)
+        hypsometry_Boolean.set(VAR.read_variable("HYPSOMETRY"))
+        
+        
+        
+        
+        
+        
+
         settings_frame = TK.Frame (options_frame, relief = TK.RIDGE, bd = 1)
-        settings_frame.grid (row =2, column =0, columnspan = 2, padx = 20, pady = (6,6))
+        settings_frame.grid (row =1, column =0, columnspan = 2, padx = 20, pady = (3,6))
         
         label_minbin = TK.Label(settings_frame, text='Min. Bin')
         label_minbin.pack(side=TK.LEFT)
@@ -123,7 +141,7 @@ class GUI ():
         min_string = TK.StringVar()
         min_entry = TK.Entry (settings_frame, textvariable = min_string, width = 6, justify = TK.CENTER)
         min_entry.pack(side=TK.LEFT, padx = (12,12), pady = (6,6))
-        min_string.set(VAR.Variables().read_variable("MINBIN"))
+        min_string.set(VAR.read_variable("MINBIN"))
         
         label_maxbin = TK.Label(settings_frame, text='Max. Bin')
         label_maxbin.pack(side=TK.LEFT)
@@ -131,7 +149,7 @@ class GUI ():
         max_string = TK.StringVar()
         max_entry = TK.Entry (settings_frame, textvariable = max_string, width = 6, justify = TK.CENTER)
         max_entry.pack(side=TK.LEFT, padx = (3,12), pady = (6,6))
-        max_string.set(VAR.Variables().read_variable("MAXBIN"))
+        max_string.set(VAR.read_variable("MAXBIN"))
         
         label_size = TK.Label(settings_frame, text='Size')
         label_size.pack(side=TK.LEFT)
@@ -139,31 +157,25 @@ class GUI ():
         size_string = TK.StringVar()
         size_entry = TK.Entry (settings_frame, textvariable = size_string, width = 6, justify = TK.CENTER)
         size_entry.pack(side=TK.LEFT, padx = (3,12), pady = (6,6))
-        size_string.set(VAR.Variables().read_variable("BINSIZE"))
+        size_string.set(VAR.read_variable("BINSIZE"))
         
         def __callback_reset_default ():
-            VAR.Variables().reset_defaults()
-            min_string.set(VAR.Variables().read_variable("MINBIN"))
-            max_string.set(VAR.Variables().read_variable("MAXBIN"))
-            size_string.set(VAR.Variables().read_variable("BINSIZE"))
+            VAR.reset_defaults()
+            min_string.set(VAR.read_variable("MINBIN"))
+            max_string.set(VAR.read_variable("MAXBIN"))
+            size_string.set(VAR.read_variable("BINSIZE"))
             
-        helpButton = TK.Button(settings_frame, text = "Default", height = 1, width = 6, command=__callback_reset_default)
-        helpButton.pack(side=TK.LEFT, padx = (6,12), pady = (6,6))
+        defaultButton = TK.Button(settings_frame, text = "Default", height = 1, width = 6, command=__callback_reset_default)
+        defaultButton.pack(side=TK.LEFT, padx = (6,12), pady = (6,6))
         
         
         #______________________________________________________________________
         #*******Menu Bar*******************************************************
         arcpyModule = 'NOT FOUND'
-        numpyModule = 'NOT FOUND'
 
         try:
             import arcpy #@UnresolvedImport @UnusedImport
             arcpyModule = 'AVAILABLE'
-        except: pass
-
-        try:
-            import numpy #@UnusedImport
-            numpyModule = 'AVAILABLE'
         except: pass
 
         foundFrame = TK.Frame(master)
@@ -176,14 +188,6 @@ class GUI ():
         if arcpyModule == 'NOT FOUND':
             arcpyLabelResult.configure(fg = "#ff0000")
         arcpyLabelResult.pack(side=TK.LEFT, padx = (0,12))
-
-        numpyLabel = TK.Label (foundFrame, text="Numpy Module - ")
-        numpyLabel.pack(side=TK.LEFT, padx = (6,0))
-
-        numpyLabelResult = TK.Label (foundFrame, text=numpyModule, fg = "#008000")
-        if numpyModule == 'NOT FOUND':
-            numpyLabelResult.configure(fg = "#ff0000")
-        numpyLabelResult.pack(side=TK.LEFT, padx = (0,12))
         
         #______________________________________________________________________
         #*******Menu Bar*******************************************************
@@ -202,23 +206,25 @@ class GUI ():
 
         #Run Program Button
         def callback_runImport ():
-            import post_processing                                  #@UnresolvedImport
+            #import post_processing                                  #@UnresolvedImport
             if InputString.get() <> 'Required' and OutputString.get() <> 'Required' and DEMString.get() <> 'Required':
                 master.destroy()
                 try: self.root.destroy()
                 except: pass
                 
-                VAR.Variables().set_variable("MINBIN", min_string.get())
-                VAR.Variables().set_variable("MAXBIN", max_string.get())
-                VAR.Variables().set_variable("BINSIZE", size_string.get())
-                workspace = os.path.dirname(os.path.abspath(__file__)) + '\\workspace'
-                post_processing.process (InputString.get(), OutputString.get(), DEMString.get(), workspace, size_string.get(), min_string.get(), max_string.get())
+                VAR.set_variable("HYPSOMETRY", "BOOLEAN", hypsometry_Boolean.get())
+                
+                VAR.set_variable("MINBIN", "INTEGER", min_string.get())
+                VAR.set_variable("MAXBIN", "INTEGER", max_string.get())
+                VAR.set_variable("BINSIZE", "INTEGER", size_string.get())
+                #workspace = os.path.dirname(os.path.abspath(__file__)) + '\\workspace'
+                #post_processing.process (InputString.get(), OutputString.get(), DEMString.get(), workspace, size_string.get(), min_string.get(), max_string.get())
             else:
                 import tkMessageBox
                 tkMessageBox.showwarning ('Warning', 'You must select Input and Output files.')
                 
         run = TK.Button(buttonFrame, text = "Run", height = 1, width = 12, command= callback_runImport)
-        if numpyModule == 'NOT FOUND' or arcpyModule == 'NOT FOUND':
+        if arcpyModule == 'NOT FOUND':
             run.configure (state=TK.DISABLED) #Disable if modules not available
         run.pack(side=TK.LEFT, padx = 6)
         

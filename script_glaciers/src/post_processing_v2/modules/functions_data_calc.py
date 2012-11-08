@@ -53,15 +53,15 @@ def get_attributes (feature, Attribute_header):
         return attributes, True
     
     
-def get_centerline (features, dem, workspace, output, min_bin = 0, bin_size = 50):
+def get_centerline (features, dem, workspace):
     """Returns a center line feature of the given polygon feature based
      on elevation. Center line determined by contour line centroid. If 
      there are multiple contours are found at a bin location then the 
      largest is selected. """
-    centerline = output + '\\centerline.shp'
+    centerline = workspace + '\\centerline.shp'
 
     
-    return centerline
+    return centerline, 'ERROR'
 
 def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate hypsometry information from the given digital elevation model

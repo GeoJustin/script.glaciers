@@ -11,42 +11,58 @@
 #	Input Outlines
 INPUT = STRING = A:/Desktop/TestDataPrep/TestGlaciers.shp
 INPUT (Default) = STRING = Required
+#
 #	Input DEM raster
 DEM = STRING = A:/Desktop/TestDataPrep/Test_DEM.img
 DEM (Default) = STRING = Required
+#
 #	Output Folder for results
 OUTPUT = STRING = A:/Desktop/TestDataPrep/Output
 OUTPUT (Default) = STRING = Required
+#
 #	Raster Scaling Factor
 SCALING = INTEGER = 1000
 SCALING (Default) = INTEGER = 1000
+#
 #	Z Value for slope calculations - 1.0 = no scale factor
 ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
+#
 #	Generate GLIMS ID's
 GLIMSIDS = BOOLEAN = 1
 GLIMSIDS (Default) = BOOLEAN = True
+#
 #	Generate RGI ID's
-RGIIDS = BOOLEAN = 1
+RGIIDS = BOOLEAN = 0
 RGIIDS (Default) = BOOLEAN = True
+#
+#	Output centerlines to file
+CENTERLINES = BOOLEAN = True
+CENTERLINES (Default) = BOOLEAN = True
+#
 #	Process Hypsometry
 HYPSOMETRY = BOOLEAN = 1
 HYPSOMETRY (Default) = BOOLEAN = True
+#
 #	Process Slope
 SLOPE = BOOLEAN = 0
 SLOPE (Default) = BOOLEAN = False
+#
 #	Process Aspect
 ASPECT = BOOLEAN = 0
 ASPECT (Default) = BOOLEAN = False
+#
 #	Bins - Bin size based on DEM elevation units
 #	BINSIZE - The vertical size of the elevation bins. If the DEM is in meters
 #		the bin size should be in meters, etc.
 BINSIZE = INTEGER = 50
 BINSIZE (Default) = INTEGER = 50
+#
 #	Bin measured from base bin elevation i.e. 8800 is 8800-8850
 #	Minimum Bin elevation
 MINBIN = INTEGER = 0
 MINBIN (Default) = INTEGER = 0
+#
 #	Maximum Bin elevation (8,800m would include Mt. Everest)
 MAXBIN = INTEGER = 8850
 MAXBIN (Default) = INTEGER = 8850 

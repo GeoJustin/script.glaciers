@@ -25,32 +25,54 @@ import functions_data_calc as DC
 import log
 import csv
 import os
+import sys
 
 class process (object):
     
     def __init__ (self, Input, output_location, DEM, variables):
         
-        try: import arcinfo # Get ArcInfo License - @UnresolvedImport @UnusedImport
-        except: print 'ArcInfo license NOT available'
+        # Create a copy of the input file in the output folder. This will be the
+        # actual result file after fields are updated. This is done so no changes
+        # are imposed on the original file.
+        try:
+            Output = output_location + '\\' + os.path.basename(Input)
+            input_copy = ARCPY.CopyFeatures_management(Input, Output)
+        except:
+            print 'Output Glacier file already exists or the output folder is not available.'
+            sys.exit()
+        
+        try: # Start Log file and write it to the output folder
+            log_path = os.path.dirname(os.path.abspath(Output))
+            __Log = log.Log(log_path)
+        except:
+            print 'Log file could not be written to the output folder.'
+            sys.exit()
+            
+        try:  # Get ArcInfo License if it's available
+            import arcinfo                          #@UnresolvedImport @UnusedImport
+        except:
+            __Log.print_line('ArcInfo license NOT available')
+            sys.exit()
 
         try: # Check out Spatial Analyst extension if available.
             if ARCPY.CheckExtension('Spatial') == 'Available':
                 ARCPY.CheckOutExtension('Spatial')
-                print 'Spatial Analyst is available'
-        except: print 'Spatial Analyst extension not available'
-
-        # Set environment
-        workspace = output_location + '\\workspace'
-        os.makedirs(workspace) # Create Workspace
-        ARCPY.env.workspace = workspace
+                __Log.print_line('Spatial Analyst is available')
+        except: 
+            __Log.print_line('Spatial Analyst extension not available')
+            sys.exit()
+        
+        try: # Set environment
+            workspace = output_location + '\\workspace'
+            os.makedirs(workspace) # Create Workspace
+            ARCPY.env.workspace = workspace
+        except:
+            __Log.print_line('WARNING - Workspace folder already exists.')
+            sys.exit()
                         
-        # Create a copy of the input file in the output folder. This will be the
-        # actual result file after fields are updated. This is done so no changes
-        # are imposed on the original file.
-        Output = output_location + '\\' + os.path.basename(Input)
-        input_copy = ARCPY.CopyFeatures_management(Input, Output)
         
         # Read Variables
+        centerlines = variables.read_variable('CENTERLINES')
         hypsometry = variables.read_variable('HYPSOMETRY')
         slope = variables.read_variable('SLOPE')
         aspect = variables.read_variable('ASPECT')
@@ -70,16 +92,13 @@ class process (object):
         # Read other variables
         scaling = variables.read_variable('SCALING')
 
-        # Start Log and print file info
-        log_path = os.path.dirname(os.path.abspath(Output))
-        __Log = log.Log(log_path)
+        # Print run time variables to log file
         __Log.print_line("Input File: " + os.path.basename(Input))
         __Log.print_line("Input DEM: " + os.path.basename(DEM))
         __Log.print_line('Output Folder: ' + os.path.dirname(os.path.abspath(Output)))
-        __Log.print_line("Output File: " + os.path.basename(Output))
+        __Log.print_line('Output Glaciers: ' + os.path.basename(Output))
+        if centerlines == True: __Log.print_line('Output Centerlines: centerlines.shp' )
         __Log.print_break()
-
-        # Print Variables to Log
         __Log.print_line("Runtime Parameters")
         __Log.print_line("     Run Hypsometry: " + str(hypsometry))
         __Log.print_line("     Run Slope: " + str(slope))
@@ -91,9 +110,10 @@ class process (object):
         __Log.print_line("     Bin Size: " + str(bin_size))
         __Log.print_line("     DEM Scaling Factor: " + str(scaling))
         __Log.print_break() # Break for next section in the log file.
-        """
+        
         #_______________________________________________________________________
-        #*******Input File Cleanup**********************************************   
+        #*******Input File Cleanup**********************************************  
+        """ 
         __Log.print_line('Input Polygon Checks')
         # Check geometries. If there are errors, correct them and print the
         # results to the log file
@@ -138,17 +158,24 @@ class process (object):
             __Log.print_line('   RGI IDs - ' + rgi_ids + ' RGI IDs Generated')
         
         __Log.print_break() # Break for next section in the log file.
+        
         #_______________________________________________________________________
         #*******Calculate Statistics********************************************
 
-        # Generate center lines if slope or aspect are to be generated
-        #if slope == True or aspect == True:
-        centerlines = DC.get_centerline(Input, DEM, workspace, Output, min_bin, bin_size)
+        # Generate center lines output file to append centerlines
+        if centerlines == True:
+            output_centerlines = ARCPY.CreateFeatureclass_management(output_location, 'centerlines.shp', 'POLYLINE', '', '', 'ENABLED', Input)
+            ARCPY.AddField_management(output_centerlines, 'GLIMSID', 'TEXT', '', '', '25')
+            ARCPY.AddField_management(output_centerlines, 'LENGTH', 'FLOAT')
 
-        # Create an instance of hypsometry table if applicable
+            
+        # Create an instance of hypsometry, slope and aspect table if applicable
         if hypsometry == True: hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', header) 
+        if slope == True: hypso_csv = csv.csv(table_output, 'Stats_slope', header) 
+        if aspect == True: hypso_csv = csv.csv(table_output, 'Stats_aspect', header) 
         
-        if hypsometry == True or slope == True or aspect == True:
+        
+        if centerlines == True or hypsometry == True or slope == True or aspect == True:
             rows = ARCPY.SearchCursor(input_copy) # Open shapefile to read features
             for row in rows: # For each feature in the shapefile
                 
@@ -162,27 +189,35 @@ class process (object):
                 if attribute_error == True: # If function failed
                     __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not read attributes')
                                 
+                                
                 # Subset the DEM based on a single buffered glacier outline
                 subset, subset_error = DC.subset(row, DEM, workspace, 2)
                 if subset_error == True: # If function failed
                     __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
                 
+                
                 # Get basic statistics such as minimum elevation, mean... etc.
-                statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, scaling) 
-                print '    Elevation: ' + str(statistics_info[0]) + ' Min. / ' + str (statistics_info[1]) + ' Max.'
-                print '    Area Weighted Avg. Elev. = ' + str(statistics_info[2])
-                if statistics_error == True: # If function failed
-                    __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
+                if hypsometry == True or slope == True or aspect == True:
+                    statistics_info, statistics_error = DC.get_statistics(row, subset, workspace, scaling) 
+                    print '    Elevation: ' + str(statistics_info[0]) + ' Min. / ' + str (statistics_info[1]) + ' Max.'
+                    print '    Area Weighted Avg. Elev. = ' + str(statistics_info[2])
+                    if statistics_error == True: # If function failed
+                        __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
+                
                 
                 if hypsometry == True:
                     print '    Running Hypsometry'
                     hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, scaling, max_bin, min_bin, bin_size)
-                    # Print hypsometry data.
-                    hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info)
+                    hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info) # Print hypsometry data.
                     if hypso_error == True:
                         __Log.print_line(str(row.GLIMSID) + 'ERROR - Could not generate hypsometry data')
                 
                 
+                if centerlines == True or slope == True or aspect == True:
+                    centerline, centerline_error = DC.get_centerline(row, subset, workspace)
+                    if centerlines == True: ARCPY.Append_management(centerline, output_centerlines)
+                    if centerline_error == True:
+                        __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate center line')
                 
 #                if slope == True:
 #                    # Create an instance of slope table

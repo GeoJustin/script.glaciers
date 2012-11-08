@@ -174,8 +174,8 @@ class rgi_process ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = 'A:\\Desktop\\RGI30'
-    output_folder = 'A:\\Desktop\\RGI30_repair'
+    input_folder = r'A:\Desktop\AntPeripheryInventory'
+    output_folder = r'A:\Desktop\AntPeripheryInventory\Output'
 
     rgi_process (input_folder, output_folder)
 

@@ -39,21 +39,15 @@ def get_aspect (feature, dem, bin_mask, max_bin = 8850, min_bin = 0, bin_size = 
         return aspect, True
     
 
-def get_attributes (feature):
+def get_attributes (feature, Attribute_header):
     """Return feature attribute values: GLIMSID, NAME, GLACTYPE, BGNDATE, 
     ENDDATE, CENLON, CENLAT and AREA. If value doesn't exist it should be
     left blank. If this function fails at runtime an error is returned for
     recording in the log file."""
-    attributes = [''] * 8
+    attributes = [''] * len(Attribute_header)
     try:
-        attributes[0] = str(feature.GLIMSID)
-        attributes[1] = str(feature.NAME)
-        attributes[2] = str(feature.GLACTYPE)
-        attributes[3] = str(feature.BGNDATE)
-        attributes[4] = str(feature.ENDDATE)
-        attributes[5] = str(feature.CENLON)
-        attributes[6] = str(feature.CENLAT)
-        attributes[7] = str(feature.AREA)
+        for position, item in enumerate (Attribute_header):
+            attributes[position] =  str(feature.getValue(item))
         return attributes, False
     except:
         return attributes, True

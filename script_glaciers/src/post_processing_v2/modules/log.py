@@ -59,8 +59,10 @@ class Log ():
         global __content # Accessed in order to add new content.
         if supress_ts == False: # No suppression of time stamp.
             __content = __content + str(__clock.get_elapsed_time()) + ' - ' + text + '\n'
+            print text
         if supress_ts == True: # Time stamp suppressed. Used in 'print_break'
             __content = __content + text + '\n'
+            print text
         
         # Print old and new content to log file.
         self.print_to_logfile()

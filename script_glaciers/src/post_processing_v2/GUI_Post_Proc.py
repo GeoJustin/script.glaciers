@@ -76,7 +76,7 @@ class GUI ():
         InputString = TK.StringVar()
         InputEntry = TK.Entry (InputFrame, textvariable = InputString, width = 50)
         InputEntry.grid(row=0, column = 1, padx = 6)
-        InputString.set('Required')
+        InputString.set(VAR.read_variable("INPUT"))
 
         inputFile = TK.Button(InputFrame, text = 'Select', height = 1, width = 8,
          command = callback_SelectedIn)
@@ -91,7 +91,7 @@ class GUI ():
         DEMString = TK.StringVar()
         DEMEntry = TK.Entry (InputFrame, textvariable = DEMString, width = 50)
         DEMEntry.grid(row=1, column = 1, padx = 6, pady = (6,6))
-        DEMString.set('Required')
+        DEMString.set(VAR.read_variable("DEM"))
 
         DEMFile = TK.Button(InputFrame, text = 'Select', height = 1, width = 8,
          command = callback_Selected)
@@ -106,7 +106,7 @@ class GUI ():
         OutputString = TK.StringVar()
         OutputEntry = TK.Entry (InputFrame, textvariable = OutputString, width = 50)
         OutputEntry.grid(row=2, column = 1, padx = 6, pady = (6,6))
-        OutputString.set('Required')
+        OutputString.set(VAR.read_variable("OUTPUT"))
 
         OutputFile = TK.Button(InputFrame, text = 'Select', height = 1, width = 8,
          command = callback_SelectedOut)
@@ -116,27 +116,70 @@ class GUI ():
         #*******Settings*******************************************************
         options_frame = TK.LabelFrame(master, text= 'Parameters')
         options_frame.grid (row =3, column =0, columnspan = 2, padx =6, pady = 6)
+ 
+ 
         
         function_frame = TK.Frame (options_frame, relief = TK.RIDGE, bd = 1)
-        function_frame.grid (row =0, column =0, columnspan = 2, padx = 20, pady = (6,3))
+        function_frame.grid (row =0, column =0, padx = (20, 3), pady = (6,3), sticky = TK.W)
+        
+        label_tables = TK.Label(function_frame, text='Output Tables')
+        label_tables.grid (row =0, padx = 12, pady = (3,0))
+        
+        hypsometry_boolean = TK.BooleanVar()
+        check_hypsometry = TK.Checkbutton(function_frame, text='Hypsometry', variable = hypsometry_boolean, onvalue = True, offvalue = False)
+        check_hypsometry.grid (row =1, padx = 12, sticky = TK.W)
+        hypsometry_boolean.set(VAR.read_variable("HYPSOMETRY"))
+        
+        slope_boolean = TK.BooleanVar()
+        check_slope = TK.Checkbutton(function_frame, state = TK.DISABLED, text='Slope', variable = slope_boolean, onvalue = True, offvalue = False)
+        check_slope.grid (row =2, padx = 12, sticky = TK.W)
+        slope_boolean.set(VAR.read_variable("SLOPE"))
+        
+        aspect_boolean = TK.BooleanVar()
+        check_aspect = TK.Checkbutton(function_frame, state = TK.DISABLED, text='Aspect', variable = aspect_boolean, onvalue = True, offvalue = False)
+        check_aspect.grid (row =3, padx = 12, pady = (0,3), sticky = TK.W)
+        aspect_boolean.set(VAR.read_variable("ASPECT"))
         
         
-        hypsometry_Boolean = TK.BooleanVar()
-        check_hypsometry = TK.Checkbutton(function_frame, text='Hypsometry', variable = hypsometry_Boolean, onvalue = True, offvalue = False)
-        check_hypsometry.pack(side=TK.LEFT)
-        hypsometry_Boolean.set(VAR.read_variable("HYPSOMETRY"))
         
+        populate_frame = TK.Frame (options_frame, relief = TK.RIDGE, bd = 1)
+        populate_frame.grid (row =0, column =1, padx = (3,3), pady = (6,3), sticky = TK.W)
         
+        label_populate = TK.Label(populate_frame, text='Populate Attributes')
+        label_populate.grid (row =0, padx = 12, pady = (3,0))
+            
+        glims_boolean = TK.BooleanVar()
+        check_glims = TK.Checkbutton(populate_frame, text="GLIMS ID's", variable = glims_boolean, onvalue = True, offvalue = False)
+        check_glims.grid (row =1, padx = 12, sticky = TK.W)
+        glims_boolean.set(VAR.read_variable("GLIMSIDS"))
         
+        rgi_boolean = TK.BooleanVar()
+        check_rgi = TK.Checkbutton(populate_frame, state = TK.DISABLED, text="RGI ID's", variable = rgi_boolean, onvalue = True, offvalue = False)
+        check_rgi.grid (row =2, padx = 12, pady = (0,26), sticky = TK.W)
+        rgi_boolean.set(VAR.read_variable("RGIIDS"))
+
+
+
+        parameters_frame = TK.Frame (options_frame, relief = TK.RIDGE, bd = 1)
+        parameters_frame.grid (row =0, column =2, padx = (3,20), pady = (6,3), sticky = TK.W)
         
+        label_parameters = TK.Label(parameters_frame, text='Scaling')
+        label_parameters.grid (row =0, padx = 12, pady = (3,0))
         
-        
+        scaling_string = TK.StringVar()
+        option_scaling = TK.OptionMenu(parameters_frame, scaling_string, "1", "10", "100", "1000", "10000", "100000", "1000000")
+        option_scaling['width'] = 7
+        option_scaling['relief'] = TK.FLAT
+        option_scaling.grid (row = 1)
+        scaling_string.set(VAR.read_variable("SCALING"))
+
+
 
         settings_frame = TK.Frame (options_frame, relief = TK.RIDGE, bd = 1)
-        settings_frame.grid (row =1, column =0, columnspan = 2, padx = 20, pady = (3,6))
+        settings_frame.grid (row =1, column =0, columnspan = 3, padx = 20, pady = (3,6))
         
         label_minbin = TK.Label(settings_frame, text='Min. Bin')
-        label_minbin.pack(side=TK.LEFT)
+        label_minbin.pack(side=TK.LEFT, padx = (12,0), pady = (6,6))
         
         min_string = TK.StringVar()
         min_entry = TK.Entry (settings_frame, textvariable = min_string, width = 6, justify = TK.CENTER)
@@ -159,8 +202,19 @@ class GUI ():
         size_entry.pack(side=TK.LEFT, padx = (3,12), pady = (6,6))
         size_string.set(VAR.read_variable("BINSIZE"))
         
+        
+        
         def __callback_reset_default ():
             VAR.reset_defaults()
+            InputString.set(VAR.read_variable("INPUT"))
+            DEMString.set(VAR.read_variable("DEM"))
+            OutputString.set(VAR.read_variable("OUTPUT"))
+            hypsometry_boolean.set(VAR.read_variable("HYPSOMETRY"))
+            slope_boolean.set(VAR.read_variable("SLOPE"))
+            aspect_boolean.set(VAR.read_variable("ASPECT"))
+            glims_boolean.set(VAR.read_variable("GLIMSIDS"))
+            rgi_boolean.set(VAR.read_variable("RGIIDS"))
+            scaling_string.set(VAR.read_variable("SCALING"))
             min_string.set(VAR.read_variable("MINBIN"))
             max_string.set(VAR.read_variable("MAXBIN"))
             size_string.set(VAR.read_variable("BINSIZE"))
@@ -206,19 +260,34 @@ class GUI ():
 
         #Run Program Button
         def callback_runImport ():
-            #import post_processing                                  #@UnresolvedImport
+            import post_processing                                  #@UnresolvedImport
             if InputString.get() <> 'Required' and OutputString.get() <> 'Required' and DEMString.get() <> 'Required':
                 master.destroy()
                 try: self.root.destroy()
                 except: pass
-                
-                VAR.set_variable("HYPSOMETRY", "BOOLEAN", hypsometry_Boolean.get())
-                
+            
+                VAR.set_variable("INPUT", "STRING", InputString.get())
+                VAR.set_variable("DEM", "STRING", DEMString.get())
+                VAR.set_variable("OUTPUT", "STRING", OutputString.get())
+                VAR.set_variable("HYPSOMETRY", "BOOLEAN", hypsometry_boolean.get())
+                VAR.set_variable("SLOPE", "BOOLEAN", slope_boolean.get())
+                VAR.set_variable("ASPECT", "BOOLEAN", aspect_boolean.get())
+                VAR.set_variable("GLIMSIDS", "BOOLEAN", glims_boolean.get())
+                VAR.set_variable("RGIIDS", "BOOLEAN", rgi_boolean.get())
+                VAR.set_variable("SCALING", "INTEGER", scaling_string.get())
                 VAR.set_variable("MINBIN", "INTEGER", min_string.get())
                 VAR.set_variable("MAXBIN", "INTEGER", max_string.get())
                 VAR.set_variable("BINSIZE", "INTEGER", size_string.get())
-                #workspace = os.path.dirname(os.path.abspath(__file__)) + '\\workspace'
-                #post_processing.process (InputString.get(), OutputString.get(), DEMString.get(), workspace, size_string.get(), min_string.get(), max_string.get())
+                
+                try:
+                    output = OutputPath.get() + '\\Post_Processed'
+                    os.makedirs(output)
+                except: 
+                    import tkMessageBox
+                    tkMessageBox.showwarning ('Warning', 'Output Folder can not be written. It may already exist.')
+                    sys.exit()
+                    
+                post_processing.process(InputString.get(), output, DEMString.get(), VAR)
             else:
                 import tkMessageBox
                 tkMessageBox.showwarning ('Warning', 'You must select Input and Output files.')

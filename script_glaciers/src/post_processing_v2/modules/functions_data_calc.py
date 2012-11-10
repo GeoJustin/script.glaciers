@@ -53,15 +53,64 @@ def get_attributes (feature, Attribute_header):
         return attributes, True
     
     
-def get_centerline (features, dem, workspace):
+def get_centerline (feature, dem, workspace):
     """Returns a center line feature of the given polygon feature based
      on elevation. Center line determined by contour line centroid. If 
      there are multiple contours are found at a bin location then the 
-     largest is selected. """
+     largest is selected. """    
     centerline = workspace + '\\centerline.shp'
-
+    try: 
+        ARCPY.env.snapRaster = dem
+        ARCPY.env.overwriteOutput = True
+        
+        # Get minimum and maximum points
+        masked_dem = ARCPY.sa.ExtractByMask (dem, feature.shape)
+        
+        maximum = get_properties (masked_dem, 'MAXIMUM')
+        maximum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + maximum)
+        maximum_point = ARCPY.RasterToPoint_conversion(maximum_raster, 'in_memory\\max_point')
+        
+        minimum = get_properties (masked_dem, 'MINIMUM')
+        minimum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + minimum)
+        minimum_point = ARCPY.RasterToPoint_conversion(minimum_raster, 'in_memory\\min_point')
+        
+        # Calculate Euclidean Distance to boundary line for input DEM cells.
+        polyline = ARCPY.PolygonToLine_management(feature.shape, 'in_memory\\polyline')
     
-    return centerline, 'ERROR'
+        eucdist = ARCPY.sa.EucDistance(polyline, "", 2, '')
+        masked_eucdist = ARCPY.sa.ExtractByMask (eucdist, feature.shape)
+        
+        cost_raster = (-1 * masked_eucdist + float(maximum))**5
+        
+        backlink = 'in_memory\\backlink'
+        cost_distance = ARCPY.sa.CostDistance(minimum_point, cost_raster, '', backlink)
+        cost_path = ARCPY.sa.CostPath(maximum_point, cost_distance, backlink, 'EACH_CELL', '')
+        
+        # workspace + '\\rtop.shp'
+        r_to_p = ARCPY.RasterToPolyline_conversion (cost_path, 'in_memory\\raster_to_polygon')
+        
+    #    simplify = workspace + '\\simplify.shp'
+    #    ARCPY.SimplifyLine_cartography(r_to_p, simplify, 'POINT_REMOVE', 40)
+        
+        ARCPY.SmoothLine_cartography(r_to_p, centerline, 'PAEK', 500, 'FIXED_CLOSED_ENDPOINT', 'NO_CHECK')
+        
+        #ARCPY.Delete_management(simplify)
+        
+        field_names = []
+        fields_list = ARCPY.ListFields(centerline)
+        for field in fields_list:
+            if not field.required:
+                field_names.append(field.name)     
+        ARCPY.AddField_management(centerline, 'GLIMSID', 'TEXT', '', '', '25')
+        ARCPY.AddField_management(centerline, 'LENGTH', 'FLOAT')
+        ARCPY.DeleteField_management(centerline, field_names)
+    
+        
+        ARCPY.env.overwriteOutput = False
+        return centerline, False
+    except:
+        ARCPY.env.overwriteOutput = False
+        return centerline, True
 
 def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate hypsometry information from the given digital elevation model
@@ -177,9 +226,8 @@ def subset (feature, raster, workspace, buffer_scale = 2):
     converted to a feature class."""
     subset = workspace + '\\' + 'raster_subset_' + str(feature.GLIMSID) + '.img'
     try:
-        cellsize = float(get_properties(raster, 'CELLSIZEX')) * buffer_scale
-  
         # Buffer the input features geometry
+        cellsize = float(get_properties(raster, 'CELLSIZEX')) * buffer_scale
         mask = ARCPY.Buffer_analysis(feature.shape, ARCPY.Geometry(), cellsize)
         
         # Extract by mask using the buffered feature geometry

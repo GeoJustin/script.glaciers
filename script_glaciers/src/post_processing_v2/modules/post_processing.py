@@ -91,6 +91,10 @@ class process (object):
         
         # Read other variables
         scaling = variables.read_variable('SCALING')
+        
+        # Other variables
+        currently_processing = 1
+        total_features = 0
 
         # Print run time variables to log file
         __Log.print_line("Input File: " + os.path.basename(Input))
@@ -151,11 +155,13 @@ class process (object):
             __Log.print_line('Generating GLIMS IDs')
             glims_ids = DP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
             __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
+            total_features = glims_ids
             
         if rgiids == True:
             __Log.print_line('Generating RGI IDs')
             rgi_ids = DP.generate_RGIIDs(input_copy) # Copy to Output
             __Log.print_line('   RGI IDs - ' + rgi_ids + ' RGI IDs Generated')
+            total_features = rgi_ids
         
         __Log.print_break() # Break for next section in the log file.
         
@@ -167,6 +173,7 @@ class process (object):
             output_centerlines = ARCPY.CreateFeatureclass_management(output_location, 'centerlines.shp', 'POLYLINE', '', '', 'ENABLED', Input)
             ARCPY.AddField_management(output_centerlines, 'GLIMSID', 'TEXT', '', '', '25')
             ARCPY.AddField_management(output_centerlines, 'LENGTH', 'FLOAT')
+            ARCPY.DeleteField_management(output_centerlines, 'Id')
 
             
         # Create an instance of hypsometry, slope and aspect table if applicable
@@ -174,7 +181,7 @@ class process (object):
         if slope == True: hypso_csv = csv.csv(table_output, 'Stats_slope', header) 
         if aspect == True: hypso_csv = csv.csv(table_output, 'Stats_aspect', header) 
         
-        
+
         if centerlines == True or hypsometry == True or slope == True or aspect == True:
             rows = ARCPY.SearchCursor(input_copy) # Open shapefile to read features
             for row in rows: # For each feature in the shapefile
@@ -182,6 +189,7 @@ class process (object):
                 # Get Attributes information such as GLIMS ID, Lat, Lon, area... etc.
                 attribute_info, attribute_error = DC.get_attributes(row, Attribute_header)
                 print ''
+                print 'Currently running: ' + str(currently_processing) + ' of ' + str(total_features)
                 print 'Feature ' + str(attribute_info[0]) + ' ' + str(attribute_info[1])
                 print '    Glacier Type: '  + str(attribute_info[2])
                 print '    Area: ' + str(attribute_info[7]) + ' Sqr.'
@@ -214,8 +222,9 @@ class process (object):
                 
                 
                 if centerlines == True or slope == True or aspect == True:
+                    print '    Running Center Line'
                     centerline, centerline_error = DC.get_centerline(row, subset, workspace)
-                    if centerlines == True: ARCPY.Append_management(centerline, output_centerlines)
+                    if centerline_error == False: ARCPY.Append_management(centerline, output_centerlines)
                     if centerline_error == True:
                         __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate center line')
                 
@@ -235,6 +244,8 @@ class process (object):
                     
                 try: ARCPY.Delete_management(subset)
                 except: pass
+                
+                currently_processing += 1
                 
             del row , rows #Delete cursors and remove locks
             

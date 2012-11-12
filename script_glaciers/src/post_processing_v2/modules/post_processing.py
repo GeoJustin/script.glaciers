@@ -173,6 +173,7 @@ class process (object):
             output_centerlines = ARCPY.CreateFeatureclass_management(output_location, 'centerlines.shp', 'POLYLINE', '', '', 'ENABLED', Input)
             ARCPY.AddField_management(output_centerlines, 'GLIMSID', 'TEXT', '', '', '25')
             ARCPY.AddField_management(output_centerlines, 'LENGTH', 'FLOAT')
+            ARCPY.AddField_management(output_centerlines, 'SLOPE', 'FLOAT')
             ARCPY.DeleteField_management(output_centerlines, 'Id')
 
             
@@ -223,8 +224,10 @@ class process (object):
                 
                 if centerlines == True or slope == True or aspect == True:
                     print '    Running Center Line'
-                    centerline, centerline_error = DC.get_centerline(row, subset, workspace)
-                    if centerline_error == False: ARCPY.Append_management(centerline, output_centerlines)
+                    centerline, center_length, center_angle, centerline_error = DC.get_centerline(row, subset, workspace)
+                    if centerline_error == False: 
+                        print '    Center Line Length: ' + str(center_length) + ' & Slope Angle: ' + str(center_angle)
+                        ARCPY.Append_management(centerline, output_centerlines)
                     if centerline_error == True:
                         __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate center line')
                 
@@ -243,6 +246,8 @@ class process (object):
 #                    #'ERROR - Could not generate binned slope data'
                     
                 try: ARCPY.Delete_management(subset)
+                except: pass
+                try: ARCPY.Delete_management(centerline)
                 except: pass
                 
                 currently_processing += 1

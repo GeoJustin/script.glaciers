@@ -41,7 +41,7 @@ CENTERLINES = BOOLEAN = True
 CENTERLINES (Default) = BOOLEAN = True
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 1
+HYPSOMETRY = BOOLEAN = 0
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope

@@ -53,12 +53,14 @@ def get_attributes (feature, Attribute_header):
         return attributes, True
     
     
-def get_centerline (feature, dem, workspace):
+def get_centerline (feature, dem, workspace, eu_cell_size = 2, smoothing = 4):
     """Returns a center line feature of the given polygon feature based
      on elevation. Center line determined by contour line centroid. If 
      there are multiple contours are found at a bin location then the 
      largest is selected. """    
     centerline = workspace + '\\centerline.shp'
+    center_length = 0
+    center_slope = 0
     try: 
         ARCPY.env.snapRaster = dem
         ARCPY.env.overwriteOutput = True
@@ -69,15 +71,25 @@ def get_centerline (feature, dem, workspace):
         maximum = get_properties (masked_dem, 'MAXIMUM')
         maximum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + maximum)
         maximum_point = ARCPY.RasterToPoint_conversion(maximum_raster, 'in_memory\\max_point')
+        rows = ARCPY.UpdateCursor (maximum_point)
+        for row in rows:
+            if row.pointid <> 1:
+                rows.deleteRow(row)
+        del row, rows
         
         minimum = get_properties (masked_dem, 'MINIMUM')
         minimum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + minimum)
         minimum_point = ARCPY.RasterToPoint_conversion(minimum_raster, 'in_memory\\min_point')
+        rows = ARCPY.UpdateCursor (minimum_point)
+        for row in rows:
+            if row.pointid <> 1:
+                rows.deleteRow(row)
+        del row, rows
         
-        # Calculate Euclidean Distance to boundary line for input DEM cells.
+        # Calculate euclidean Distance to boundary line for input DEM cells.
         polyline = ARCPY.PolygonToLine_management(feature.shape, 'in_memory\\polyline')
     
-        eucdist = ARCPY.sa.EucDistance(polyline, "", 2, '')
+        eucdist = ARCPY.sa.EucDistance(polyline, "", eu_cell_size, '')
         masked_eucdist = ARCPY.sa.ExtractByMask (eucdist, feature.shape)
         
         cost_raster = (-1 * masked_eucdist + float(maximum))**5
@@ -85,17 +97,12 @@ def get_centerline (feature, dem, workspace):
         backlink = 'in_memory\\backlink'
         cost_distance = ARCPY.sa.CostDistance(minimum_point, cost_raster, '', backlink)
         cost_path = ARCPY.sa.CostPath(maximum_point, cost_distance, backlink, 'EACH_CELL', '')
-        
-        # workspace + '\\rtop.shp'
-        r_to_p = ARCPY.RasterToPolyline_conversion (cost_path, 'in_memory\\raster_to_polygon')
-        
-    #    simplify = workspace + '\\simplify.shp'
-    #    ARCPY.SimplifyLine_cartography(r_to_p, simplify, 'POINT_REMOVE', 40)
-        
-        ARCPY.SmoothLine_cartography(r_to_p, centerline, 'PAEK', 500, 'FIXED_CLOSED_ENDPOINT', 'NO_CHECK')
-        
-        #ARCPY.Delete_management(simplify)
-        
+        cost_path_ones = ARCPY.sa.Con(cost_path, 1, '', 'VALUE > ' + str(-1)) # Set all pixels to 1
+        r_to_p = ARCPY.RasterToPolyline_conversion (cost_path_ones, 'in_memory\\raster_to_polygon')
+    
+        smooth_tolerance = (float(maximum) - float(minimum)) / smoothing
+        ARCPY.SmoothLine_cartography(r_to_p, centerline, 'PAEK', smooth_tolerance, 'FIXED_CLOSED_ENDPOINT', 'NO_CHECK')
+    
         field_names = []
         fields_list = ARCPY.ListFields(centerline)
         for field in fields_list:
@@ -103,14 +110,26 @@ def get_centerline (feature, dem, workspace):
                 field_names.append(field.name)     
         ARCPY.AddField_management(centerline, 'GLIMSID', 'TEXT', '', '', '25')
         ARCPY.AddField_management(centerline, 'LENGTH', 'FLOAT')
+        ARCPY.AddField_management(centerline, 'SLOPE', 'FLOAT')
         ARCPY.DeleteField_management(centerline, field_names)
-    
         
+        # Calculate the length of the line segment
+        ARCPY.CalculateField_management(centerline, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
+    
+        rows = ARCPY.UpdateCursor (centerline)
+        for row in rows:
+            center_length = row.LENGTH
+            center_slope = round(math.degrees(math.atan((float(maximum) - float(minimum)) / row.LENGTH)), 2)
+            row.GLIMSID = feature.GLIMSID # pop next value and print it to file.
+            row.SLOPE = center_slope
+            rows.updateRow(row) # Update the new entry
+        del row, rows #Delete cursors and remove locks    
+    
         ARCPY.env.overwriteOutput = False
-        return centerline, False
+        return centerline, center_length, center_slope, False
     except:
         ARCPY.env.overwriteOutput = False
-        return centerline, True
+        return centerline, '', '', True
 
 def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate hypsometry information from the given digital elevation model

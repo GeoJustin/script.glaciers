@@ -179,8 +179,8 @@ class process (object):
             
         # Create an instance of hypsometry, slope and aspect table if applicable
         if hypsometry == True: hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', header) 
-        if slope == True: hypso_csv = csv.csv(table_output, 'Stats_slope', header) 
-        if aspect == True: hypso_csv = csv.csv(table_output, 'Stats_aspect', header) 
+        if slope == True: slope_csv = csv.csv(table_output, 'Stats_slope', header) 
+        if aspect == True: aspect_csv = csv.csv(table_output, 'Stats_aspect', header) 
         
 
         if centerlines == True or hypsometry == True or slope == True or aspect == True:
@@ -214,12 +214,13 @@ class process (object):
                         __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate basic statistics')
                 
                 
-                if hypsometry == True:
-                    print '    Running Hypsometry'
+                if hypsometry == True or slope == True or aspect == True:
+                    print '    Running Hypsometry for Bin Mask & Table Statistics'
                     hypsometry_info, hypso_error, bin_mask = DC.get_hypsometry(row, subset, workspace, scaling, max_bin, min_bin, bin_size)
-                    hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info) # Print hypsometry data.
+                    if hypsometry == True and hypso_error == False:
+                        hypso_csv.print_line(attribute_info + statistics_info + hypsometry_info) # Print hypsometry data.
                     if hypso_error == True:
-                        __Log.print_line(str(row.GLIMSID) + 'ERROR - Could not generate hypsometry data')
+                        __Log.print_line(str(row.GLIMSID) + 'ERROR - Could not generate hypsometry information')
                 
                 
                 if centerlines == True or slope == True or aspect == True:
@@ -227,17 +228,20 @@ class process (object):
                     centerline, center_length, center_angle, centerline_error = DC.get_centerline(row, subset, workspace)
                     if centerline_error == False: 
                         print '    Center Line Length: ' + str(center_length) + ' & Slope Angle: ' + str(center_angle)
-                        ARCPY.Append_management(centerline, output_centerlines)
+                        if centerlines == True:
+                            ARCPY.Append_management(centerline, output_centerlines)
                     if centerline_error == True:
                         __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not generate center line')
                 
-#                if slope == True:
-#                    # Create an instance of slope table
-#                    slope_csv = csv.csv(table_output, 'Stats_Slope', table_header)
-#                    #slope_info, slope_error = DC.get_slope(row, subset, bin_mask, workspace, scaling, z_value, max_bin, min_bin, bin_size)
-#                    #slope_csv.print_line(attribute_info + statistics_info + slope_info)
-#                    #'ERROR - Could not generate binned aspect data'
-#                
+                
+                    if slope == True:
+                        print '    Running Slope Table Statistics'
+                        slope_info, slope_error = DC.get_slope(centerline, bin_mask, bin_header, workspace, scaling, bin_size)
+                        slope_csv.print_line(attribute_info + statistics_info + slope_info)
+                        if slope_error == True:
+                            __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not calculate binned slope data')
+                            
+                
 #                if aspect == True:
 #                    # Create an instance of aspect table
 #                    aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)

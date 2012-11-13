@@ -45,7 +45,7 @@ HYPSOMETRY = BOOLEAN = 0
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 0
+SLOPE = BOOLEAN = 1
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect

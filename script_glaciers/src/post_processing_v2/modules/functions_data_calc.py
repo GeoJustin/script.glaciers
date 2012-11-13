@@ -54,10 +54,9 @@ def get_attributes (feature, Attribute_header):
     
     
 def get_centerline (feature, dem, workspace, eu_cell_size = 2, smoothing = 4):
-    """Returns a center line feature of the given polygon feature based
-     on elevation. Center line determined by contour line centroid. If 
-     there are multiple contours are found at a bin location then the 
-     largest is selected. """    
+    """Returns a center line feature of the given polygon feature based on
+    cost over an euclidean distance raster and cost path. points are seeded
+    using minimum and maximum elevation."""    
     centerline = workspace + '\\centerline.shp'
     center_length = 0
     center_slope = 0
@@ -176,6 +175,7 @@ def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 88
         rows = ARCPY.SearchCursor(bin_features)
         for row in rows:
             elevation_list.append([float(row.GRIDCODE/raster_scaling), float(row.F_AREA)])
+        del row, rows
             
         item_found = False # Switch to identify if an element exists or not
         current_bin = 0.0 # Bin value to print
@@ -194,8 +194,7 @@ def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 88
                 current_bin = 0.0   # Reset bin value to print
         
         ARCPY.Delete_management(reclassify) # Remove the reclassified raster from workspace
-        del row
-        del rows
+        
         return hypsometry, False, bin_features
     except:
         return hypsometry, True, bin_features
@@ -207,17 +206,53 @@ def get_properties (raster, prop = ''):
     return str(ARCPY.GetRasterProperties_management(raster, prop))
 
 
-def get_slope (feature, dem, bin_mask, workspace, raster_scaling = 0, z_value = 1.0, max_bin = 8850, min_bin = 0, bin_size = 50):
-    """Calculate slope information from the given slope raster generated from 
-    a DEM and return bin statistics. Each slope bin is defined by elevation
-    and shares the same spatial area is hypsometry bins. If this function 
-    fails at runtime an error is returned for recording in the log file."""
+def get_slope (feature, bin_mask, bins, workspace, raster_scaling = 1000, bin_size = 50):
+    """Calculate slope information along the center line by clipping segements of the 
+    centerline to each bin. A bin mask is required and is calculated as a standard
+    output of the 'get_hypsometry' function. Slope calculations assume centerline 
+    segment runs the length of the bins so first and last values may be incorrect if
+    if the line end before it reaches the end of a bin or starts within it."""
     
-    slope_list = []
+    slope_list = [str(0.0)] * len(bins) # string list of 0.0 to return
+    bin_list = bins # List of bin values
+    centerline_list = [] # List to hold current features length and slope values
+            
+    try:
+        rows = ARCPY.SearchCursor (bin_mask)
+        for row in rows: # For each bin within the bin mask
+            elevation_bin = int(row.GRIDCODE / raster_scaling) # Get bin value
+            
+            # Clip centerline to current bin and calculate it's length
+            clipped_line = ARCPY.Clip_analysis (feature, row.shape, 'in_memory\\clipped_line' )
+            ARCPY.CalculateField_management(clipped_line, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
+            
+            length = 0
+            try: # Fails if feature is empty (i.e. there is no centerline in the bin
+                # Open clipped line segment and look for it's length
+                clip_rows = ARCPY.SearchCursor (clipped_line)
+                for clip_row in clip_rows:
+                    length += clip_row.LENGTH # Get length
+                del clip_row, clip_rows
+            except: pass
+            
+            # If there is a line segment, calculate slope and append it list
+            if length <> 0:  # with elevation bin value
+                center_slope = round(math.degrees(math.atan(float(bin_size) / length)), 2)
+                centerline_list.append([elevation_bin, center_slope])
+            
+            ARCPY.Delete_management(clipped_line) # Clean up temporary clip
+        del row, rows    
+        
+        # Look to see if there is a slope value for the given bin
+        for index, entry in enumerate (bin_list): # For each bin (all of them)
+            bin_number = int(entry[1:]) # Convert string to int ('B150' to 150)
+            for item in centerline_list: # For each item in current feature
+                if item[0] == bin_number: # If item bin matches all bin 
+                    slope_list[index] = str(item[1]) # Place slope value
 
-    return slope_list, False
-    #except:
-    #   return  slope, True
+        return slope_list, False # Return current features slope values
+    except:
+        return  slope_list, True # Return anything that was run or empty list of '0.0'
         
         
 def get_statistics (feature, dem, workspace, raster_scaling = 1000):

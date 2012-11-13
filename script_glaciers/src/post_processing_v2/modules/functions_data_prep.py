@@ -115,7 +115,7 @@ def check_topology (input_file, workspace):
     return [str(error_count), str(original_count)]        
 
 
-def check_column_formate (input_file):
+def check_formate (input_file):
     """Check that column headings exist, are in the correct order and 
     add if missing. This function utilizes the insert column class and 
     the move column class."""
@@ -187,6 +187,7 @@ def generate_RGIIDs (input_file):
         #NOT WRITEN
             #NOT WRITEN
     return str(id_count)
+
 
 def generate_header (max_bin = 8850, min_bin = 0, bin_size = 50):
     """Generate a table list containing table header information by combining

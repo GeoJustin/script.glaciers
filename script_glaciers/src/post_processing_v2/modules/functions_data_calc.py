@@ -68,7 +68,9 @@ def get_centerline (feature, dem, workspace, eu_cell_size = 2, smoothing = 4):
         # Get minimum and maximum points
         masked_dem = ARCPY.sa.ExtractByMask (dem, feature.shape)
         
-        maximum = get_properties (masked_dem, 'MAXIMUM')
+        # Find the maximum elevation value in the feature, convert them to
+        # points and then remove all but one.
+        maximum = get_properties (masked_dem, 'MAXIMUM') 
         maximum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + maximum)
         maximum_point = ARCPY.RasterToPoint_conversion(maximum_raster, 'in_memory\\max_point')
         rows = ARCPY.UpdateCursor (maximum_point)
@@ -77,6 +79,8 @@ def get_centerline (feature, dem, workspace, eu_cell_size = 2, smoothing = 4):
                 rows.deleteRow(row)
         del row, rows
         
+        # Find the minimum elevation value in the feature, convert them to
+        # points and then remove all but one.
         minimum = get_properties (masked_dem, 'MINIMUM')
         minimum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + minimum)
         minimum_point = ARCPY.RasterToPoint_conversion(minimum_raster, 'in_memory\\min_point')
@@ -88,40 +92,48 @@ def get_centerline (feature, dem, workspace, eu_cell_size = 2, smoothing = 4):
         
         # Calculate euclidean Distance to boundary line for input DEM cells.
         polyline = ARCPY.PolygonToLine_management(feature.shape, 'in_memory\\polyline')
-    
         eucdist = ARCPY.sa.EucDistance(polyline, "", eu_cell_size, '')
         masked_eucdist = ARCPY.sa.ExtractByMask (eucdist, feature.shape)
         
+        # Calculate the cost raster by inverting the euclidean distance results,
+        # and rasing it to the power of x to exaggerate the least expensive route.
         cost_raster = (-1 * masked_eucdist + float(maximum))**5
         
+        # Run the cost distance and cost path function to find the path of least
+        # resistance between the minimum and maximum values. The results are set
+        # so all values equal 1 (different path segments have different values)
+        # and convert the raster line to a poly-line.
         backlink = 'in_memory\\backlink'
         cost_distance = ARCPY.sa.CostDistance(minimum_point, cost_raster, '', backlink)
         cost_path = ARCPY.sa.CostPath(maximum_point, cost_distance, backlink, 'EACH_CELL', '')
-        cost_path_ones = ARCPY.sa.Con(cost_path, 1, '', 'VALUE > ' + str(-1)) # Set all pixels to 1
+        cost_path_ones = ARCPY.sa.Con(cost_path, 1, '', 'VALUE > ' + str(-1)) # Set all resulting pixels to 1
         r_to_p = ARCPY.RasterToPolyline_conversion (cost_path_ones, 'in_memory\\raster_to_polygon')
     
+        # Smooth the resulting line. Currently smoothing is determined by minimum
+        # and maximum distance. The greater change the greater the smoothing.
         smooth_tolerance = (float(maximum) - float(minimum)) / smoothing
         ARCPY.SmoothLine_cartography(r_to_p, centerline, 'PAEK', smooth_tolerance, 'FIXED_CLOSED_ENDPOINT', 'NO_CHECK')
     
-        field_names = []
+        field_names = [] # List of field names in the file that will be deleted.
         fields_list = ARCPY.ListFields(centerline)
-        for field in fields_list:
-            if not field.required:
-                field_names.append(field.name)     
+        for field in fields_list: # Loop through the field names
+            if not field.required: # If they are not required append them to the list of field names.
+                field_names.append(field.name)
+        # Add new fields to the center line feature
         ARCPY.AddField_management(centerline, 'GLIMSID', 'TEXT', '', '', '25')
         ARCPY.AddField_management(centerline, 'LENGTH', 'FLOAT')
         ARCPY.AddField_management(centerline, 'SLOPE', 'FLOAT')
-        ARCPY.DeleteField_management(centerline, field_names)
+        ARCPY.DeleteField_management(centerline, field_names) # Remove the old fields.
         
-        # Calculate the length of the line segment
+        # Calculate the length of the line segment and populate segment data.
         ARCPY.CalculateField_management(centerline, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
-    
         rows = ARCPY.UpdateCursor (centerline)
         for row in rows:
-            center_length = row.LENGTH
+            row.GLIMSID = feature.GLIMSID # Get GLIMS ID and add it to segment
+            center_length = row.LENGTH # Get the length of the center line
+            # Calculate slope of the line based on change in elevation over length of line
             center_slope = round(math.degrees(math.atan((float(maximum) - float(minimum)) / row.LENGTH)), 2)
-            row.GLIMSID = feature.GLIMSID # pop next value and print it to file.
-            row.SLOPE = center_slope
+            row.SLOPE = center_slope # Write slope to Segment
             rows.updateRow(row) # Update the new entry
         del row, rows #Delete cursors and remove locks    
     
@@ -130,6 +142,7 @@ def get_centerline (feature, dem, workspace, eu_cell_size = 2, smoothing = 4):
     except:
         ARCPY.env.overwriteOutput = False
         return centerline, '', '', True
+
 
 def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 8850, min_bin = 0, bin_size = 50):
     """Calculate hypsometry information from the given digital elevation model

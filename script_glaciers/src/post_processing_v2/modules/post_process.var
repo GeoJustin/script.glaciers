@@ -45,11 +45,11 @@ HYPSOMETRY = BOOLEAN = 0
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 1
+SLOPE = BOOLEAN = 0
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = 0
+ASPECT = BOOLEAN = 1
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units

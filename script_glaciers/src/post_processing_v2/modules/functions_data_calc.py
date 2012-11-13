@@ -25,18 +25,64 @@ import arcpy as ARCPY                                        #@UnresolvedImport
 import math
 import random
 
-def get_aspect (feature, dem, bin_mask, max_bin = 8850, min_bin = 0, bin_size = 50):
-    """Calculate aspect information from the given aspect raster generated from 
-    a DEM and return bin statistics. Each aspect bin is defined by elevation
-    and shares the same spatial area is hypsometry bins. If this function 
-    fails at runtime an error is returned for recording in the log file."""
-    aspect = []
+def get_aspect (feature, bin_mask, bins, workspace, raster_scaling = 1000):
+    """Calculate aspect information from the given feature centerline based
+    on a bin mask. A bin mask is one of the standard outputs from calculating 
+    hypsometry. Aspect is 0 -360 degrees clockwise from north and starts from 
+    the lowest elevation toward the highest."""
     try:
-        # NOT WRITTEN 
-        # NOT WRITTEN 
-        return aspect, False
+        aspect_list = [str(0.0)] * len(bins) # string list of 0.0 to return
+        bin_list = bins # List of bin values
+        centerline_list = [] # List to hold current features length and slope values
+        
+        
+        rows = ARCPY.SearchCursor (bin_mask)
+        for row in rows: # For each bin within the bin mask
+            elevation_bin = int(row.GRIDCODE / raster_scaling) # Get bin value
+            
+            # Clip centerline to current bin and calculate it's length
+            clipped_line = ARCPY.Clip_analysis (feature, row.shape, 'in_memory\\clipped_line')
+            ARCPY.CalculateField_management(clipped_line, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
+            
+            # Lines with multi-part features sometimes have reversed directions do to where
+            # points are placed for the beginning and end of line segments within the multi-part line. 
+            m_to_s = ARCPY.MultipartToSinglepart_management (clipped_line, 'in_memory\\m_to_s')
+    
+            try: # Fails if feature is empty (i.e. there is no centerline in the bin
+            # Open clipped line segment and look for it's length
+                bin_aspects = []
+                clip_rows = ARCPY.SearchCursor (m_to_s) # For each segment in a bin
+                for clip_row in clip_rows:
+                    if clip_row.LENGTH > 0: # If the bin is not empty
+                        
+                        # Calculate the directional mean for each segment within a bin
+                        direction = ARCPY.DirectionalMean_stats(clip_row.shape, 'in_memory\\direction_line', "DIRECTION")  
+                        dir_rows = ARCPY.SearchCursor (direction)
+                        for dir_row in dir_rows: # Read the direction field 
+                            bin_aspects.append(dir_row.CompassA)
+                        del dir_row, dir_rows
+                        
+                        ARCPY.Delete_management(direction) # Clean up temporary clip
+                del clip_row, clip_rows
+                
+                # Add the current bin and average aspect to the centerline list
+                centerline_list.append([elevation_bin, str(sum(bin_aspects) / float(len(bin_aspects)))])
+            except: pass
+            
+            ARCPY.Delete_management(m_to_s) # Clean up temporary clip
+            ARCPY.Delete_management(clipped_line) # Clean up temporary clip
+        del row, rows
+    
+        # Look to see if there is an aspect value for the given bin
+        for index, entry in enumerate (bin_list): # For each bin (all of them)
+            bin_number = int(entry[1:]) # Convert string to int ('B150' to 150)
+            for item in centerline_list: # For each item in current feature
+                if item[0] == bin_number: # If item bin matches all bin 
+                    aspect_list[index] = str(item[1]) # Place slope value
+        
+        return aspect_list, False
     except:
-        return aspect, True
+        return aspect_list, True
     
 
 def get_attributes (feature, Attribute_header):
@@ -212,7 +258,6 @@ def get_slope (feature, bin_mask, bins, workspace, raster_scaling = 1000, bin_si
     output of the 'get_hypsometry' function. Slope calculations assume centerline 
     segment runs the length of the bins so first and last values may be incorrect if
     if the line end before it reaches the end of a bin or starts within it."""
-    
     slope_list = [str(0.0)] * len(bins) # string list of 0.0 to return
     bin_list = bins # List of bin values
     centerline_list = [] # List to hold current features length and slope values

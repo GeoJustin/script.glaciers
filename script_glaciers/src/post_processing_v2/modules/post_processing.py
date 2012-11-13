@@ -242,12 +242,13 @@ class process (object):
                             __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not calculate binned slope data')
                             
                 
-#                if aspect == True:
-#                    # Create an instance of aspect table
-#                    aspect_csv = csv.csv(table_output, 'Stats_Aspect', table_header)
-#                    aspect_info, aspect_error = DC.get_aspect(row, subset, bin_mask, max_bin, min_bin, bin_size)        
-#                    aspect_csv.print_line(attribute_info + statistics_info + aspect_info)
-#                    #'ERROR - Could not generate binned slope data'
+                    if aspect == True:
+                        print '    Running Aspect Table Statistics'
+                        aspect_info, aspect_error = DC.get_aspect(centerline, bin_mask, bin_header, workspace, scaling)        
+                        aspect_csv.print_line(attribute_info + statistics_info + aspect_info)
+                        if aspect_error == True:
+                            __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not calculate binned aspect data')
+                             
                     
                 try: ARCPY.Delete_management(subset)
                 except: pass

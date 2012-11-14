@@ -115,17 +115,21 @@ def check_topology (input_file, workspace):
     return [str(error_count), str(original_count)]        
 
 
-def check_formate (input_file):
-    """Check that column headings exist, are in the correct order and 
-    add if missing. This function utilizes the insert column class and 
-    the move column class."""
+def check_formate (input_file, headings):
+    """Check that column headings exist."""
+    item_not_found = False
+    field_names = [] # Get input file field names
     
-    # Function should check to see if the correct column is included.
-    # If it is and it's in the correct location, do nothing
-    # If not add it in the correct location.
-    # If it is but in the wrong place, move it.
-    
-    return "function not written yet"
+    fields_list = ARCPY.ListFields(input_file)
+    for field in fields_list: # Loop through the field names
+        if not field.required: # If they are not required 
+            field_names.append(field.name) # Append them to the list of field names.
+
+    for item in headings: # Look for each item in headings list
+        if item not in field_names: # If item is not found 
+            item_not_found = True # Set not found to true
+            
+    return item_not_found
 
 
 def generate_GLIMSIDs (input_file, workspace):

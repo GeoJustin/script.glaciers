@@ -7,7 +7,7 @@
 Created: Oct 12, 2012
 Author:  Justin Rich (justin.rich@gi.alaska.edu)
 Location: Geophysical Institute | University of Alaska, Fairbanks
-Contributors:
+Contributors: Christian Kienholz, University of Alaska, Fairbanks
 
 Copyright:   (c) Justin L. Rich 2012
 License:     Although this application has been produced and tested
@@ -35,41 +35,37 @@ def get_aspect (feature, bin_mask, bins, workspace, raster_scaling = 1000):
         bin_list = bins # List of bin values
         centerline_list = [] # List to hold current features length and slope values
         
-        
         rows = ARCPY.SearchCursor (bin_mask)
         for row in rows: # For each bin within the bin mask
             elevation_bin = int(row.GRIDCODE / raster_scaling) # Get bin value
             
-            # Clip centerline to current bin and calculate it's length
+            # Clip centerline to current bin and count the features generated
             clipped_line = ARCPY.Clip_analysis (feature, row.shape, 'in_memory\\clipped_line')
-            ARCPY.CalculateField_management(clipped_line, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
+            feature_count = int(ARCPY.GetCount_management(clipped_line).getOutput(0)) 
             
-            # Lines with multi-part features sometimes have reversed directions do to where
-            # points are placed for the beginning and end of line segments within the multi-part line. 
-            m_to_s = ARCPY.MultipartToSinglepart_management (clipped_line, 'in_memory\\m_to_s')
-    
-            try: # Fails if feature is empty (i.e. there is no centerline in the bin
-            # Open clipped line segment and look for it's length
-                bin_aspects = []
-                clip_rows = ARCPY.SearchCursor (m_to_s) # For each segment in a bin
-                for clip_row in clip_rows:
-                    if clip_row.LENGTH > 0: # If the bin is not empty
-                        
-                        # Calculate the directional mean for each segment within a bin
-                        direction = ARCPY.DirectionalMean_stats(clip_row.shape, 'in_memory\\direction_line', "DIRECTION")  
-                        dir_rows = ARCPY.SearchCursor (direction)
-                        for dir_row in dir_rows: # Read the direction field 
-                            bin_aspects.append(dir_row.CompassA)
-                        del dir_row, dir_rows
-                        
-                        ARCPY.Delete_management(direction) # Clean up temporary clip
-                del clip_row, clip_rows
+            if feature_count > 0: # If there is 1 or more features
+                ARCPY.CalculateField_management(clipped_line, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
                 
-                # Add the current bin and average aspect to the centerline list
-                centerline_list.append([elevation_bin, str(sum(bin_aspects) / float(len(bin_aspects)))])
-            except: pass
+                # Lines with multi-part features sometimes have reversed directions do to where
+                # points are placed for the beginning and end of line segments within the multi-part line. 
+                m_to_s = ARCPY.MultipartToSinglepart_management (clipped_line, 'in_memory\\m_to_s')
             
-            ARCPY.Delete_management(m_to_s) # Clean up temporary clip
+                # Calculate mean direction of lines
+                direction = ARCPY.DirectionalMean_stats(m_to_s, 'in_memory\\direction_line', "DIRECTION")  
+                
+                bin_aspects = []
+                dir_rows = ARCPY.SearchCursor (direction) # Read the direction feature 
+                for dir_row in dir_rows: # For each record (there should only be one
+                    bin_aspects = dir_row.CompassA # Get direction
+                del dir_row, dir_rows
+                        
+                ARCPY.Delete_management(direction) # Clean up temporary clip
+                    
+                # Add the current bin and average aspect to the centerline list
+                centerline_list.append([elevation_bin, round(bin_aspects, 2)])
+
+                
+                ARCPY.Delete_management(m_to_s) # Clean up temporary clip
             ARCPY.Delete_management(clipped_line) # Clean up temporary clip
         del row, rows
     

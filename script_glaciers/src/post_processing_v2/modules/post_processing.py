@@ -29,14 +29,14 @@ import sys
 
 class process (object):
     
-    def __init__ (self, Input, output_location, DEM, variables):
+    def __init__ (self, input_features, output_location, DEM, variables):
         
         # Create a copy of the input file in the output folder. This will be the
         # actual result file after fields are updated. This is done so no changes
         # are imposed on the original file.
         try:
-            Output = output_location + '\\' + os.path.basename(Input)
-            input_copy = ARCPY.CopyFeatures_management(Input, Output)
+            Output = output_location + '\\' + os.path.basename(input_features)
+            input_copy = ARCPY.CopyFeatures_management(input_features, Output)
         except:
             print 'Output Glacier file already exists or the output folder is not available.'
             sys.exit()
@@ -90,6 +90,7 @@ class process (object):
         header = Attribute_header + Statistics_header + bin_header
         
         # Read other variables
+        check_header = variables.read_variable('RGIHEADER')
         scaling = variables.read_variable('SCALING')
         
         # Other variables
@@ -97,7 +98,7 @@ class process (object):
         total_features = 0
 
         # Print run time variables to log file
-        __Log.print_line("Input File: " + os.path.basename(Input))
+        __Log.print_line("Input File: " + os.path.basename(input))
         __Log.print_line("Input DEM: " + os.path.basename(DEM))
         __Log.print_line('Output Folder: ' + os.path.dirname(os.path.abspath(Output)))
         __Log.print_line('Output Glaciers: ' + os.path.basename(Output))
@@ -117,8 +118,16 @@ class process (object):
         
         #_______________________________________________________________________
         #*******Input File Cleanup**********************************************  
-        """ 
+        
         __Log.print_line('Input Polygon Checks')
+        # Check to see if the input file follows RGI table headings.
+        formate_error = DP.check_formate(input_features, check_header)
+        if formate_error == False:
+            __Log.print_line('    Input header information is consistent with the standard set')
+        if formate_error == True:
+            __Log.print_line('    ERROR - Input header information is NOT consistent with the standard set')
+            sys.exit()
+        
         # Check geometries. If there are errors, correct them and print the
         # results to the log file
         repair = DP.repair_geometry(input_copy)
@@ -147,17 +156,17 @@ class process (object):
         if topology[0] <> str(0): raw_input(str(topology[0]) + "WARNING: Topology errors found.")
        
         __Log.print_break() # Break for next section in the log file.
-        """
+        
         #_______________________________________________________________________
         #*******Prepare Input file*********************************************
         
-        if glimsids == True:
+        if glimsids == True: # Generate GLIMS id's if applicable
             __Log.print_line('Generating GLIMS IDs')
             glims_ids = DP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
             __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
             total_features = glims_ids
             
-        if rgiids == True:
+        if rgiids == True: # Generate RGI id's if applicable
             __Log.print_line('Generating RGI IDs')
             rgi_ids = DP.generate_RGIIDs(input_copy) # Copy to Output
             __Log.print_line('   RGI IDs - ' + rgi_ids + ' RGI IDs Generated')
@@ -170,7 +179,7 @@ class process (object):
 
         # Generate center lines output file to append centerlines
         if centerlines == True:
-            output_centerlines = ARCPY.CreateFeatureclass_management(output_location, 'centerlines.shp', 'POLYLINE', '', '', 'ENABLED', Input)
+            output_centerlines = ARCPY.CreateFeatureclass_management(output_location, 'centerlines.shp', 'POLYLINE', '', '', 'ENABLED', input_features)
             ARCPY.AddField_management(output_centerlines, 'GLIMSID', 'TEXT', '', '', '25')
             ARCPY.AddField_management(output_centerlines, 'LENGTH', 'FLOAT')
             ARCPY.AddField_management(output_centerlines, 'SLOPE', 'FLOAT')
@@ -189,6 +198,7 @@ class process (object):
                 
                 # Get Attributes information such as GLIMS ID, Lat, Lon, area... etc.
                 attribute_info, attribute_error = DC.get_attributes(row, Attribute_header)
+                print ''
                 print ''
                 print 'Currently running: ' + str(currently_processing) + ' of ' + str(total_features)
                 print 'Feature ' + str(attribute_info[0]) + ' ' + str(attribute_info[1])
@@ -249,17 +259,22 @@ class process (object):
                         if aspect_error == True:
                             __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not calculate binned aspect data')
                              
-                    
+                # Clean Up Workspace
                 try: ARCPY.Delete_management(subset)
                 except: pass
                 try: ARCPY.Delete_management(centerline)
                 except: pass
-                
+
                 currently_processing += 1
-                
             del row , rows #Delete cursors and remove locks
             
-        print 'Processing Complete'
+        try: # Script Complete. Try and delete workspace 
+            ARCPY.Delete_management(workspace)
+            'Processing Complete'
+        except: 
+            print 'Could Not Delete Workspace'
+            print 'Processing Complete'
+            
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !

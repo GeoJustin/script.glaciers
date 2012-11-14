@@ -20,7 +20,7 @@ License:     Although this application has been produced and tested
 *****************************************************************************"""
 import time
 
-class StopWatch ():
+class StopWatch (object):
     """StopWatch extends the time module and is used for basic time keeping and
     is largely used to reduce the amount of input needed to run time commands 
     in other modules. Stop Watch also keeps track of initial start time in order

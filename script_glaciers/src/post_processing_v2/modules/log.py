@@ -20,7 +20,7 @@ License:     Although this application has been produced and tested
 ****************************************************************************"""
 import stop_watch
 
-class Log ():
+class Log (object):
     """Log is used to create, update and print information to a Log file.
         Attributes:
             Log Name (optional): A String for the name of the Log file.

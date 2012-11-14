@@ -9,47 +9,47 @@
 #
 # VARIABLES:
 #	Input Outlines
-INPUT = STRING = A:/Desktop/TestDataPrep/TestGlaciers.shp
+INPUT = STRING = Required
 INPUT (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = A:/Desktop/TestDataPrep/Test_DEM.img
+DEM = STRING = Required
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT = STRING = A:/Desktop/TestDataPrep/Output
+OUTPUT = STRING = Required
 OUTPUT (Default) = STRING = Required
 #
 #	Raster Scaling Factor
 SCALING = INTEGER = 1000
 SCALING (Default) = INTEGER = 1000
 #
-#	Z Value for slope calculations - 1.0 = no scale factor
+#	Z Value for slope calculations - 1.0 = no scale factor  <NOT USED>
 ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 1
+GLIMSIDS = BOOLEAN = True
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
-RGIIDS = BOOLEAN = 0
+RGIIDS = BOOLEAN = True
 RGIIDS (Default) = BOOLEAN = True
 #
 #	Output centerlines to file
-CENTERLINES = BOOLEAN = True
-CENTERLINES (Default) = BOOLEAN = True
+CENTERLINES = BOOLEAN = False
+CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 0
+HYPSOMETRY = BOOLEAN = True
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 0
+SLOPE = BOOLEAN = False
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = 1
+ASPECT = BOOLEAN = False
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units
@@ -67,6 +67,18 @@ MINBIN (Default) = INTEGER = 0
 MAXBIN = INTEGER = 8850
 MAXBIN (Default) = INTEGER = 8850 
 #
+#	Buffer Distance for DEM extract
+BUFFER = INTEGER = 2
+BUFFER (Default) = INTEGER = 2
+#
+#	Euclidean Distance Raster Cell Size
+EU_CELL_SIZE = INTEGER = 2
+EU_CELL_SIZE (Default) = INTEGER = 2
+#
+#	Centerline Smoothing Factor
+SMOOTHING = INTEGER = 4
+SMOOTHING (Default) = INTEGER = 4
+#
 #	Header Information - RGI Headers
 RGIHEADER = LIST = RGIID,GLIMSID,RGIFLAG,BGNDATE,ENDDATE,CENLON,CENLAT,01REGION,02REGION,AREA,GLACTYPE,NAME
 RGIHEADER (Default) = LIST = RGIID, GLIMSID, RGIFLAG, BGNDATE, ENDDATE, CENLON, CENLAT, 01REGION, 02REGION, AREA, GLACTYPE, NAME
@@ -76,5 +88,5 @@ ATTABLE = LIST = GLIMSID,NAME,GLACTYPE,BGNDATE,ENDDATE,CENLON,CENLAT,AREA
 ATTABLE (Default) = LIST = GLIMSID, NAME, GLACTYPE, BGNDATE, ENDDATE, CENLON, CENLAT, AREA
 #
 #	Header Information - RGI Compatible Table Headers for Statistics
-STATABLE = LIST = MIN_ELEV, MAX_ELEV, MEAN_ELEV
+STATABLE = LIST = MIN_ELEV,MAX_ELEV,MEAN_ELEV
 STATABLE (Default) = LIST = MIN_ELEV, MAX_ELEV, MEAN_ELEV

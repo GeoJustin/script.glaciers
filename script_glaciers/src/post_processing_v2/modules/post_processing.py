@@ -91,7 +91,10 @@ class process (object):
         
         # Read other variables
         check_header = variables.read_variable('RGIHEADER')
+        subset_buffer = variables.read_variable('BUFFER')
         scaling = variables.read_variable('SCALING')
+        eu_cell_size = variables.read_variable('EU_CELL_SIZE')
+        smoothing = variables.read_variable('SMOOTHING')
         
         # Other variables
         currently_processing = 1
@@ -113,7 +116,10 @@ class process (object):
         __Log.print_line("     Maximum Bin Elevation: " + str(max_bin))
         __Log.print_line("     Minimum Bin Elevation: " + str(min_bin))
         __Log.print_line("     Bin Size: " + str(bin_size))
+        __Log.print_line("     Subset Buffer: " + str(subset_buffer)) + 'x'
         __Log.print_line("     DEM Scaling Factor: " + str(scaling))
+        __Log.print_line("     Centerline Euclidean Cell Size: " + str(eu_cell_size))
+        __Log.print_line("     Centerline Line Smoothing Factor: " + str(smoothing))
         __Log.print_break() # Break for next section in the log file.
         
         #_______________________________________________________________________
@@ -210,7 +216,7 @@ class process (object):
                                 
                                 
                 # Subset the DEM based on a single buffered glacier outline
-                subset, subset_error = DC.subset(row, DEM, workspace, 2)
+                subset, subset_error = DC.subset(row, DEM, workspace, subset_buffer)
                 if subset_error == True: # If function failed
                     __Log.print_line(str(row.GLIMSID) + ' - ERROR - Could not subset feature')
                 
@@ -235,7 +241,7 @@ class process (object):
                 
                 if centerlines == True or slope == True or aspect == True:
                     print '    Running Center Line'
-                    centerline, center_length, center_angle, centerline_error = DC.get_centerline(row, subset, workspace)
+                    centerline, center_length, center_angle, centerline_error = DC.get_centerline(row, subset, workspace, eu_cell_size, smoothing)
                     if centerline_error == False: 
                         print '    Center Line Length: ' + str(center_length) + ' & Slope Angle: ' + str(center_angle)
                         if centerlines == True:

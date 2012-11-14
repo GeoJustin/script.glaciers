@@ -143,6 +143,7 @@ class GUI ():
 
         checkBoxGINA = TK.Checkbutton(checkFrame, text = "GINA", variable = checkGINA, onvalue = 1, offvalue = 0, command=__callbackGINA)
         checkBoxGINA.pack(side=TK.LEFT, padx = (6,12))
+        
 
         checkBoxStats = TK.Checkbutton(checkFrame, text = "Stats (CSV)", variable = checkStats, onvalue = 1, offvalue = 0, state = TK.DISABLED, command=__callbackDEM)
         checkBoxStats.pack(side=TK.LEFT, padx = (6,12))

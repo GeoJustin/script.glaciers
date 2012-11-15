@@ -276,10 +276,12 @@ class process (object):
             
         try: # Script Complete. Try and delete workspace 
             ARCPY.Delete_management(workspace)
-            'Processing Complete'
+            __Log.print_break()
+            __Log.print_line('Processing Complete')
         except: 
-            print 'Could Not Delete Workspace'
-            print 'Processing Complete'
+            __Log.print_break()
+            __Log.print_line('Workspace Could not be deleted')
+            __Log.print_line('Processing Complete')
             
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************

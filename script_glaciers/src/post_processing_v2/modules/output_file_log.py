@@ -1,8 +1,8 @@
 """****************************************************************************
- Name:        Log
- Purpose:     Creates and maintains a Log file.
+Name:        Output File Log
+Purpose:     Creates and maintains a Log file.
 
- Author:      Justin L. Rich
+Author:      Justin L. Rich
 Location: Geophysical Institute | University of Alaska, Fairbanks
 Contributors:
 

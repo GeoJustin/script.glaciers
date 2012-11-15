@@ -29,7 +29,7 @@ import tkMessageBox
 import tkFileDialog
 import variables                                        #@UnresolvedImport
 import post_processing                                  #@UnresolvedImport
-
+                    
 class GUI (object):
     """Graphical User Interface (GUI) for Post Process application."""
 
@@ -200,13 +200,6 @@ class GUI (object):
         #Run Program Button
         def __callback_runImport ():
             if self.__input_string.get() <> 'Required' and self.__output_string.get() <> 'Required' and self.__dem_string.get() <> 'Required':
-                 
-                # Remove GUI window and destroy it.
-                try: master.destroy()
-                except: pass
-                
-                try: self.root.destroy()
-                except: pass
             
                 # Write variables to .var file
                 VAR.set_variable("INPUT", "STRING", self.__input_string.get())
@@ -226,16 +219,24 @@ class GUI (object):
                 VAR.set_variable("MAXBIN", "INTEGER", self.__max_string.get())
                 VAR.set_variable("BINSIZE", "INTEGER", self.__size_string.get())
                 
+                output_created = False
                 try: # Creates an output folder to place files. This guarantees and empty folder
                     output = self.__output_string.get() + '\\Post_Processing'
                     os.makedirs(output)
+                    output_created = True
+                except: 
+                    tkMessageBox.showwarning ('Warning', 'Output Folder can not be written. It may already exist.')
+                                        
+                if output_created == True:
+                    # Remove GUI window and destroy it.
+                    try: master.destroy()
+                    except: pass
+                    try: self.root.destroy()
+                    except: pass
                     
                     # RUN APPLICATION
                     post_processing.process(self.__input_string.get(), output, self.__dem_string.get(), VAR)
-                except: 
-                    tkMessageBox.showwarning ('Warning', 'Output Folder can not be written. It may already exist.')
-                    sys.exit()
-                    
+                
             else: 
                 tkMessageBox.showwarning ('Warning', 'You must select Input and Output files.')
                 

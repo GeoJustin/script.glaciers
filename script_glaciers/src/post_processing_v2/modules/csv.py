@@ -1,45 +1,43 @@
 """****************************************************************************
- Name: csv
- Purpose: Create and handle printing to a csv file. 
- 
+Name: csv
+Purpose: Create and handle printing to a csv file.
 Created: Oct 12, 2012
-Author:  Justin Rich (justin.rich@gi.alaska.edu)
+Author: Justin Rich (justin.rich@gi.alaska.edu)
 Location: Geophysical Institute | University of Alaska, Fairbanks
 Contributors:
 
-Copyright:   (c) Justin L. Rich 2012
-License:     Although this application has been produced and tested
- successfully, no warranty expressed or implied is made regarding the
- reliability and accuracy of the utility, or the data produced by it, on any
- other system or for general or scientific purposes, nor shall the act of
- distribution constitute any such warranty. It is also strongly recommended
- that careful attention be paid to the contents of the metadata / help file
- associated with these data to evaluate application limitations, restrictions
- or intended use. The creators and distributors of the application shall not
- be held liable for improper or incorrect use of the utility described and/
- or contained herein.
+Copyright: (c) Justin L. Rich 2012
+License: Although this application has been produced and tested
+successfully, no warranty expressed or implied is made regarding the
+reliability and accuracy of the utility, or the data produced by it, on any
+other system or for general or scientific purposes, nor shall the act of
+distribution constitute any such warranty. It is also strongly recommended
+that careful attention be paid to the contents of the metadata / help file
+associated with these data to evaluate application limitations, restrictions
+or intended use. The creators and distributors of the application shall not
+be held liable for improper or incorrect use of the utility described and/
+or contained herein.
 ****************************************************************************"""
 
-class csv (object):
+class CSV (object):
     """csv is used to create, update and print information to a csv file.
     Attributes:
-        csv Name (optional): A String for the name of the csv file.
-        headers (optional): A list of headers to populate the csv file."""
+    csv Name (optional): A String for the name of the csv file.
+    headers (optional): A list of headers to populate the csv file."""
     
     # Create the csv file (.csv file) and populate the first line with headers.
     def __init__ (self, output, csv_name = 'csv', headers = []):
-        """init starts the stop watch, creates the Log '.txt' file and populates 
+        """init starts the stop watch, creates the Log '.txt' file and populates
         it with the current date and time."""
         
         # initialize instance variables
-        # Global variable - csv file name.
-        self.__csvfile = output + '\\' + csv_name  + '.csv'
+        self.__csvfile = output + '\\' + csv_name + '.csv'
         self.__header = headers # Global variable - The header of the csv file.
         self.__content = [] # List of Lists. Each internal list contains one row.
         self.__records = 0
         
         output_file = open (self.__csvfile, 'w') # Open CSV hard copy
-        for item in self.__header:    # Print the header to the CSV.
+        for item in self.__header: # Print the header to the CSV.
             output_file.write(item + ',')
         output_file.close() # Close the csv hard copy
         
@@ -75,7 +73,7 @@ class csv (object):
                 output_file.write(item + ',')
             output_file.write('\n') # Move cursor to next line
             
-            # Write __content to the CSV. 
+            # Write __content to the CSV.
             for each_list in self.__content: # Iterate through each List
                 for each_item in each_list: # Iterate through Items
                     output_file.write(each_item + ',')

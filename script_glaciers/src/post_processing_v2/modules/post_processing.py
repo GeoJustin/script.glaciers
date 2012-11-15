@@ -35,14 +35,14 @@ class process (object):
         # actual result file after fields are updated. This is done so no changes
         # are imposed on the original file.
         try:
-            Output = output_location + '\\' + os.path.basename(input_features)
-            input_copy = ARCPY.CopyFeatures_management(input_features, Output)
+            output = output_location + '\\' + os.path.basename(input_features)
+            input_copy = ARCPY.CopyFeatures_management(input_features, output)
         except:
             print 'Output Glacier file already exists or the output folder is not available.'
             sys.exit()
         
         try: # Start Log file and write it to the output folder
-            log_path = os.path.dirname(os.path.abspath(Output))
+            log_path = os.path.dirname(os.path.abspath(output))
             __Log = log.Log(log_path)
         except:
             print 'Log file could not be written to the output folder.'
@@ -80,7 +80,7 @@ class process (object):
         rgiids = variables.read_variable('RGIIDS')        
         
         # Create output table header information to populate the tables with
-        table_output = os.path.dirname(os.path.abspath(Output))
+        table_output = os.path.dirname(os.path.abspath(output))
         Attribute_header = variables.read_variable('ATTABLE')
         Statistics_header = variables.read_variable('STATABLE')
         max_bin = variables.read_variable('MAXBIN')
@@ -101,10 +101,10 @@ class process (object):
         total_features = 0
 
         # Print run time variables to log file
-        __Log.print_line("Input File: " + os.path.basename(input))
+        __Log.print_line("Input File: " + os.path.basename(input_features))
         __Log.print_line("Input DEM: " + os.path.basename(DEM))
-        __Log.print_line('Output Folder: ' + os.path.dirname(os.path.abspath(Output)))
-        __Log.print_line('Output Glaciers: ' + os.path.basename(Output))
+        __Log.print_line('Output Folder: ' + os.path.dirname(os.path.abspath(output)))
+        __Log.print_line('Output Glaciers: ' + os.path.basename(output))
         if centerlines == True: __Log.print_line('Output Centerlines: centerlines.shp' )
         __Log.print_break()
         __Log.print_line("Runtime Parameters")
@@ -116,7 +116,7 @@ class process (object):
         __Log.print_line("     Maximum Bin Elevation: " + str(max_bin))
         __Log.print_line("     Minimum Bin Elevation: " + str(min_bin))
         __Log.print_line("     Bin Size: " + str(bin_size))
-        __Log.print_line("     Subset Buffer: " + str(subset_buffer)) + 'x'
+        __Log.print_line("     Subset Buffer: " + str(subset_buffer) + 'x')
         __Log.print_line("     DEM Scaling Factor: " + str(scaling))
         __Log.print_line("     Centerline Euclidean Cell Size: " + str(eu_cell_size))
         __Log.print_line("     Centerline Line Smoothing Factor: " + str(smoothing))
@@ -193,9 +193,9 @@ class process (object):
 
             
         # Create an instance of hypsometry, slope and aspect table if applicable
-        if hypsometry == True: hypso_csv = csv.csv(table_output, 'Stats_Hypsometry', header) 
-        if slope == True: slope_csv = csv.csv(table_output, 'Stats_slope', header) 
-        if aspect == True: aspect_csv = csv.csv(table_output, 'Stats_aspect', header) 
+        if hypsometry == True: hypso_csv = csv.CSV(table_output, 'Stats_Hypsometry', header) 
+        if slope == True: slope_csv = csv.CSV(table_output, 'Stats_slope', header) 
+        if aspect == True: aspect_csv = csv.CSV(table_output, 'Stats_aspect', header) 
         
 
         if centerlines == True or hypsometry == True or slope == True or aspect == True:
@@ -285,7 +285,7 @@ class process (object):
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !
 def driver():
-    Input = r'A:\Desktop\TestDataPrep\TestGlaciers.shp'
+    Input = r'A:\Desktop\TestDataPrep\TestGlacier_Single.shp'
     Output = r'A:\Desktop\TestDataPrep\Output'
     DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
     

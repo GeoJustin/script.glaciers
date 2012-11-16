@@ -128,11 +128,12 @@ class process (object):
         
         __Log.print_line('Input Polygon Checks')
         # Check to see if the input file follows RGI table headings.
-        formate_error = DP.check_formate(input_features, check_header)
+        formate_error, not_found = DP.check_formate(input_features, check_header)
         if formate_error == False:
             __Log.print_line('    Input header information is consistent with the standard set')
         if formate_error == True:
             __Log.print_line('    ERROR - Input header information is NOT consistent with the standard set')
+            __Log.print_line('        Items not found: ' + not_found)
             sys.exit()
         
         # Check geometries. If there are errors, correct them and print the
@@ -293,7 +294,7 @@ def driver():
     DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
     
     #Variables - WARNING: Use caution manually changing variables.
-    import variables                                    #@UnresolvedImport
+    import glacier_utilities.general_utilities.variables  as variables
     variables = variables.Variables()
 
     process (Input, Output, DEM, variables)

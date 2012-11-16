@@ -34,6 +34,8 @@ class FormateRGI (object):
 
 
 def driver ():
+    
+    
     FormateRGI ()
 if __name__ == '__main__':
     driver()

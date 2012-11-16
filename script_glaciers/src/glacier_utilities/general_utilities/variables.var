@@ -8,9 +8,13 @@
 #		used by the restore_defaults method to reset all values.
 #
 # VARIABLES:
-#	Input Outlines
+#	Input file
 INPUT = STRING = A:/Desktop/TestDataPrep/TestGlaciers.shp
 INPUT (Default) = STRING = Required
+#
+#	Input folder
+FOLDER = STRING = Required
+FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
 DEM = STRING = A:/Desktop/TestDataPrep/Test_DEM.img

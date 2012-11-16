@@ -125,11 +125,13 @@ def check_formate (input_file, headings):
         if not field.required: # If they are not required 
             field_names.append(field.name) # Append them to the list of field names.
 
+    not_found = '' # Return a list of items not found
     for item in headings: # Look for each item in headings list
         if item not in field_names: # If item is not found 
             item_not_found = True # Set not found to true
+            not_found += item + ', ' # Add to the list of items not found
             
-    return item_not_found
+    return item_not_found, not_found
 
 
 def generate_GLIMSIDs (input_file, workspace):

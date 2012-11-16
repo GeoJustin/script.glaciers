@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input Outlines
-INPUT = STRING = A:/Desktop/TestDataPrep/TestGlacier_Single.shp
+INPUT = STRING = A:/Desktop/TestDataPrep/TestGlaciers.shp
 INPUT (Default) = STRING = Required
 #
 #	Input DEM raster
@@ -33,7 +33,7 @@ GLIMSIDS = BOOLEAN = 1
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
-RGIIDS = BOOLEAN = 0
+RGIIDS = BOOLEAN = 1
 RGIIDS (Default) = BOOLEAN = True
 #
 #	Output centerlines to file

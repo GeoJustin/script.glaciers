@@ -21,25 +21,18 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
-import os
-import glob
 
 class Variables (object):
     """Stores and calls variables to be used by the application. This module
        works with a configuration file and stores the information perminatly
        so that changes are remembered between runs."""
   
-    def __init__ (self):
+    def __init__ (self, variables = ''):
         """ init starts the variables module and locates the associated .var
         file to be used. The .var file must be located at the same path as the
         module or an error will be generated."""
         
-        self.__variables = '' #Store the path of the variables file
-        
-        path = os.path.dirname(os.path.abspath(__file__)) # Get modules path.
-        # Search files in path with the extension .var and add the path to it.
-        for f in glob.glob (os.path.join (path, '*.var')): 
-            self.__variables = path + '\\' + os.path.basename(f) 
+        self.__variables = variables #Store the path of the variables file
         
 #______________________________________________________________________________
 #***Methods********************************************************************

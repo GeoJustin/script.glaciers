@@ -19,13 +19,14 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
-import arcpy as ARCPY                                         #@UnresolvedImport
-import functions_data_prep as DP
-import functions_data_calc as DC
-import output_file_log
-import output_file_csv
 import os
-import sys
+import sys  
+import arcpy as ARCPY                                         #@UnresolvedImport
+import glacier_utilities.functions.data_prep as DP                              
+import glacier_utilities.functions.data_calc as DC                         
+import glacier_utilities.output_file.output_file_log as LOG
+import glacier_utilities.output_file.output_file_csv as CSV                                       
+
 
 class process (object):
     
@@ -43,7 +44,7 @@ class process (object):
         
         try: # Start Log file and write it to the output folder
             log_path = os.path.dirname(os.path.abspath(output))
-            __Log = output_file_log.Log(log_path)
+            __Log = LOG.Log(log_path)
         except:
             print 'Log file could not be written to the output folder.'
             sys.exit()
@@ -193,9 +194,9 @@ class process (object):
 
             
         # Create an instance of hypsometry, slope and aspect table if applicable
-        if hypsometry == True: hypso_csv = output_file_csv.CSV(table_output, 'Stats_Hypsometry', header) 
-        if slope == True: slope_csv = output_file_csv.CSV(table_output, 'Stats_slope', header) 
-        if aspect == True: aspect_csv = output_file_csv.CSV(table_output, 'Stats_aspect', header) 
+        if hypsometry == True: hypso_csv = CSV.CSV(table_output, 'Stats_Hypsometry', header) 
+        if slope == True: slope_csv = CSV.CSV(table_output, 'Stats_slope', header) 
+        if aspect == True: aspect_csv = CSV.CSV(table_output, 'Stats_aspect', header) 
         
 
         if centerlines == True or hypsometry == True or slope == True or aspect == True:
@@ -292,8 +293,8 @@ def driver():
     DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
     
     #Variables - WARNING: Use caution manually changing variables.
-    import variables
-    variables = variables.Variables()
+    import variables                                    #@UnresolvedImport
+    variables = variables.Variables(path = os.path.dirname(os.path.abspath(__file__)) + '\\post_process.var')
 
     process (Input, Output, DEM, variables)
 

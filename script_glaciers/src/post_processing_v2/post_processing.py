@@ -294,7 +294,7 @@ def driver():
     
     #Variables - WARNING: Use caution manually changing variables.
     import variables                                    #@UnresolvedImport
-    variables = variables.Variables(path = os.path.dirname(os.path.abspath(__file__)) + '\\post_process.var')
+    variables = variables.Variables()
 
     process (Input, Output, DEM, variables)
 

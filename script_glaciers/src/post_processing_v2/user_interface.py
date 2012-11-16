@@ -22,7 +22,6 @@ License:     Although this application has been produced and tested
 #Add the current directory to python search path.
 import sys
 import os
-import glob
 import Tkinter as TK
 import tkMessageBox
 import tkFileDialog
@@ -35,11 +34,8 @@ class GUI (object):
     def __init__ (self, master):
         """Setup the main GUI window and load default or starting settings."""
         
-        path = os.path.dirname(os.path.abspath(__file__)) # Get modules path.
-        # Search files in path with the extension .var and add the path to it.
-        for f in glob.glob (os.path.join (path, '*.var')): 
-            variable_file = path + '\\' + os.path.basename(f) 
-        VAR = variables.Variables(variable_file) # Start the variables reader
+
+        VAR = variables.Variables() # Start the variables reader
         
         self.get_menubar(master) # Setup menu bar items
         

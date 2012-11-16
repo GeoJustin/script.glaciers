@@ -21,46 +21,22 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 import os
-import sys
 import glob
 import arcpy as ARCPY                                        #@UnresolvedImport
 import glacier_utilities.functions.data_prep as DP
-import glacier_utilities.output_file.output_file_log as LOG
-import glacier_utilities.general_utilities.variables as VAR
+import glacier_utilities.general_utilities.environment as ENV
 
 class rgi_process ():
     
     def __init__ (self, input_folder, output_folder, variables):
         
-        try: # Start Log file and write it to the output folder
-            log_path = os.path.dirname(os.path.abspath(output_folder))
-            __Log = LOG.Log(log_path)
-        except:
-            print 'Log file could not be written to the output folder.'
-            sys.exit()
+        # Setup working environment
+        environment = ENV.setup_arcgis(output_folder)
+        workspace = environment.workspace
+        __Log = environment.log
         
-        try:  # Get ArcInfo License if it's available
-            import arcinfo                          #@UnresolvedImport @UnusedImport
-        except:
-            __Log.print_line('ArcInfo license NOT available')
-            sys.exit()
-
-        try: # Check out Spatial Analyst extension if available.
-            if ARCPY.CheckExtension('Spatial') == 'Available':
-                ARCPY.CheckOutExtension('Spatial')
-                __Log.print_line('Spatial Analyst is available')
-        except: 
-            __Log.print_line('Spatial Analyst extension not available')
-            sys.exit()
-
-        try: # Set environment
-            workspace = output_folder + '\\workspace'
-            os.makedirs(workspace) # Create Workspace
-            ARCPY.env.workspace = workspace
-        except:
-            __Log.print_line('WARNING - Workspace folder already exists.')
-            sys.exit()
-
+        print workspace
+        
         # Read variables
         check_header = variables.read_variable('RGIHEADER')
 
@@ -112,11 +88,12 @@ class rgi_process ():
            
             __Log.print_break() # Break for next section in the log file.
             
-        try: # Script Complete. Try and delete workspace 
-            ARCPY.Delete_management(workspace)
+        # Script Complete. Try and delete workspace   
+        removed = environment.remove_workspace()
+        if removed == True:
             __Log.print_break()
             __Log.print_line('Processing Complete')
-        except: 
+        else:
             __Log.print_break()
             __Log.print_line('Workspace Could not be deleted')
             __Log.print_line('Processing Complete')

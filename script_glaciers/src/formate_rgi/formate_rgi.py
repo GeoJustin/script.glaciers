@@ -19,7 +19,7 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
-from glaciers.formate_output import output_log
+import glacier_utilities.output_file.output_file_log as LOG
 
 
 class FormateRGI (object):
@@ -28,7 +28,7 @@ class FormateRGI (object):
     def __init__(self):
         """Constructor:  """
         print 'Running'
-        output_log.Log('A:\Desktop')
+        LOG.Log('A:\Desktop')
 
 
 

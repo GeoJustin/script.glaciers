@@ -66,6 +66,12 @@ class Variables (object):
                     if var_line [1] == 'LIST': # Return the value as a list
                         return var_line [2].replace(' ', '').split (',')
                         break
+                    if var_line [1] == 'LISTS': # Return the value as a list
+                        list_strings = var_line [2].replace(' ', '').split (',')
+                        for index, item in enumerate (list_strings):
+                            list_strings [index] = item.replace('(', '').replace(')', '').split(';')
+                        return list_strings
+                        break
         variables.close() # Close the file and discard reference.
         return 'VARIABLE NOT FOUND' # Return value if no variable is found.
 

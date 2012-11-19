@@ -26,7 +26,6 @@ import Tkinter as TK
 import tkMessageBox
 import tkFileDialog
 import glacier_utilities.general_utilities.variables as variables       
-import post_processing                                  #@UnresolvedImport
                     
 class GUI (object):
     """Graphical User Interface (GUI) for Post Process application."""
@@ -234,6 +233,8 @@ class GUI (object):
                     except: pass
                     
                     # RUN APPLICATION
+                    # Import needs to be here in case ARCPY not found. Crashes on import if not
+                    import post_processing                                              #@UnresolvedImport
                     post_processing.process(self.__input_string.get(), output, self.__dem_string.get(), VAR)
                 
             else: 
@@ -241,6 +242,8 @@ class GUI (object):
                 
         run_button = TK.Button(buttonFrame, text = "Run", height = 1, width = 12, command= __callback_runImport)
         run_button.pack(side=TK.LEFT, padx = 6)
+        
+        return run_button # Return the run button to be accessed by disable
    
    
     def get_centerline (self, frame, VAR):

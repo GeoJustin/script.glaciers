@@ -127,9 +127,9 @@ def check_formate (input_file, headings):
 
     not_found = '' # Return a list of items not found
     for item in headings: # Look for each item in headings list
-        if item not in field_names: # If item is not found 
+        if item[0] not in field_names: # If item is not found 
             item_not_found = True # Set not found to true
-            not_found += item + ', ' # Add to the list of items not found
+            not_found += item[0] + ', ' # Add to the list of items not found
             
     return item_not_found, not_found
 

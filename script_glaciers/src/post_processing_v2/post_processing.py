@@ -92,7 +92,7 @@ class process (object):
         header = Attribute_header + Statistics_header + bin_header
         
         # Read other variables
-        check_header = variables.read_variable('RGIHEADER')
+        check_header = variables.read_variable('RGI_SPEC')
         subset_buffer = variables.read_variable('BUFFER')
         scaling = variables.read_variable('SCALING')
         eu_cell_size = variables.read_variable('EU_CELL_SIZE')

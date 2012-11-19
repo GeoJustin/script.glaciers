@@ -23,7 +23,8 @@ import os
 import sys  
 import arcpy as ARCPY                                         #@UnresolvedImport
 import glacier_utilities.functions.data_prep as DP                              
-import glacier_utilities.functions.data_calc as DC                         
+import glacier_utilities.functions.data_calc as DC
+import glacier_utilities.functions.data_pop as POP                         
 import glacier_utilities.output_file.output_file_log as LOG
 import glacier_utilities.output_file.output_file_csv as CSV                                       
 
@@ -87,7 +88,7 @@ class process (object):
         max_bin = variables.read_variable('MAXBIN')
         min_bin =  variables.read_variable('MINBIN')
         bin_size = variables.read_variable('BINSIZE')
-        bin_header = DP.generate_header(max_bin, min_bin, bin_size)
+        bin_header = DP.generate_bin_header(max_bin, min_bin, bin_size)
         header = Attribute_header + Statistics_header + bin_header
         
         # Read other variables
@@ -170,13 +171,13 @@ class process (object):
         
         if glimsids == True: # Generate GLIMS id's if applicable
             __Log.print_line('Generating GLIMS IDs')
-            glims_ids = DP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
+            glims_ids = POP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
             __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
             total_features = glims_ids
             
         if rgiids == True: # Generate RGI id's if applicable
             __Log.print_line('Generating RGI IDs')
-            rgi_ids = DP.generate_RGIIDs(input_copy) # Copy to Output
+            rgi_ids = POP.generate_RGIIDs(input_copy) # Copy to Output
             __Log.print_line('   RGI IDs - ' + rgi_ids + ' RGI IDs Generated')
             total_features = rgi_ids
         

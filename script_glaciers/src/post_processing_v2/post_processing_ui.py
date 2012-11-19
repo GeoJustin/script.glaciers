@@ -20,11 +20,11 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 #Add the current directory to python search path.
-import sys
 import os
 import Tkinter as TK
 import tkMessageBox
 import tkFileDialog
+import glacier_utilities.functions.ui_setup as setup
 import glacier_utilities.general_utilities.variables as variables       
                     
 class GUI (object):
@@ -36,7 +36,7 @@ class GUI (object):
 
         VAR = variables.Variables() # Start the variables reader
         
-        self.get_menubar(master) # Setup menu bar items
+        self.get_menubar(master, master) # Setup menu bar items
         
         # Setup file / folder input output dialog boxes
         input_string, dem_string, output_string = self.get_io (master, VAR)
@@ -82,7 +82,7 @@ class GUI (object):
         self.reset_default (options_frame, VAR)
         
         # Setup Module checks
-        arcpy_found = self.check_modules (master)
+        arcpy_found = setup.check_arcpy(master, 4, 0, 3, 0, 6)
         
         # Setup command buttons
         run_button = self.get_buttons (master, master, VAR)
@@ -93,31 +93,6 @@ class GUI (object):
         
         self.enable() # Enable or disable buttons depending on need
 
-
-    def check_modules (self, frame):
-        """Function: Check Modules
-        Attempts to import critical modules and returns whether the were imported
-        successfully or not. Also, displays a label on the user interface listing
-        the modules availability."""
-        arcpy_module = False
-
-        try:
-            import arcpy                            #@UnresolvedImport @UnusedImport
-            arcpy_module = True
-        except: pass
-
-        modules_frame = TK.Frame(frame)
-        modules_frame.grid(row=4, column=0, columnspan = 3, pady = 6)
-
-        arcpy_label = TK.Label (modules_frame, text= "ArcPy Module - ")
-        arcpy_label.pack(side=TK.LEFT, padx = (6,0))
-
-        arcpy_found = TK.Label (modules_frame, text = 'Available', fg = "#008000")
-        if arcpy_module == False:
-            arcpy_found.configure(text = "NOT Available", fg = "#ff0000")
-        arcpy_found.pack(side=TK.LEFT, padx = (0,12))
-        
-        return arcpy_module
 
 
     def enable (self):
@@ -132,13 +107,7 @@ class GUI (object):
             self.__smoothing_entry.configure (state=TK.NORMAL)
 
 
-    def exit (self, master):
-        """Function: exit
-        System exit function to stop the program and destroy the GUI window."""
-        master.destroy()
-        try: self.root.destroy()
-        except: pass
-        sys.exit()
+
         
             
     def get_bins (self, frame, VAR):
@@ -184,13 +153,15 @@ class GUI (object):
         buttonFrame.grid(row=5, column=0, columnspan = 3, pady = 6)
 
         #Help button (calls get help function)
+        def __callback_help(): 
+            setup.get_help()
         helpButton = TK.Button(buttonFrame, text = "Help", height = 1,
-         width = 12, command=self.get_help)
+         width = 12, command=__callback_help)
         helpButton.pack(side=TK.LEFT, padx = (6,12))
 
         #Exit application button (calls exit function)
         def __callback_exit(): 
-            self.exit(master)
+            setup.exit_application(master)
         exitButton = TK.Button(buttonFrame, text = "Exit", height = 1,
          width = 12, command= __callback_exit)
         exitButton.pack(side=TK.LEFT, padx = (6,12))
@@ -282,32 +253,6 @@ class GUI (object):
         
         return centerline_boolean, cellsize_string, smoothing_string, cellsize_entry, smoothing_entry
        
-   
-    def get_directory (self, string):
-        """Method: Get directory
-        An extension of the tkFileDialog module to be used internally for purposes
-        of selecting a directory using a navigable user interface."""
-        vDirectory = tkFileDialog.askdirectory(title='Please select a directory')
-        if len(vDirectory) > 0:
-            string.set (vDirectory)
-            return vDirectory
-        
-        
-    def get_file (self, string, types):
-        """Method: Get file
-        Purpose - An extension of the tkFileDialog module to be used internally."""
-        vFile = tkFileDialog.askopenfilename (title='Please select a file', filetypes = types)
-        if len(vFile) > 0:
-            string.set (vFile)
-            return vFile
-   
-   
-    def get_help (self):
-        """ Function: Get Help
-        A function that opens the help file which gives instructions on running
-        the application and how the application works."""
-        tkMessageBox.showwarning ('Warning', 'Help currently not available.')
-        
         
     def get_io (self, frame, VAR):
         """Function: File IO
@@ -321,7 +266,7 @@ class GUI (object):
         input_label.grid(row=0, column = 0, sticky = TK.W, padx = 6)
 
         def __callback_select_input ():
-            self.get_file (input_string, [('Shapefile','*.shp')])
+            setup.get_file (input_string, [('Shapefile','*.shp')])
         input_string = TK.StringVar()
         input_entry = TK.Entry (input_frame, textvariable = input_string, width = 50)
         input_entry.grid(row=0, column = 1, padx = 6)
@@ -335,7 +280,7 @@ class GUI (object):
         dem_label.grid(row=1, column = 0, sticky = TK.W, padx = 6, pady = (6,6))
 
         def __callback_dem ():
-            self.get_file (dem_string, [('Image', '*.img'), ('Tiff', '*.tif')])
+            setup.get_file (dem_string, [('Image', '*.img'), ('Tiff', '*.tif')])
         dem_string = TK.StringVar()
         dem_entry = TK.Entry (input_frame, textvariable = dem_string, width = 50)
         dem_entry.grid(row=1, column = 1, padx = 6, pady = (6,6))
@@ -349,7 +294,7 @@ class GUI (object):
         output_label.grid(row=2, column = 0, sticky = TK.W, padx = 6, pady = (6,6))
 
         def __callback_output ():
-            self.get_directory (output_string)
+            setup.get_directory (output_string)
         output_string = TK.StringVar()
         output_entry = TK.Entry (input_frame, textvariable = output_string, width = 50)
         output_entry.grid(row=2, column = 1, padx = 6, pady = (6,6))
@@ -361,19 +306,21 @@ class GUI (object):
         return input_string, dem_string, output_string
 
 
-    def get_menubar (self, frame):
+    def get_menubar (self, master, frame):
         """Function: Menu Bar
         Menu bar bar along the top of the window."""
         menubar = TK.Menu(frame)
 
         def __callback_exit():
-            self.exit(frame)
+            setup.exit_application(master)
         filemenu = TK.Menu(menubar, tearoff=0)
         filemenu.add_command(label="Exit", command=__callback_exit)
         menubar.add_cascade(label="File", menu=filemenu)
 
+        def __callback_help():
+            setup.get_help()
         helpmenu = TK.Menu(menubar, tearoff=0)
-        helpmenu.add_command(label="Help Files", command=self.get_help)
+        helpmenu.add_command(label="Help Files", command=__callback_help)
         menubar.add_cascade(label="Help", menu=helpmenu)
 
         frame.config(menu=menubar)

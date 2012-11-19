@@ -25,12 +25,12 @@ import arcpy as ARCPY                                       #@UnresolvedImport
 import glacier_utilities.general_utilities.environment as ENV
 
 class FormatRGI (object):
-    """classdocs Creates an instance of Format RGI, a class designed to
+    """classdocs: Creates an instance of Format RGI, a class designed to
     reformat a shapefile into rgi format. Old fields are either deleted
     or copied into a new column based on the mapping dictionary"""
 
     def __init__(self, input_file, output_file, mappings, variables):
-        """Constructor:  Takes an input shapefile and outputs a new shapefile
+        """Constructor: Takes an input shapefile and outputs a new shapefile
         formated based on the rgi format."""
         
         # Setup working environment

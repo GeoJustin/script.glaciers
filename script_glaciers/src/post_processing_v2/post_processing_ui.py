@@ -23,7 +23,6 @@ License:     Although this application has been produced and tested
 import os
 import Tkinter as TK
 import tkMessageBox
-import tkFileDialog
 import glacier_utilities.functions.ui_setup as setup
 import glacier_utilities.general_utilities.variables as variables       
                     
@@ -105,9 +104,6 @@ class GUI (object):
         if self.__centerline_boolean.get() == True or self.__slope_boolean.get() == True or self.__aspect_boolean.get() == True:
             self.__cellsize_entry.configure (state=TK.NORMAL)
             self.__smoothing_entry.configure (state=TK.NORMAL)
-
-
-
         
             
     def get_bins (self, frame, VAR):
@@ -171,9 +167,9 @@ class GUI (object):
             if self.__input_string.get() <> 'Required' and self.__output_string.get() <> 'Required' and self.__dem_string.get() <> 'Required':
             
                 # Write variables to .var file
-                VAR.set_variable("INPUT", "STRING", self.__input_string.get())
+                VAR.set_variable("INPUT_FILE", "STRING", self.__input_string.get())
                 VAR.set_variable("DEM", "STRING", self.__dem_string.get())
-                VAR.set_variable("OUTPUT", "STRING", self.__output_string.get())
+                VAR.set_variable("OUTPUT_FOLDER", "STRING", self.__output_string.get())
                 VAR.set_variable("CENTERLINES", "BOOLEAN", self.__centerline_boolean.get())
                 VAR.set_variable("EU_CELL_SIZE", "INTEGER", self.__cellsize_string.get())
                 VAR.set_variable("SMOOTHING", "INTEGER", self.__smoothing_string.get())
@@ -266,11 +262,11 @@ class GUI (object):
         input_label.grid(row=0, column = 0, sticky = TK.W, padx = 6)
 
         def __callback_select_input ():
-            setup.get_file (input_string, [('Shapefile','*.shp')])
+            setup.get_file (input_string, VAR.read_variable("INPUT_FILE"), [('Shapefile','*.shp')])
         input_string = TK.StringVar()
         input_entry = TK.Entry (input_frame, textvariable = input_string, width = 50)
         input_entry.grid(row=0, column = 1, padx = 6)
-        input_string.set(VAR.read_variable("INPUT"))
+        input_string.set(VAR.read_variable("INPUT_FILE"))
 
         input_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_select_input)
         input_file.grid(row=0, column = 2, padx = (0,6), pady = (0,6))
@@ -280,7 +276,7 @@ class GUI (object):
         dem_label.grid(row=1, column = 0, sticky = TK.W, padx = 6, pady = (6,6))
 
         def __callback_dem ():
-            setup.get_file (dem_string, [('Image', '*.img'), ('Tiff', '*.tif')])
+            setup.get_file (dem_string, VAR.read_variable("DEM"), [('Image', '*.img'), ('Tiff', '*.tif')])
         dem_string = TK.StringVar()
         dem_entry = TK.Entry (input_frame, textvariable = dem_string, width = 50)
         dem_entry.grid(row=1, column = 1, padx = 6, pady = (6,6))
@@ -294,11 +290,11 @@ class GUI (object):
         output_label.grid(row=2, column = 0, sticky = TK.W, padx = 6, pady = (6,6))
 
         def __callback_output ():
-            setup.get_directory (output_string)
+            setup.get_directory (output_string, VAR.read_variable("OUTPUT_FOLDER"))
         output_string = TK.StringVar()
         output_entry = TK.Entry (input_frame, textvariable = output_string, width = 50)
         output_entry.grid(row=2, column = 1, padx = 6, pady = (6,6))
-        output_string.set(VAR.read_variable("OUTPUT"))
+        output_string.set(VAR.read_variable("OUTPUT_FOLDER"))
 
         output_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_output)
         output_file.grid(row=2, column = 2, padx = (0,6), pady = (0,6))
@@ -420,9 +416,9 @@ class GUI (object):
         def __callback_reset_default ():
             VAR.reset_defaults()
             
-            self.__input_string.set(VAR.read_variable("INPUT"))
+            self.__input_string.set(VAR.read_variable("INPUT_FILE"))
             self.__dem_string.set(VAR.read_variable("DEM"))
-            self.__output_string.set(VAR.read_variable("OUTPUT"))
+            self.__output_string.set(VAR.read_variable("OUTPUT_FOLDER"))
             self.__centerline_boolean.set(VAR.read_variable("CENTERLINES"))
             self.__cellsize_string.set(VAR.read_variable("EU_CELL_SIZE"))
             self.__smoothing_string.set(VAR.read_variable("SMOOTHING"))

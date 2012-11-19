@@ -9,20 +9,24 @@
 #
 # VARIABLES:
 #	Input file
-INPUT = STRING = A:/Desktop/TestDataPrep/TestGlaciers.shp
-INPUT (Default) = STRING = Required
+INPUT_FILE = STRING = A:/Desktop/TestDataPrep/formate_test.shp
+INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
-FOLDER = STRING = Required
-FOLDER (Default) = STRING = Required
+INPUT_FOLDER = STRING = Required
+INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = A:/Desktop/TestDataPrep/Test_DEM.img
+DEM = STRING = Required
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT = STRING = A:/Desktop/TestDataPrep/Output
-OUTPUT (Default) = STRING = Required
+OUTPUT_FOLDER = STRING = Required
+OUTPUT_FOLDER (Default) = STRING = Required
+#
+#	Output file for results
+OUTPUT_FILE = STRING = A:/Desktop/TestDataPrep/Output/Test_format.shp
+OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
 SCALING = INTEGER = 1000
@@ -33,27 +37,27 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 1
+GLIMSIDS = BOOLEAN = True
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
-RGIIDS = BOOLEAN = 1
+RGIIDS = BOOLEAN = True
 RGIIDS (Default) = BOOLEAN = True
 #
 #	Output centerlines to file
-CENTERLINES = BOOLEAN = 1
+CENTERLINES = BOOLEAN = False
 CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 1
+HYPSOMETRY = BOOLEAN = True
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 0
+SLOPE = BOOLEAN = False
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = 0
+ASPECT = BOOLEAN = False
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units
@@ -84,7 +88,7 @@ SMOOTHING = INTEGER = 4
 SMOOTHING (Default) = INTEGER = 4
 #
 #	Header Specifications - RGI Header specification for creating fields
-RGI_SPEC = LISTS = (RGIID; TEXT; ; ; 14), (GLIMSID; TEXT; ; ; 14), (RGIFLAG; TEXT; ; ; 14), (BGNDATE; TEXT; ; ; 8), (ENDDATE; TEXT; ; ; 8), (CENLON; FLOAT; ; ; ), (CENLAT; FLOAT; ; ; ), (O1REGION; SHORT; ; ; ), (O2REGION; SHORT; ; ; ), (AREA; DOUBLE; 10; 3; ), (GLACTYPE; TEXT; ; ; 4), (NAME; TEXT; ; ; 25) 
+RGI_SPEC = LISTS = (RGIID;TEXT;;;14),(GLIMSID;TEXT;;;14),(RGIFLAG;TEXT;;;14),(BGNDATE;TEXT;;;8),(ENDDATE;TEXT;;;8),(CENLON;FLOAT;;;),(CENLAT;FLOAT;;;),(O1REGION;SHORT;;;),(O2REGION;SHORT;;;),(AREA;DOUBLE;10;3;),(GLACTYPE;TEXT;;;4),(NAME;TEXT;;;25)
 RGI_SPEC (Default) = LISTS = (RGIID; TEXT; ; ; 14), (GLIMSID; TEXT; ; ; 14), (RGIFLAG; TEXT; ; ; 14), (BGNDATE; TEXT; ; ; 8), (ENDDATE; TEXT; ; ; 8), (CENLON; FLOAT; ; ; ), (CENLAT; FLOAT; ; ; ), (O1REGION; SHORT; ; ; ), (O2REGION; SHORT; ; ; ), (AREA; DOUBLE; 10; 3; ), (GLACTYPE; TEXT; ; ; 4), (NAME; TEXT; ; ; 25) 
 #
 #	Header Information - RGI Compatible Table Headers for Attributes

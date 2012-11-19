@@ -51,23 +51,34 @@ def check_arcpy (frame, frow = 0, fcolumn = 0, fcolumnspan = 1, fpadx = 6, fpady
     return arcpy_module
 
 
-def get_directory (string):
+def get_directory (string, initial):
     """Method: Get directory
     An extension of the tkFileDialog module to be used internally for purposes
     of selecting a directory using a navigable user interface."""
-    vDirectory = tkFileDialog.askdirectory(title='Please select a directory')
-    if len(vDirectory) > 0:
-        string.set (vDirectory)
-        return vDirectory
+    options = {}
+    options ['title'] = 'Select a Directory'
+    options ['initialdir'] = initial
+    
+    return_directory = tkFileDialog.askdirectory(**options)
+    if len(return_directory) > 0:
+        string.set (return_directory)
+        return return_directory
+    return None
     
     
-def get_file (string, types):
+def get_file (string, initial, types):
     """Method: Get file
     Purpose - An extension of the tkFileDialog module to be used internally."""
-    vFile = tkFileDialog.askopenfilename (title='Please select a file', filetypes = types)
-    if len(vFile) > 0:
-        string.set (vFile)
-        return vFile
+    options = {}
+    options ['title'] = 'Select a File'
+    options ['initialfile'] = initial
+    options ['filetypes'] = types
+    
+    return_file = tkFileDialog.askopenfilename (**options)
+    if len(return_file) > 0:
+        string.set (return_file)
+        return return_file
+    return None
 
 
 def get_help (help_file = ''):
@@ -76,6 +87,22 @@ def get_help (help_file = ''):
     the application and how the application works."""
     tkMessageBox.showwarning ('Warning', 'Help currently not available.')
         
+        
+def get_save (string, initial, types, extention):
+    """Method: Get Save
+    Purpose - An extension of the tkFileDialog module to be used internally."""
+    options = {}
+    options ['title'] = 'Save File As'
+    options ['initialfile'] = initial
+    options ['filetypes'] = types
+    options ['defaultextension'] = extention
+    
+    return_file = tkFileDialog.asksaveasfilename(**options)
+    if len(return_file) > 0:
+        string.set (return_file)
+        return return_file
+    return None
+    
 
 def exit_application (master):
     """Function: exit

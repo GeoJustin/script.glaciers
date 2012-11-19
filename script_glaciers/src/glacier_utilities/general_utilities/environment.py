@@ -42,16 +42,15 @@ class setup_arcgis (object):
         and then returns them"""
         try: # Start Log file and write it to the output folder
             l = LOG.Log(output_folder)
-        except:
-            print 'Log file could not be written to the output folder.'
-            sys.exit()
+        except: 
+            sys.exit('Log file could not be written to the output folder.')
         
         if arcinfo == True: # If arc info is needed
             try:  # Get ArcInfo License if it's available
                 import arcinfo                  #@UnresolvedImport @UnusedImport
             except:
                 l.print_line('ArcInfo license NOT available')
-                sys.exit()
+                sys.exit('ArcInfo license NOT available')
 
         if spatial == True: # If arc GIS spatial analysis is needed
             try: # Check out Spatial Analyst extension if available.
@@ -60,7 +59,7 @@ class setup_arcgis (object):
                     l.print_line('Spatial Analyst is available')
             except:
                 l.print_line('Spatial Analyst extension not available')
-                sys.exit()
+                sys.exit('Spatial Analyst extension not available')
 
         try: # Set environment
             scratch_space = output_folder + '\\workspace'
@@ -68,7 +67,7 @@ class setup_arcgis (object):
             ARCPY.env.workspace = scratch_space
         except:
             l.print_line('WARNING - Workspace folder already exists.')
-            sys.exit()
+            sys.exit('WARNING - Workspace folder already exists.')
     
         self.workspace = scratch_space  # Set workspace Variable
         self.log = l                    # Set log file to variable

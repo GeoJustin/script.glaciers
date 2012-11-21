@@ -19,8 +19,9 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
-import os
-import sys  
+import sys, os
+sys.path.append (os.path.dirname(os.path.dirname(__file__)))
+
 import arcpy as ARCPY                                         #@UnresolvedImport
 import glacier_utilities.functions.data_prep as DP                              
 import glacier_utilities.functions.data_calc as DC

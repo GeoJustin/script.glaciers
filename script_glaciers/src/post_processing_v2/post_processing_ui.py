@@ -20,7 +20,11 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 #Add the current directory to python search path.
-import os
+import sys, os
+print os.path.dirname(os.path.dirname(__file__))
+
+sys.path.append (os.path.dirname(os.path.dirname(__file__)))
+
 import Tkinter as TK
 import tkMessageBox
 import glacier_utilities.functions.ui_setup as setup

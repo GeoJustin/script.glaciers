@@ -19,6 +19,9 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
+import sys, os
+sys.path.append (os.path.dirname(os.path.dirname(__file__)))
+
 import Tkinter as TK
 import tkMessageBox
 import glacier_utilities.general_utilities.variables as variables
@@ -100,6 +103,12 @@ class format_RGI_GUI (object):
                 VAR.set_variable("INPUT_FILE", "STRING", self.__input_string.get())
                 VAR.set_variable("OUTPUT_FILE", "STRING", self.__output_string.get())
                 
+                # Put together mapping dictionary
+                mapping_dict = {}
+                for item in self.__mapping_list:
+                    if item[1].get() <> '':
+                        mapping_dict [item[0]] = item[1].get()
+                
                 # Remove GUI window and destroy it.
                 try: master.destroy()
                 except: pass
@@ -108,8 +117,8 @@ class format_RGI_GUI (object):
                 
                 # RUN APPLICATION
                 # Import needs to be here in case ARCPY not found. Crashes on import if not
-#                import format_rgi                                              #@UnresolvedImport
-#                format_rgi.FormatRGI(self.__input_string.get(), self.__output_string.get(), self.__mapping, VAR)
+                import format_rgi                                              #@UnresolvedImport
+                format_rgi.FormatRGI(self.__input_string.get(), self.__output_string.get(), mapping_dict, VAR)
                 
             else: 
                 tkMessageBox.showwarning ('Warning', 'You must select Input and Output files.')
@@ -163,17 +172,13 @@ class format_RGI_GUI (object):
     def get_mapping (self, frame, VAR):
         """Function: Get Mapping
         Generates user selection interface for choosing mapping options."""
+        mapping = [] # List of drop down boxes.
         
         #Settings Frame
         options_frame = TK.LabelFrame(frame, text= 'Field Mapping')
         options_frame.grid (row =3, column =0, columnspan = 3, padx =6, pady = 6)
         
-        mapping = [] # List of drop down boxes.
-        
-
-        print self.__original_fields
-        
-        option_list = tuple(['No Map'])
+        option_list = tuple([''])
         option_list += tuple([item.encode() for item in self.__original_fields])
         
         pos_row = 0
@@ -190,7 +195,7 @@ class format_RGI_GUI (object):
             map_string.set(option_list[0])
             map_entry.grid(row= pos_row, column = pos_col + 1, sticky = TK.E)
             
-            mapping.append([map_entry, map_string])
+            mapping.append([heading[0], map_string])
         
             pos_row += 1
             if pos_row == 6:
@@ -220,7 +225,7 @@ class format_RGI_GUI (object):
         frame.config(menu=menubar)
        
     
-    def set_option_list (self, frame, VAR):
+    def set_option_list (self, master, VAR):
         """Function: Set Option Lists
         Attempts to read an input shapefile and get a list of optional 
         headers to map"""
@@ -233,8 +238,12 @@ class format_RGI_GUI (object):
         except: 'could not find header list'
         
         self.__options_frame.destroy()
-        self.get_mapping(frame, VAR)
         
+        options_frame, mapping_list = self.get_mapping (master, VAR)
+        self.__options_frame = options_frame
+        self.__mapping_list = mapping_list
+        
+        return True
 
 #DRIVER
 def driver():

@@ -19,8 +19,9 @@ License:     Although this application has been produced and tested
  be held liable for improper or incorrect use of the utility described and/
  or contained herein.
 ****************************************************************************"""
-import os
-import sys
+import sys, os
+sys.path.append (os.path.dirname(os.path.dirname(__file__)))
+
 import arcpy as ARCPY                                       #@UnresolvedImport
 import glacier_utilities.general_utilities.environment as ENV
 
@@ -60,7 +61,7 @@ class FormatRGI (object):
         __Log.print_line('Original Field Names:')
         __Log.print_line('    ' + ', '.join(original_fields))    
         __Log.print_line('Field Mapping:')       
-        __Log.print_line('    ' + str(mappings.items()))   
+        __Log.print_line('    ' + str(mappings))   
         __Log.print_break(1)      
         __Log.print_line('Fields Added:')    
                 

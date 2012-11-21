@@ -62,15 +62,11 @@ class format_RGI_GUI (object):
         if arcpy_found == False:
             run_button.configure (state=TK.DISABLED) #Disable if modules not available
         
+        # Build options list for the first time. This is here since it can 
+        # not be built until both the input and options frames are in place
         self.set_option_list (master, VAR)
-        self.enable() # Enable or disable buttons depending on need
-    
-    
-    def enable (self):
-        """Function: Enable
-        Enables or Disables widgets as needed."""
-        pass
 
+    
     
     def get_buttons (self, master, frame, VAR):
         """Function: Get Buttons
@@ -140,10 +136,11 @@ class format_RGI_GUI (object):
         input_label = TK.Label (input_frame, text='Glaciers')
         input_label.grid(row=0, column = 0, sticky = TK.W, padx = 6)
 
+        # Callback to get new input file and rebuild options based on it
         def __callback_select_input ():
             setup.get_file (input_string, VAR.read_variable("INPUT_FILE"), [('Shapefile','*.shp')])
-            self.__input_string = input_string.get()
-            self.set_option_list (master, VAR)
+            self.__input_string = input_string.get() # Set new input file
+            self.set_option_list (master, VAR) # Create New option window with new inputs
         input_string = TK.StringVar()
         input_entry = TK.Entry (input_frame, textvariable = input_string, width = 50)
         input_entry.grid(row=0, column = 1, padx = 6)
@@ -178,30 +175,35 @@ class format_RGI_GUI (object):
         options_frame = TK.LabelFrame(frame, text= 'Field Mapping')
         options_frame.grid (row =3, column =0, columnspan = 3, padx =6, pady = 6)
         
-        option_list = tuple([''])
+        option_list = tuple(['']) # a tuple containing ''
+        # Add a tuple for each of the field names from the input file
         option_list += tuple([item.encode() for item in self.__original_fields])
         
-        pos_row = 0
-        pos_col = 0
-        rgi_columns = VAR.read_variable("RGI_SPEC")
-        for heading in rgi_columns:
+        pos_row = 0 # Track current row to position the option menu and label
+        pos_col = 0 # Track current col to position the option menu and label
+        rgi_columns = VAR.read_variable("RGI_SPEC") # Get RGI column headers
+        for heading in rgi_columns: # For each header
             
+            # Create Label for RGI Column
             output_label = TK.Label (options_frame, text= heading[0])
             output_label.grid(row= pos_row, column = pos_col, padx = (0,12), sticky = TK.W)
             
+            # Create Option menu populated with input table fields
             map_string = TK.StringVar()
             map_entry = TK.OptionMenu (options_frame, map_string, *option_list)
             map_entry.config(width = 10, relief=TK.SUNKEN, bg= 'white')
             map_string.set(option_list[0])
             map_entry.grid(row= pos_row, column = pos_col + 1, sticky = TK.E)
             
+            # Add the RGI Column label and option menu string to a list
             mapping.append([heading[0], map_string])
         
-            pos_row += 1
-            if pos_row == 6:
-                pos_row = 0
-                pos_col = 2
+            pos_row += 1 # Incriment current positioning row by one
+            if pos_row == 6: # If it is the sixth row
+                pos_row = 0  # Reset row position to the top
+                pos_col = 2  # Offset the columns by 2
                 
+        # Return a reference to the option frame and the list of Column names and map_string
         return options_frame, mapping
             
     
@@ -230,17 +232,19 @@ class format_RGI_GUI (object):
         Attempts to read an input shapefile and get a list of optional 
         headers to map"""
         try:
-            import arcpy as ARCPY                                            #@UnresolvedImport
+            import arcpy as ARCPY                  #@UnresolvedImport
             fields_list = ARCPY.ListFields(self.__input_string.get())
             for field in fields_list: # Loop through the field names
-                if not field.required: # If they are not required append them to the list of field names.
+                if not field.required: 
+                    # If they are not required append them to the list of field names.
                     self.__original_fields.append(field.name)
         except: 'could not find header list'
         
-        self.__options_frame.destroy()
+        self.__options_frame.destroy() # Destroy current option frame
         
+        # Rebuild option frame with (attempt to get new input file)
         options_frame, mapping_list = self.get_mapping (master, VAR)
-        self.__options_frame = options_frame
+        self.__options_frame = options_frame # Reset Variables
         self.__mapping_list = mapping_list
         
         return True

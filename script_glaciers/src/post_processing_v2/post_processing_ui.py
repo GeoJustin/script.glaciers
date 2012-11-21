@@ -21,8 +21,6 @@ License:     Although this application has been produced and tested
 ****************************************************************************"""
 #Add the current directory to python search path.
 import sys, os
-print os.path.dirname(os.path.dirname(__file__))
-
 sys.path.append (os.path.dirname(os.path.dirname(__file__)))
 
 import Tkinter as TK

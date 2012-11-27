@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/TestDataPrep/formate_test.shp
+INPUT_FILE = STRING = A:/Desktop/TestDataPrep/Test_Glaciers_Formated.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -17,15 +17,15 @@ INPUT_FOLDER = STRING = Required
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = Required
+DEM = STRING = A:/Desktop/TestDataPrep/Test_DEM.img
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = Required
+OUTPUT_FOLDER = STRING = A:/Desktop/TestDataPrep/Output
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/TestDataPrep/Output/Test_format.shp
+OUTPUT_FILE = STRING = A:/Desktop/TestDataPrep/Output/Test_Glaciers_Formated.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -37,27 +37,27 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = True
+GLIMSIDS = BOOLEAN = 1
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
-RGIIDS = BOOLEAN = True
-RGIIDS (Default) = BOOLEAN = True
+RGIIDS = BOOLEAN = 0
+RGIIDS (Default) = BOOLEAN = False
 #
 #	Output centerlines to file
-CENTERLINES = BOOLEAN = False
+CENTERLINES = BOOLEAN = 1
 CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = True
+HYPSOMETRY = BOOLEAN = 1
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = False
+SLOPE = BOOLEAN = 1
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = False
+ASPECT = BOOLEAN = 1
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units
@@ -80,12 +80,12 @@ BUFFER = INTEGER = 2
 BUFFER (Default) = INTEGER = 2
 #
 #	Euclidean Distance Raster Cell Size
-EU_CELL_SIZE = INTEGER = 2
-EU_CELL_SIZE (Default) = INTEGER = 2
+EU_CELL_SIZE = INTEGER = 10
+EU_CELL_SIZE (Default) = INTEGER = 10
 #
-#	Centerline Smoothing Factor
-SMOOTHING = INTEGER = 4
-SMOOTHING (Default) = INTEGER = 4
+#	Centerline Power Factor
+POWER = INTEGER = 8
+POWER (Default) = INTEGER = 8
 #
 #	Header Specifications - RGI Header specification for creating fields
 RGI_SPEC = LISTS = (RGIID;TEXT;;;14),(GLIMSID;TEXT;;;14),(RGIFLAG;TEXT;;;14),(BGNDATE;TEXT;;;8),(ENDDATE;TEXT;;;8),(CENLON;FLOAT;;;),(CENLAT;FLOAT;;;),(O1REGION;SHORT;;;),(O2REGION;SHORT;;;),(AREA;DOUBLE;10;3;),(GLACTYPE;TEXT;;;4),(NAME;TEXT;;;25)

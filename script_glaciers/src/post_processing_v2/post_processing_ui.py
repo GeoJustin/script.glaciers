@@ -46,7 +46,7 @@ class GUI (object):
         self.__output_string = output_string
         
         #Settings Frame
-        options_frame = TK.LabelFrame(master, text= 'Parameters')
+        options_frame = TK.LabelFrame(master, text= 'Options')
         options_frame.grid (row =3, column =0, columnspan = 3, padx =6, pady = 6)
         
         # Setup Centerline options
@@ -174,7 +174,7 @@ class GUI (object):
                 VAR.set_variable("OUTPUT_FOLDER", "STRING", self.__output_string.get())
                 VAR.set_variable("CENTERLINES", "BOOLEAN", self.__centerline_boolean.get())
                 VAR.set_variable("EU_CELL_SIZE", "INTEGER", self.__cellsize_string.get())
-                VAR.set_variable("SMOOTHING", "INTEGER", self.__smoothing_string.get())
+                VAR.set_variable("POWER", "INTEGER", self.__smoothing_string.get())
                 VAR.set_variable("HYPSOMETRY", "BOOLEAN", self.__hypsometry_boolean.get())
                 VAR.set_variable("SLOPE", "BOOLEAN", self.__slope_boolean.get())
                 VAR.set_variable("ASPECT", "BOOLEAN", self.__aspect_boolean.get())
@@ -221,7 +221,7 @@ class GUI (object):
         centerline_frame = TK.Frame (frame, relief = TK.RIDGE, bd = 1)
         centerline_frame.grid (row =0, column =0, columnspan = 3, padx = (6,6), pady = (3,0), sticky = TK.W)
         
-        label_centerline = TK.Label(centerline_frame, text='Output Centerline')
+        label_centerline = TK.Label(centerline_frame, text='Output Centerline?')
         label_centerline.pack(side=TK.LEFT, padx = (12,0), pady = (6,6))
         
         centerline_boolean = TK.BooleanVar()
@@ -230,7 +230,7 @@ class GUI (object):
         def __callback_centerline ():
             self.enable()
         check_centerline = TK.Checkbutton(centerline_frame, text='', variable = centerline_boolean, command=__callback_centerline, onvalue = True, offvalue = False)
-        check_centerline.pack(side=TK.LEFT, padx = 0, pady = 6)
+        check_centerline.pack(side=TK.LEFT, padx = (0,5), pady = 6)
         
         
         label_cellsize = TK.Label(centerline_frame, text='Cell Size')
@@ -238,16 +238,16 @@ class GUI (object):
         
         cellsize_string = TK.StringVar()
         cellsize_entry = TK.Entry (centerline_frame, textvariable = cellsize_string, width = 6, justify = TK.CENTER)
-        cellsize_entry.pack(side=TK.LEFT, padx = (3,12), pady = (6,6))
+        cellsize_entry.pack(side=TK.LEFT, padx = (3,18), pady = (6,6))
         cellsize_string.set(VAR.read_variable("EU_CELL_SIZE"))
         
-        label_smoothing = TK.Label(centerline_frame, text='Smoothing Factor')
+        label_smoothing = TK.Label(centerline_frame, text='Power Factor')
         label_smoothing.pack(side=TK.LEFT)
         
         smoothing_string = TK.StringVar()
         smoothing_entry = TK.Spinbox(centerline_frame, textvariable = smoothing_string, from_=0, to=10, width = 4,justify = TK.CENTER, wrap = TK.TRUE)
-        smoothing_entry.pack(side=TK.LEFT, padx = (3,12), pady = (6,6))
-        smoothing_string.set(VAR.read_variable("SMOOTHING"))
+        smoothing_entry.pack(side=TK.LEFT, padx = (3,23), pady = (6,6))
+        smoothing_string.set(VAR.read_variable("POWER"))
         
         return centerline_boolean, cellsize_string, smoothing_string, cellsize_entry, smoothing_entry
        
@@ -270,7 +270,7 @@ class GUI (object):
         input_entry.grid(row=0, column = 1, padx = 6)
         input_string.set(VAR.read_variable("INPUT_FILE"))
 
-        input_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_select_input)
+        input_file = TK.Button(input_frame, text = 'Browse', height = 1, width = 8, command = __callback_select_input)
         input_file.grid(row=0, column = 2, padx = (0,6), pady = (0,6))
         
         #Select DEM Frame
@@ -284,7 +284,7 @@ class GUI (object):
         dem_entry.grid(row=1, column = 1, padx = 6, pady = (6,6))
         dem_string.set(VAR.read_variable("DEM"))
 
-        dem_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_dem)
+        dem_file = TK.Button(input_frame, text = 'Browse', height = 1, width = 8, command = __callback_dem)
         dem_file.grid(row=1, column = 2, padx = (0,6), pady = (0,6))
 
         #Select Output Frame
@@ -298,7 +298,7 @@ class GUI (object):
         output_entry.grid(row=2, column = 1, padx = 6, pady = (6,6))
         output_string.set(VAR.read_variable("OUTPUT_FOLDER"))
 
-        output_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_output)
+        output_file = TK.Button(input_frame, text = 'Browse', height = 1, width = 8, command = __callback_output)
         output_file.grid(row=2, column = 2, padx = (0,6), pady = (0,6))
         
         return input_string, dem_string, output_string
@@ -423,7 +423,7 @@ class GUI (object):
             self.__output_string.set(VAR.read_variable("OUTPUT_FOLDER"))
             self.__centerline_boolean.set(VAR.read_variable("CENTERLINES"))
             self.__cellsize_string.set(VAR.read_variable("EU_CELL_SIZE"))
-            self.__smoothing_string.set(VAR.read_variable("SMOOTHING"))
+            self.__smoothing_string.set(VAR.read_variable("POWER"))
             self.__hypsometry_boolean.set(VAR.read_variable("HYPSOMETRY"))
             self.__slope_boolean.set(VAR.read_variable("SLOPE"))
             self.__aspect_boolean.set(VAR.read_variable("ASPECT"))

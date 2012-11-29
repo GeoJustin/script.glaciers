@@ -28,6 +28,7 @@ import math
 
 def repair_geometry (input_file):
     """Repair geometry error and report the number of errors if any."""
+    import arcpy as ARCPY                                   #@UnresolvedImport
     
     check = ARCPY.CheckGeometry_management(input_file) # Check geometry
     first_count = ARCPY.GetCount_management (check) # Number of Errors found.

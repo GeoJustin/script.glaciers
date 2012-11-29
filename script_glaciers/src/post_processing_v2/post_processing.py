@@ -28,7 +28,7 @@ import glacier_utilities.functions.data_calc as DC
 import glacier_utilities.functions.data_pop as POP                         
 import glacier_utilities.output_file.output_file_log as LOG
 import glacier_utilities.output_file.output_file_csv as CSV                                       
-
+import glacier_utilities.general_utilities.parallel.pp as PP
 
 class process (object):
     
@@ -123,6 +123,18 @@ class process (object):
         __Log.print_line("     DEM Scaling Factor: " + str(scaling))
         __Log.print_line("     Centerline Euclidean Cell Size: " + str(eu_cell_size))
         __Log.print_line("     Centerline Line Power Factor: " + str(power))
+        
+        
+        # Start a job server to manage functions
+        ppservers = () #Start the job server.
+        job_server = PP.Server(ppservers=ppservers) # Creates job server with automatically detected number of workers
+        number_of_processors = job_server.get_ncpus() # Get number of processors
+        job_server.set_ncpus(int(number_of_processors/2)) # Set number of processors
+        
+        __Log.print_break() # Break for next section in the log file.
+        __Log.print_line('System Parameters')
+        __Log.print_line('     Number of Processesers: ' + str(number_of_processors))
+        __Log.print_line('     Number of Processesers used: ' + str(int(number_of_processors/2)))
         __Log.print_break() # Break for next section in the log file.
         
         #_______________________________________________________________________
@@ -142,7 +154,7 @@ class process (object):
         # results to the log file
         repair = DP.repair_geometry(input_copy)
         __Log.print_line('    Geometry - ' + repair[0] + ' errors found (Repaired ' + repair[1] + ')')
-           
+        
         # Check to see if there are any multi-part polygons in the input file. If
         # so, prompt the user to stop and correct. Print to log file.
         multipart = DP.check_multipart(input_copy, workspace) # Check for multi-part Polygons

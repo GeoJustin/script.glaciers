@@ -44,8 +44,6 @@ def get_aspect (feature, bin_mask, bins, workspace, raster_scaling = 1000):
             feature_count = int(ARCPY.GetCount_management(clipped_line).getOutput(0))
             
             if feature_count > 0: # If there is 1 or more features (not empty)
-                ARCPY.CalculateField_management(clipped_line, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
-                
                 # Lines with multi-part features sometimes have reversed directions do to where
                 # points are placed for the beginning and end of line segments within the multi-part line. 
                 m_to_s = ARCPY.MultipartToSinglepart_management (clipped_line, 'in_memory\\m_to_s')
@@ -101,7 +99,8 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
     center_length = 0
     center_slope = 0
     smoothing = 4
-    items_to_delete = []
+    trim_distance = "100 Meters"
+
     try: 
         # Setup extents / environments for the current feature
         ARCPY.env.extent = feature.shape.extent
@@ -111,13 +110,16 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         YMax_new = ARCPY.env.extent.YMax + 200
         ARCPY.env.extent = ARCPY.arcpy.Extent(XMin_new, YMin_new, XMax_new, YMax_new)
     
+        ARCPY.env.overwriteOutput = True
+        ARCPY.env.cellSize = eu_cell_size
         ARCPY.env.snapRaster = dem
         
         
         # Get minimum and maximum points
-        masked_dem = ARCPY.sa.ExtractByMask (dem, feature.shape)
-         
-         
+        resample = ARCPY.Resample_management (dem, 'in_memory\\sample', eu_cell_size)
+        masked_dem = ARCPY.sa.ExtractByMask (resample, feature.shape)
+    
+    
         # Find the maximum elevation value in the feature, convert them to
         # points and then remove all but one.
         maximum = get_properties (masked_dem, 'MAXIMUM') 
@@ -128,7 +130,6 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
             if row.pointid <> 1:
                 rows.deleteRow(row)
         del row, rows
-        items_to_delete.extend([maximum_raster, maximum_point]) # Add items to clean up list
         
         # Find the minimum elevation value in the feature, convert them to
         # points and then remove all but one.
@@ -140,58 +141,45 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
             if row.pointid <> 1:
                 rows.deleteRow(row)
         del row, rows
-        items_to_delete.extend([minimum_raster,minimum_point]) # Add items to clean up list
-        
         
         # Calculate euclidean Distance to boundary line for input DEM cells.
         polyline = ARCPY.PolygonToLine_management(feature.shape, 'in_memory\\polyline')
         eucdist = ARCPY.sa.EucDistance(polyline, "", eu_cell_size, '')
          
         masked_eucdist = ARCPY.sa.ExtractByMask (eucdist, feature.shape)
-        items_to_delete.extend([polyline, eucdist, masked_eucdist]) # Add items to clean up list
         
         # Calculate the cost raster by inverting the euclidean distance results,
         # and raising it to the power of x to exaggerate the least expensive route.
         cost_raster = (-1 * masked_eucdist + float(maximum))**power
-        
-        # Set no data values equal to the highest cost. This forces points that fall
-        # outside feature to be forced inside when running cost distance.
-        maximum_cost_value = float(get_properties (cost_raster, 'MAXIMUM'))*power
-        extended_cost_raster = ARCPY.sa.Con(ARCPY.sa.IsNull(cost_raster), maximum_cost_value, cost_raster)
-        items_to_delete.extend([cost_raster, extended_cost_raster])# Add items to clean up list
             
         # Run the cost distance and cost path function to find the path of least
         # resistance between the minimum and maximum values. The results are set
         # so all values equal 1 (different path segments have different values)
         # and convert the raster line to a poly-line.
         backlink = 'in_memory\\backlink'
-        cost_distance = ARCPY.sa.CostDistance(minimum_point, extended_cost_raster, '', backlink) 
+        cost_distance = ARCPY.sa.CostDistance(minimum_point, cost_raster, '', backlink) 
         cost_path = ARCPY.sa.CostPath(maximum_point, cost_distance, backlink, 'EACH_CELL', '')
         cost_path_ones = ARCPY.sa.Con(cost_path, 1, '', 'VALUE > ' + str(-1)) # Set all resulting pixels to 1
         r_to_p = ARCPY.RasterToPolyline_conversion (cost_path_ones, 'in_memory\\raster_to_polygon')
         
-        items_to_delete.extend([backlink, cost_distance, cost_path, cost_path_ones, r_to_p])# Add items to clean up list
-        
-        
         
         del ARCPY.env.extent # Delete current extents (need here but do not know why)
         
+        # Removes small line segments from the centerline shape. These segments are
+        # a byproduct of cost analysis.
         lines = str(ARCPY.GetCount_management(r_to_p)) #check whether we have more than one line segment
-        
         if float(lines) > 1: # If there is more then one line
             rows = ARCPY.UpdateCursor(r_to_p)
             for row in rows:
                 if row.shape.length == eu_cell_size: # delete all the short 10 m lines
                     rows.deleteRow(row)
             del row, rows
-    
             lines = str(ARCPY.GetCount_management(r_to_p))
-    
             if float(lines) > 1:
                 ARCPY.Snap_edit(r_to_p, [[r_to_p, "END", "50 Meters"]]) # make sure that the ends of the lines are connected
                 r_to_p = ARCPY.Dissolve_management(r_to_p, 'in_memory\\raster_to_polygon_dissolve')
-
-            
+    
+    
         # Smooth the resulting line. Currently smoothing is determined by minimum
         # and maximum distance. The greater change the greater the smoothing.
         smooth_tolerance = (float(maximum) - float(minimum)) / smoothing
@@ -207,6 +195,7 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         ARCPY.AddField_management(centerline, 'LENGTH', 'FLOAT')
         ARCPY.AddField_management(centerline, 'SLOPE', 'FLOAT')
         ARCPY.DeleteField_management(centerline, field_names) # Remove the old fields.
+        
         
         # Calculate the length of the line segment and populate segment data.
         ARCPY.CalculateField_management(centerline, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
@@ -237,16 +226,30 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         if merged_line_length > (center_length/4):
             ARCPY.FlipLine_edit(centerline)
     
-        items_to_delete.extend([end_point, merged_points, merged_line])
     
-        # Clean up temporary
-        for item in items_to_delete:
-            ARCPY.Delete_management(item) 
+        # This function attempts to extend the line and clip it back to the 
+        # feature extents in order to create a line that runs from edge to edge
+        #trimmed_line = ARCPY.Merge_management([polyline, centerline], 'in_memory\\line_merge')
+        trimmed_line = ARCPY.Append_management (polyline, centerline, 'NO_TEST')
+        ARCPY.TrimLine_edit (trimmed_line, trim_distance, "DELETE_SHORT")
+        ARCPY.ExtendLine_edit(trimmed_line, trim_distance, "EXTENSION")
+        
+        rows = ARCPY.UpdateCursor (trimmed_line)
+        for row in rows:
+            if row.LENGTH == 0.0:
+                rows.deleteRow(row)
+        del row, rows
+        # Recalculate length. Must be after 0.0 lengths are deleted or they will
+        # not be removed above.
+        ARCPY.CalculateField_management(centerline, 'LENGTH', 'float(!shape.length@meters!)', 'PYTHON')
     
+    
+        ARCPY.env.overwriteOutput = False
         return centerline, center_length, center_slope, False
     except:
         ARCPY.env.overwriteOutput = False
         return centerline, '', '', True
+
 
 
 def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 8850, min_bin = 0, bin_size = 50):
@@ -340,18 +343,19 @@ def get_slope (feature, bin_mask, bins, workspace, raster_scaling = 1000, bin_si
                 del clip_row, clip_rows
             except: pass
             
-            # Get number of multi-part features
-            m_to_s = ARCPY.MultipartToSinglepart_management (clipped_line, 'in_memory\\m_to_s')
-            feature_count = int(ARCPY.GetCount_management(m_to_s).getOutput(0))
+            if length <> 0:
+                # Get number of multi-part features
+                m_to_s = ARCPY.MultipartToSinglepart_management (clipped_line, 'in_memory\\m_to_s')
+                feature_count = int(ARCPY.GetCount_management(m_to_s).getOutput(0))
+                
+                # If there is a line segment, calculate slope and append it list
+                if feature_count == 1:  # with elevation bin value
+                    center_slope = round(math.degrees(math.atan(float(bin_size) / length)), 1)
+                    centerline_list.append([elevation_bin, center_slope])
+                elif feature_count > 1:
+                    centerline_list.append([elevation_bin, 'NA']) # If multi-part
             
-            # If there is a line segment, calculate slope and append it list
-            if length <> 0 and feature_count == 1:  # with elevation bin value
-                center_slope = round(math.degrees(math.atan(float(bin_size) / length)), 1)
-                centerline_list.append([elevation_bin, center_slope])
-            elif feature_count > 1:
-                centerline_list.append([elevation_bin, 'NA']) # If multi-part
-            
-            ARCPY.Delete_management(m_to_s) # Clean up temporary clip
+                ARCPY.Delete_management(m_to_s) # Clean up temporary clip
             ARCPY.Delete_management(clipped_line) # Clean up temporary clip
         del row, rows    
         

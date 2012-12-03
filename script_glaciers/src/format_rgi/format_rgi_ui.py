@@ -139,7 +139,7 @@ class format_RGI_GUI (object):
         # Callback to get new input file and rebuild options based on it
         def __callback_select_input ():
             setup.get_file (input_string, VAR.read_variable("INPUT_FILE"), [('Shapefile','*.shp')])
-            self.__input_string = input_string.get() # Set new input file
+            self.__input_string = input_string # Set new input file
             self.set_option_list (master, VAR) # Create New option window with new inputs
         input_string = TK.StringVar()
         input_entry = TK.Entry (input_frame, textvariable = input_string, width = 50)
@@ -232,6 +232,7 @@ class format_RGI_GUI (object):
         Attempts to read an input shapefile and get a list of optional 
         headers to map"""
         try:
+            self.__original_fields = []
             import arcpy as ARCPY                  #@UnresolvedImport
             fields_list = ARCPY.ListFields(self.__input_string.get())
             for field in fields_list: # Loop through the field names

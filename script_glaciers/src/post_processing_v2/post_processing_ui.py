@@ -204,8 +204,15 @@ class GUI (object):
                     # RUN APPLICATION
                     # Import needs to be here in case ARCPY not found. Crashes on import if not
                     import post_processing                                              #@UnresolvedImport
-                    post_processing.process(self.__input_string.get(), output, self.__dem_string.get(), VAR)
-                
+#                    import cProfile
+#                    import pstats
+
+                    input_string = self.__input_string.get()
+                    dem_string = self.__dem_string.get()
+#                    profile_output = output + '\\profile.txt'
+                    post_processing.process(input_string, output, dem_string, VAR)
+                    #cProfile.runctx('post_processing.process(input_string, output, dem_string, VAR)', None, locals(), profile_output)
+                    
             else: 
                 tkMessageBox.showwarning ('Warning', 'You must select Input and Output files.')
                 
@@ -278,7 +285,7 @@ class GUI (object):
         dem_label.grid(row=1, column = 0, sticky = TK.W, padx = 6, pady = (6,6))
 
         def __callback_dem ():
-            setup.get_file (dem_string, VAR.read_variable("DEM"), [('Image', '*.img'), ('Tiff', '*.tif')])
+            setup.get_file (dem_string, VAR.read_variable("DEM"), [('Tiff', '*.tif'), ('Image', '*.img')])
         dem_string = TK.StringVar()
         dem_entry = TK.Entry (input_frame, textvariable = dem_string, width = 50)
         dem_entry.grid(row=1, column = 1, padx = 6, pady = (6,6))

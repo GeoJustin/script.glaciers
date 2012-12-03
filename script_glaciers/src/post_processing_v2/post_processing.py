@@ -28,7 +28,6 @@ import glacier_utilities.functions.data_calc as DC
 import glacier_utilities.functions.data_pop as POP                         
 import glacier_utilities.output_file.output_file_log as LOG
 import glacier_utilities.output_file.output_file_csv as CSV                                       
-import glacier_utilities.general_utilities.parallel.pp as PP
 
 class process (object):
     
@@ -101,7 +100,7 @@ class process (object):
         
         # Other variables
         currently_processing = 1
-        total_features = 0
+        total_features = str(int(ARCPY.GetCount_management(input_copy).getOutput(0)))
 
         # Print run time variables to log file
         __Log.print_line("Input File: " + os.path.basename(input_features))
@@ -123,18 +122,6 @@ class process (object):
         __Log.print_line("     DEM Scaling Factor: " + str(scaling))
         __Log.print_line("     Centerline Euclidean Cell Size: " + str(eu_cell_size))
         __Log.print_line("     Centerline Line Power Factor: " + str(power))
-        
-        
-        # Start a job server to manage functions
-        ppservers = () #Start the job server.
-        job_server = PP.Server(ppservers=ppservers) # Creates job server with automatically detected number of workers
-        number_of_processors = job_server.get_ncpus() # Get number of processors
-        job_server.set_ncpus(int(number_of_processors/2)) # Set number of processors
-        
-        __Log.print_break() # Break for next section in the log file.
-        __Log.print_line('System Parameters')
-        __Log.print_line('     Number of Processesers: ' + str(number_of_processors))
-        __Log.print_line('     Number of Processesers used: ' + str(int(number_of_processors/2)))
         __Log.print_break() # Break for next section in the log file.
         
         #_______________________________________________________________________
@@ -175,7 +162,7 @@ class process (object):
         # Warnings: 
         if multipart <> str(0): print "WARNING:  Multi-part features found.."
         if area [2] > 1 or area[2] < -1: 'WARNING: The AREA difference exceeds the threshold.'
-        if topology[0] <> str(0): raw_input(str(topology[0]) + "WARNING: Topology errors found.")
+        if topology[0] <> str(0): raw_input(str(topology[0]) + " WARNINGS: Topology errors found.")
        
         __Log.print_break() # Break for next section in the log file.
         
@@ -186,13 +173,11 @@ class process (object):
             __Log.print_line('Generating GLIMS IDs')
             glims_ids = POP.generate_GLIMSIDs(input_copy, workspace) # Copy to Output
             __Log.print_line('   GLIMS IDs - ' + glims_ids + ' GLIMS IDs Generated')
-            total_features = glims_ids
             
         if rgiids == True: # Generate RGI id's if applicable
             __Log.print_line('Generating RGI IDs')
             rgi_ids = POP.generate_RGIIDs(input_copy) # Copy to Output
             __Log.print_line('   RGI IDs - ' + rgi_ids + ' RGI IDs Generated')
-            total_features = rgi_ids
         
         __Log.print_break() # Break for next section in the log file.
         

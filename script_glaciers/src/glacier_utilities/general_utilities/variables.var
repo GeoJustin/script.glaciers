@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/TestDataPrep/Test_Glaciers_Formated.shp
+INPUT_FILE = STRING = A:/Desktop/TestDataPrep/DenaliTestData/DenaliTest.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -17,15 +17,15 @@ INPUT_FOLDER = STRING = Required
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = A:/Desktop/TestDataPrep/Test_DEM.img
+DEM = STRING = A:/Desktop/FINAL_Glaciers/Region_Denali/MapDate/Input/DENA_NED_Albers.img
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/TestDataPrep/Output
+OUTPUT_FOLDER = STRING = A:/Desktop/FINAL_Glaciers/Region_Denali/MapDate/Output
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/TestDataPrep/Output/Test_Glaciers_Formated.shp
+OUTPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/Workspace/GLBA_Headers_Mapdate.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -37,7 +37,7 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 1
+GLIMSIDS = BOOLEAN = 0
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's

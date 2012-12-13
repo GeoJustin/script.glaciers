@@ -306,7 +306,7 @@ def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 88
         
         return hypsometry, False, bin_features
     except:
-        return hypsometry, True, bin_features
+        return hypsometry, True, False
 
     
 def get_properties (raster, prop = ''):

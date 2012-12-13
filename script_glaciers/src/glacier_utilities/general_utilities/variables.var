@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/TestDataPrep/DenaliTestData/DenaliTest.shp
+INPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/Region_Gates/Modern/Input/GAAR_Modern.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -17,15 +17,15 @@ INPUT_FOLDER = STRING = Required
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = A:/Desktop/FINAL_Glaciers/Region_Denali/MapDate/Input/DENA_NED_Albers.img
+DEM = STRING = A:/Desktop/FINAL_Glaciers/Region_Gates/Modern/Input/GAAR_CKDEM.img
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/FINAL_Glaciers/Region_Denali/MapDate/Output
+OUTPUT_FOLDER = STRING = A:/Desktop/FINAL_Glaciers/Region_Gates/Modern/Output
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/Workspace/GLBA_Headers_Mapdate.shp
+OUTPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/UTIL_Workspace/WRST_Mapdate_Header.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor

@@ -195,8 +195,8 @@ class process (object):
             
         # Create an instance of hypsometry, slope and aspect table if applicable
         if hypsometry == True: hypso_csv = CSV.CSV(table_output, 'Stats_Hypsometry', header) 
-        if slope == True: slope_csv = CSV.CSV(table_output, 'Stats_slope', header) 
-        if aspect == True: aspect_csv = CSV.CSV(table_output, 'Stats_aspect', header) 
+        if slope == True: slope_csv = CSV.CSV(table_output, 'Stats_Slope', header) 
+        if aspect == True: aspect_csv = CSV.CSV(table_output, 'Stats_Aspect', header) 
         
 
         if centerlines == True or hypsometry == True or slope == True or aspect == True:

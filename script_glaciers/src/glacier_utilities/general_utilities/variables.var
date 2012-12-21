@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/Region_Gates/Modern/Input/GAAR_Modern.shp
+INPUT_FILE = STRING = A:/Desktop/Canada/03_rgi30_ArcticCanadaNorth.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -17,15 +17,15 @@ INPUT_FOLDER = STRING = Required
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = A:/Desktop/FINAL_Glaciers/Region_Gates/Modern/Input/GAAR_CKDEM.img
+DEM = STRING = 
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/FINAL_Glaciers/Region_Gates/Modern/Output
+OUTPUT_FOLDER = STRING = A:/Desktop/Canada/Working
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/UTIL_Workspace/WRST_Mapdate_Header.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI_3_1_Edited/19_rgi30_AntarcticSubantarctic.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -37,7 +37,7 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 0
+GLIMSIDS = BOOLEAN = 1
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
@@ -45,19 +45,19 @@ RGIIDS = BOOLEAN = 0
 RGIIDS (Default) = BOOLEAN = False
 #
 #	Output centerlines to file
-CENTERLINES = BOOLEAN = 1
+CENTERLINES = BOOLEAN = 0
 CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 1
+HYPSOMETRY = BOOLEAN = 0
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 1
+SLOPE = BOOLEAN = 0
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = 1
+ASPECT = BOOLEAN = 0
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units

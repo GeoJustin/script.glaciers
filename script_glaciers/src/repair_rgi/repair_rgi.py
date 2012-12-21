@@ -40,12 +40,12 @@ class rgi_process ():
         print workspace
         
         # Read variables
-        check_header = variables.read_variable('RGIHEADER')
+        check_header = variables.read_variable('RGI_SPEC')
 
         # Print run time parameters
         __Log.print_line("Input File: " + input_folder)
         __Log.print_line('Output Folder: ' + output_folder)
-        __Log.print_line('RGI Header to Match: ')
+        __Log.print_line('RGI Header to Match (Name Only): ')
         __Log.print_line('   ' + str(check_header))
         __Log.print_break()
         
@@ -105,8 +105,8 @@ class rgi_process ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\TestDataPrep\Output\Input'
-    output_folder = r'A:\Desktop\TestDataPrep\Output\Output'
+    input_folder = r'A:\Desktop\RGI_3_1_Edited'
+    output_folder = r'A:\Desktop\RGI_3_Final'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

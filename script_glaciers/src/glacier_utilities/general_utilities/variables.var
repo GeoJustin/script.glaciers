@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/FINAL_Glaciers/Region_Aniakchak/Modern/Input/ANIA_Modern.shp
+INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA3/17_RGI40_SoutherAndes.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -17,15 +17,15 @@ INPUT_FOLDER = STRING = Required
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = A:/Desktop/FINAL_Glaciers/Region_Aniakchak/Modern/Input/ANIA_CKDEM.img
+DEM = STRING = 
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/FINAL_Glaciers/Region_Aniakchak/Modern/Output
+OUTPUT_FOLDER = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA3
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/Temp/WRST_Modern.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA3/RGI40_SoutherAndes.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -45,19 +45,19 @@ RGIIDS = BOOLEAN = 0
 RGIIDS (Default) = BOOLEAN = False
 #
 #	Output centerlines to file
-CENTERLINES = BOOLEAN = 1
+CENTERLINES = BOOLEAN = 0
 CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 1
+HYPSOMETRY = BOOLEAN = 0
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 1
+SLOPE = BOOLEAN = 0
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = 1
+ASPECT = BOOLEAN = 0
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units

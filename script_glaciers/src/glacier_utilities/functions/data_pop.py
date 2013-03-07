@@ -47,8 +47,8 @@ def generate_GLIMSIDs (input_file, workspace):
         elif X >= 10000 and X < 100000: X = str(0) + str(X) + "E"  # Values 10 - 100
         else: X = str(X) + "E" # Values Greater then or equal to 100
 
-        if Y < 0 and Y > -10000: Y = str (0) + str(Y) + "S"     # Values 0--10
-        elif Y <= -10000: Y = str(Y) + "S" #Values less then or equal to -10
+        if Y < 0 and Y > -10000: Y = str (0) + str(-1*Y) + "S"     # Values 0--10
+        elif Y <= -10000: Y = str(-1*Y) + "S" #Values less then or equal to -10
         elif Y >= 0 and Y < 10000: str(0) + str(Y) + "N" #Values 0-10 including 0
         else: Y = str(Y) + "N" # Values greater then or equal to 10
 

@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA3/17_RGI40_SoutherAndes.shp
+INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5/Working/17_RGI40_Southern_Andes2.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -21,11 +21,11 @@ DEM = STRING =
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA3
+OUTPUT_FOLDER = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5/Working
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA3/RGI40_SoutherAndes.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5/Working/RGI40_Southern_Andes.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor

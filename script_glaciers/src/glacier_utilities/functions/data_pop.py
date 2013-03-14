@@ -40,21 +40,19 @@ def generate_GLIMSIDs (input_file, workspace):
         featureCenter = row.getValue(ARCPY.Describe(output_wgs84).shapeFieldName)
         X = int(round(featureCenter.centroid.X, 3) * 1000) # Get X of Centroid
         Y = int(round(featureCenter.centroid.Y, 3) * 1000) # Get Y of Centroid
-        
+    
         # Format the E and N/S values appropriately. 
         if X < 0: X = str((360000 + X) ) + "E"                  # Values 180-360
         elif X >= 0 and X < 10000: X = str(00) + str(X) + "E"   # Values 0 - 10
         elif X >= 10000 and X < 100000: X = str(0) + str(X) + "E"  # Values 10 - 100
         else: X = str(X) + "E" # Values Greater then or equal to 100
 
-        if Y < 0 and Y > -10000: Y = str (0) + str(-1*Y) + "S"     # Values 0--10
-        elif Y <= -10000: Y = str(-1*Y) + "S" #Values less then or equal to -10
+        if Y < 0 and Y > -10000: Y = str (0) + str(-1 * Y) + "S"     # Values 0--10
+        elif Y <= -10000: Y = str(-1 * Y) + "S" #Values less then or equal to -10
         elif Y >= 0 and Y < 10000: str(0) + str(Y) + "N" #Values 0-10 including 0
         else: Y = str(Y) + "N" # Values greater then or equal to 10
-
-        row.GLIMSID = "G"+ X + Y # GLIMS ID is concatenated
-        glims_values.append(str("G"+ X + Y))
-        rows.updateRow(row) # The information is saved for the polygon shapefile (like save edits)
+       
+        glims_values.append(str("G"+ X + Y)) # Append value to list of values
     
     ARCPY.Delete_management(output_wgs84) # Delete temporary re-projected file
     del row     #Delete cursors and remove locks
@@ -66,7 +64,7 @@ def generate_GLIMSIDs (input_file, workspace):
     # Transfer calculated GLIMS IDs to the original input file
     rows = ARCPY.UpdateCursor (input_file)
     for row in rows:
-        row.GLIMSID = glims_values.pop() # pop next value and print it to file.
+        row.GLIMSID = glims_values.pop(0) # pop next value and print it to file.
         rows.updateRow(row) # Update the new entry
     del row #Delete cursors and remove locks
     del rows    
@@ -74,10 +72,39 @@ def generate_GLIMSIDs (input_file, workspace):
     return id_count # Return number of IDs generated
 
 
-def generate_RGIIDs (input_file):
-    """Generate RGI id's for the input table."""
+def generate_RGIIDs (input_file, version, region):
+    """Generate RGI id's for the input table. This requires including the version
+    and region numbers as input values."""
     id_count = 0
-    #NOT WRITEN
-        #NOT WRITEN
-            #NOT WRITEN
+    rgi_starter = 'RGI' + str(version) + '-' + str(region) + '.'
+    
+    rows = ARCPY.UpdateCursor (input_file)
+    for row in rows:
+        row_value = row.FID + 1
+        if row_value < 10: row.RGIID = rgi_starter + '0000' + str(row_value)
+        if row_value >= 10 and row_value < 100: row.RGIID = rgi_starter + '000' + str(row_value)
+        if row_value >= 100 and row_value < 1000: row.RGIID = rgi_starter + '00' + str(row_value)
+        if row_value >= 1000 and row_value < 10000: row.RGIID = rgi_starter + '0' + str(row_value)
+        if row_value >= 10000 and row_value < 100000: row.RGIID = rgi_starter + '' + str(row_value)
+        rows.updateRow(row) # Update the new entry
+    del row, rows #Delete cursors and remove locks
+    del row_value, rgi_starter # Delete variables not need
     return str(id_count)
+
+
+def driver():
+    input_file = r'A:\Desktop\RGI5\WorkingFiles\RGI20_SA5\Working\17_RGI40_Southern_Andes2.shp'
+    workspace = r'A:\Desktop\Testing\Workspace'
+    
+    print 'STARTING GLIMS IDs'
+    generate_GLIMSIDs (input_file, workspace)
+    print 'FINISHED GLIMS IDs'
+    print ''
+    print 'STARTING RGI IDs'
+    generate_RGIIDs (input_file, 4, 17)
+    print 'FINISHED RGI IDs'
+
+if __name__ == '__main__':
+    driver()
+
+

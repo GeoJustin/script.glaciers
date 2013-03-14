@@ -64,9 +64,13 @@ class GUI (object):
         self.__aspect_boolean = aspect_boolean
         
         # Setup optional populate field check buttons
-        glims_boolean, rgi_boolean = self.get_populate (options_frame, VAR)
+        glims_boolean, rgi_boolean, rgi_version, rgi_region, ver_entry, reg_entry = self.get_populate (options_frame, VAR)
         self.__glims_boolean = glims_boolean
         self.__rgi_boolean = rgi_boolean
+        self.__rgi_version = rgi_version
+        self.__rgi_region = rgi_region
+        self.__rgi_version_entry = ver_entry
+        self.__rgi_region_entry = reg_entry
         
         # Setup application parameters needed at runtime i.e. scale raster
         scaling_string, buffer_string = self.get_parameters (options_frame, VAR)
@@ -106,6 +110,14 @@ class GUI (object):
         if self.__centerline_boolean.get() == True or self.__slope_boolean.get() == True or self.__aspect_boolean.get() == True:
             self.__cellsize_entry.configure (state=TK.NORMAL)
             self.__smoothing_entry.configure (state=TK.NORMAL)
+            
+        if self.__rgi_boolean.get() == False:
+            self.__rgi_region_entry.configure (state=TK.DISABLED)
+            self.__rgi_version_entry.configure (state=TK.DISABLED)
+            
+        if self.__rgi_boolean.get() == True:
+            self.__rgi_region_entry.configure (state=TK.NORMAL)
+            self.__rgi_version_entry.configure (state=TK.NORMAL)
         
             
     def get_bins (self, frame, VAR):
@@ -180,6 +192,8 @@ class GUI (object):
                 VAR.set_variable("ASPECT", "BOOLEAN", self.__aspect_boolean.get())
                 VAR.set_variable("GLIMSIDS", "BOOLEAN", self.__glims_boolean.get())
                 VAR.set_variable("RGIIDS", "BOOLEAN", self.__rgi_boolean.get())
+                VAR.set_variable("RGIVERSION", "STRING", self.__rgi_version.get())
+                VAR.set_variable("RGIREGION", "STRING", self.__rgi_region.get())
                 VAR.set_variable("SCALING", "INTEGER", self.__scaling_string.get())
                 VAR.set_variable("BUFFER", "INTEGER", self.__buffer_string.get())
                 VAR.set_variable("MINBIN", "INTEGER", self.__min_string.get())
@@ -354,7 +368,7 @@ class GUI (object):
         scaling_string.set(VAR.read_variable("SCALING"))
         
         buffer_frame = TK.Frame (parameters_frame)
-        buffer_frame.grid (row =2, column =0, pady = (0, 27), sticky = TK.W)
+        buffer_frame.grid (row =2, column =0, pady = (0, 35), sticky = TK.W)
         
         label_buffer = TK.Label(buffer_frame, text='Buffer Fact.')
         label_buffer.grid (row =0, column = 0, padx = 6, pady = 3, sticky = TK.W)
@@ -381,12 +395,34 @@ class GUI (object):
         check_glims.grid (row =1, padx = 10, sticky = TK.W)
         glims_boolean.set(VAR.read_variable("GLIMSIDS"))
         
+        def __callback_RGI():
+            self.enable()
+            
         rgi_boolean = TK.BooleanVar()
-        check_rgi = TK.Checkbutton(populate_frame, state = TK.DISABLED, text="RGI ID's", variable = rgi_boolean, onvalue = True, offvalue = False)
-        check_rgi.grid (row =2, padx = 10, pady = (0,26), sticky = TK.W)
+        check_rgi = TK.Checkbutton(populate_frame, text="RGI ID's", variable = rgi_boolean, onvalue = True, offvalue = False, command=__callback_RGI)
+        check_rgi.grid (row =2, padx = 10, pady = (3,0), sticky = TK.W)
         rgi_boolean.set(VAR.read_variable("RGIIDS"))
+        
+        rgi_frame = TK.Frame (populate_frame)
+        rgi_frame.grid (row =3, pady = (0,9), sticky = TK.W)
+                   
+        label_version = TK.Label(rgi_frame, text='Ver.')
+        label_version.grid (row =0, column=0, padx = (10,0), sticky = TK.W)
+        
+        ver_string = TK.StringVar()
+        ver_entry = TK.Entry (rgi_frame, textvariable = ver_string, width = 3, justify = TK.CENTER)
+        ver_entry.grid (row =0, column=1, padx = (0,5), sticky = TK.W)
+        ver_string.set(VAR.read_variable("RGIVERSION"))
+        
+        label_region = TK.Label(rgi_frame, text='Reg.')
+        label_region.grid (row =0, column=2, padx = (5,0), sticky = TK.W)
+        
+        reg_string = TK.StringVar()
+        reg_entry = TK.Entry (rgi_frame, textvariable = reg_string, width = 3, justify = TK.CENTER)
+        reg_entry.grid (row =0, column=3, padx = (0,0), sticky = TK.W)
+        reg_string.set(VAR.read_variable("RGIREGION"))
 
-        return glims_boolean, rgi_boolean
+        return glims_boolean, rgi_boolean, ver_string, reg_string, ver_entry, reg_entry
     
 
     def get_tables(self, frame, VAR):
@@ -413,7 +449,7 @@ class GUI (object):
         
         aspect_boolean = TK.BooleanVar()
         check_aspect = TK.Checkbutton(table_frame, text='Aspect', variable = aspect_boolean, onvalue = True, offvalue = False, command=__callback_tables)
-        check_aspect.grid (row =3, padx = 14, pady = (0,3), sticky = TK.W)
+        check_aspect.grid (row =3, padx = 14, pady = (0,8), sticky = TK.W)
         aspect_boolean.set(VAR.read_variable("ASPECT"))
 
         return hypsometry_boolean, slope_boolean, aspect_boolean
@@ -436,6 +472,8 @@ class GUI (object):
             self.__aspect_boolean.set(VAR.read_variable("ASPECT"))
             self.__glims_boolean.set(VAR.read_variable("GLIMSIDS"))
             self.__rgi_boolean.set(VAR.read_variable("RGIIDS"))
+            self.__rgi_region.set(VAR.read_variable("RGIVERSION"))
+            self.__rgi_version.set(VAR.read_variable("RGIREGION"))
             self.__scaling_string.set(VAR.read_variable("SCALING"))
             self.__buffer_string.set(VAR.read_variable("BUFFER"))
             self.__min_string.set(VAR.read_variable("MINBIN"))

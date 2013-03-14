@@ -79,7 +79,9 @@ class process (object):
         slope = variables.read_variable('SLOPE')
         aspect = variables.read_variable('ASPECT')
         glimsids = variables.read_variable('GLIMSIDS')
-        rgiids = variables.read_variable('RGIIDS')        
+        rgiids = variables.read_variable('RGIIDS')    
+        rgiversion = variables.read_variable('RGIVERSION')   
+        rgiregion = variables.read_variable('RGIREGION')   
         
         # Create output table header information to populate the tables with
         table_output = os.path.dirname(os.path.abspath(output))
@@ -115,6 +117,8 @@ class process (object):
         __Log.print_line("     Run Aspect: " + str(aspect))
         __Log.print_line("     Generate GLIMS ID's: " + str(glimsids))
         __Log.print_line("     Generate RGI ID's: " + str(rgiids))
+        __Log.print_line("          RGI Version: " + str(rgiversion))
+        __Log.print_line("          RGI Region: " + str(rgiregion))
         __Log.print_line("     Maximum Bin Elevation: " + str(max_bin))
         __Log.print_line("     Minimum Bin Elevation: " + str(min_bin))
         __Log.print_line("     Bin Size: " + str(bin_size))
@@ -176,7 +180,7 @@ class process (object):
             
         if rgiids == True: # Generate RGI id's if applicable
             __Log.print_line('Generating RGI IDs')
-            rgi_ids = POP.generate_RGIIDs(input_copy) # Copy to Output
+            rgi_ids = POP.generate_RGIIDs(input_copy, rgiversion, rgiregion) # Copy to Output
             __Log.print_line('   RGI IDs - ' + rgi_ids + ' RGI IDs Generated')
         
         __Log.print_break() # Break for next section in the log file.

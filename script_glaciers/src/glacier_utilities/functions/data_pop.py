@@ -94,12 +94,7 @@ def generate_RGIIDs (input_file, version, region):
 
 def driver():
     input_file = r'A:\Desktop\RGI5\FinishedFiles\17_RGI40_Southern_Andes.shp'
-    workspace = r'A:\Desktop\Testing\Workspace'
     
-    print 'STARTING GLIMS IDs'
-#    generate_GLIMSIDs (input_file, workspace)
-    print 'FINISHED GLIMS IDs'
-    print ''
     print 'STARTING RGI IDs'
     generate_RGIIDs (input_file, 40, 17)
     print 'FINISHED RGI IDs'

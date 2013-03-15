@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5/17_RGI40_Southern_Andes.shp
+INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/Alaska/V_5_2013_03_14_ck.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -49,7 +49,7 @@ RGIVERSION = STRING = 40
 RGIVERSION (Default) = STRING = 10
 #
 #	RGI Region Number
-RGIREGION = STRING = 17
+RGIREGION = STRING = 01
 RGIREGION (Default) = STRING = 01
 #
 #	Output centerlines to file

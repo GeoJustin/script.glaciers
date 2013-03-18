@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/Alaska/V_5_2013_03_14_ck.shp
+INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/Alaska/Workspace
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder

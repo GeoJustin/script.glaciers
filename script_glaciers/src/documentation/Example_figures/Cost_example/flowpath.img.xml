@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20121107</CreaDate><CreaTime>15271200</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process Name="Cost Path" ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\CostPath" Date="20121107" Time="152712">CostPath piont A:\Desktop\TestDataPrep\Cost\fill A:\Desktop\TestDataPrep\Cost\direction.img A:\Desktop\TestDataPrep\Cost\flowpath.img EACH_CELL Id</Process></lineage></DataProperties></Esri></metadata>

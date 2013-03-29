@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20121105</CreaDate><CreaTime>15362900</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\ExtractByMask" Date="20121105" Time="153629">ExtractByMask Test_DEM.img TestGlacier_Single A:\Desktop\TestDataPrep\Workspace\Extract.img</Process></lineage></DataProperties></Esri></metadata>

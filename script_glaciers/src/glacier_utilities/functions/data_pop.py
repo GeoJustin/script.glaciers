@@ -87,6 +87,7 @@ def generate_RGIIDs (input_file, version, region):
         if row_value >= 1000 and row_value < 10000: row.RGIID = rgi_starter + '0' + str(row_value)
         if row_value >= 10000 and row_value < 100000: row.RGIID = rgi_starter + '' + str(row_value)
         rows.updateRow(row) # Update the new entry
+        id_count += 1
     del row, rows #Delete cursors and remove locks
     del row_value, rgi_starter # Delete variables not need
     return str(id_count)

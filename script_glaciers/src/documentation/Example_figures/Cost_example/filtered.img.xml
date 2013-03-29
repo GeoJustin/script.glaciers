@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20121107</CreaDate><CreaTime>15271100</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process Name="Filter" ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\Filter" Date="20121107" Time="152711">Filter neg.img A:\Desktop\TestDataPrep\Cost\filtered.img LOW DATA</Process></lineage></DataProperties></Esri></metadata>

@@ -55,8 +55,7 @@ class plot_glacier_area():
             line = aRow.split(',')  # Split each row based on a comma
             # Add values from the current row to the appropriate modern data lists
             area_modern.append(float(line[area_column_modern_date])*1e6) # Add area to the area list
-            
-        
+
         # Area plot based on earlier and later data sets
         fig = plt.figure() # Create instance of a plot
         ax = fig.add_subplot(111) # Define plot grid parameters (1x1 grid, first plot) for only one plot
@@ -79,14 +78,14 @@ class plot_glacier_area():
 # HARD CODE INPUTS HERE !
 def main():
     # Input CSV files (generated from post process scripts)
-    map_date = r'A:\Desktop\Test\KLGO_DRGs_In_BinStats.csv'
-    modern_date = r'A:\Desktop\Test\KLGO_2010_BinStats.csv'
-    output_folder = r'A:\Desktop\Test'          # Output folder to place files
-    output_name = 'KLGO'                        # Name to attach to the files
+    map_date = r'A:\Desktop\FINAL_Glaciers\Region_StElias\MapDate\Output\Post_Processing\Stats_Hypsometry.csv'
+    modern_date = r'A:\Desktop\FINAL_Glaciers\Region_StElias\Modern\After_Wrangells_Edits\Output\Post_Processing\Stats_Hypsometry.csv'
+    output_folder = r'A:\Desktop'          # Output folder to place files
+    output_name = 'WRST'                        # Name to attach to the files
     
     # Column containing area in km2
-    area_column_map_date = 6
-    area_column_modern_date = 6
+    area_column_map_date = 7
+    area_column_modern_date = 7
 
     # Plot Labels - Area - Histogram of Surface Area 
     area_x_label = 'log10 Area (sq. meters)'

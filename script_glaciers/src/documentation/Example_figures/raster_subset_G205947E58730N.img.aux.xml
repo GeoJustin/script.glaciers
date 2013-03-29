@@ -1,0 +1,16 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="DataType">Generic</MDI>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Description>Layer_1</Description>
+    <Metadata>
+      <MDI key="LAYER_TYPE">athematic</MDI>
+      <MDI key="STATISTICS_MINIMUM">577.25958251953</MDI>
+      <MDI key="STATISTICS_MAXIMUM">1348.9320068359</MDI>
+      <MDI key="STATISTICS_MEAN">1015.2667310124</MDI>
+      <MDI key="STATISTICS_STDDEV">165.2996817698</MDI>
+      <MDI key="STATISTICS_COVARIANCES">27323.9847931976</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

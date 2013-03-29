@@ -1,0 +1,16 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>Layer_1</Description>
+    <Metadata domain="IMAGE_STRUCTURE">
+      <MDI key="COMPRESSION">RLE</MDI>
+      <MDI key="NBITS">4</MDI>
+    </Metadata>
+    <Metadata>
+      <MDI key="LAYER_TYPE">athematic</MDI>
+      <MDI key="STATISTICS_MINIMUM">0</MDI>
+      <MDI key="STATISTICS_MAXIMUM">8</MDI>
+      <MDI key="STATISTICS_MEAN">4.2913777041714</MDI>
+      <MDI key="STATISTICS_STDDEV">2.5916579472583</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

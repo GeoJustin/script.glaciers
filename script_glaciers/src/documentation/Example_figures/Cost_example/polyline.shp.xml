@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20121107</CreaDate><CreaTime>15271200</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process Name="Raster to Polyline" ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Conversion Tools.tbx\RasterToPolyline" Date="20121107" Time="152712">RasterToPolyline A:\Desktop\TestDataPrep\Cost\flowpath.img A:\Desktop\TestDataPrep\Cost\polyline.shp ZERO 0 SIMPLIFY Value</Process></lineage></DataProperties></Esri></metadata>

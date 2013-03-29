@@ -1,0 +1,6 @@
+<PAMDataset>
+  <SRS>PROJCS[&quot;NAD_1983_Alaska_Albers&quot;,GEOGCS[&quot;GCS_North_American_1983&quot;,DATUM[&quot;North_American_Datum_1983&quot;,SPHEROID[&quot;GRS_1980&quot;,6378137.0,298.257222101]],PRIMEM[&quot;Greenwich&quot;,0.0],UNIT[&quot;Degree&quot;,0.0174532925199433]],PROJECTION[&quot;Albers_Conic_Equal_Area&quot;],PARAMETER[&quot;False_Easting&quot;,0.0],PARAMETER[&quot;False_Northing&quot;,0.0],PARAMETER[&quot;longitude_of_center&quot;,-154.0],PARAMETER[&quot;Standard_Parallel_1&quot;,55.0],PARAMETER[&quot;Standard_Parallel_2&quot;,65.0],PARAMETER[&quot;latitude_of_center&quot;,50.0],UNIT[&quot;Meter&quot;,1.0]]</SRS>
+  <PAMRasterBand band="1">
+    <Description>fill</Description>
+  </PAMRasterBand>
+</PAMDataset>

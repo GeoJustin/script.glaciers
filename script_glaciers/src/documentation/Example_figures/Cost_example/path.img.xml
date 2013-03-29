@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20121105</CreaDate><CreaTime>15532700</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\CostPath" Date="20121105" Time="155327">CostPath point_destination distance.img backlinkraster.img A:\Desktop\TestDataPrep\Workspace\path.img EACH_CELL Id</Process></lineage></DataProperties></Esri></metadata>

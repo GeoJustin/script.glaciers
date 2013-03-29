@@ -32,7 +32,7 @@ class plot_glacier_elevation():
     script, one map date or earlier date and one modern date or later date, and plot them
     against each other in order to derive a plot of elevation data."""
     
-    def __init__ (self, map_date, modern_date, output_file, output_name, area_column_map_date, area_column_modern_date,
+    def __init__ (self, map_date, modern_date, output_file, output_name, mean_column_map_date, mean_column_modern_date,
                     elev_x_label, elev_y_label, elev_title, legend_map_date, legend_modern_date, header):
         """This function auto runs the contents of the plot_glaciers class when run."""
         
@@ -44,7 +44,7 @@ class plot_glacier_elevation():
         for aRow in earlier_data:   # For each row in the csv
             line = aRow.split(',')  # Split each row based on a comma
             # Add values from the current row to the appropriate earlier data lists
-            mean_elev_early.append(float(line[area_column_map_date])) # Add elevation to the elevation list
+            mean_elev_early.append(float(line[mean_column_map_date])) # Add elevation to the elevation list
 
         # Read in modern data CSV file
         mean_elev_modern = []               # List to hold the modern elevation data
@@ -54,7 +54,7 @@ class plot_glacier_elevation():
         for aRow in modern_date:    # For each row in the csv
             line = aRow.split(',')  # Split each row based on a comma
             # Add values from the current row to the appropriate modern data lists
-            mean_elev_modern.append(float(line[area_column_modern_date])) # Add elevation to the elevation list
+            mean_elev_modern.append(float(line[mean_column_modern_date])) # Add elevation to the elevation list
         
         
         # Mean elevation plot based on earlier and later data sets
@@ -79,14 +79,14 @@ class plot_glacier_elevation():
 # HARD CODE INPUTS HERE !
 def main():
     # Input CSV files (generated from post process scripts)
-    map_date = r'A:\Desktop\Test\KLGO_DRGs_In_BinStats.csv'
-    modern_date = r'A:\Desktop\Test\KLGO_2010_BinStats.csv'
-    output_folder = r'A:\Desktop\Test'          # Output folder to place files
-    output_name = 'KLGO'                        # Name to attach to the files
+    map_date = r'A:\Desktop\FINAL_Glaciers\Region_StElias\MapDate\Output\Post_Processing\Stats_Hypsometry.csv'
+    modern_date = r'A:\Desktop\FINAL_Glaciers\Region_StElias\Modern\After_Wrangells_Edits\Output\Post_Processing\Stats_Hypsometry.csv'
+    output_folder = r'A:\Desktop'          # Output folder to place files
+    output_name = 'WRST'                        # Name to attach to the files
     
-    # Column containing area in km2
-    area_column_map_date = 10
-    area_column_modern_date = 10
+    # Column containing Mean Elevation
+    mean_column_map_date = 10
+    mean_column_modern_date = 10
     
     # Plot Labels - Mean Elevation - Histogram of Surface Area 
     elev_x_label = 'Mean Elevation (m)'
@@ -98,7 +98,7 @@ def main():
     # If a header is included in the input files set True if not set False
     header = True
     
-    plot_glacier_elevation (map_date, modern_date, output_folder, output_name, area_column_map_date, area_column_modern_date,
+    plot_glacier_elevation (map_date, modern_date, output_folder, output_name, mean_column_map_date, mean_column_modern_date,
                      elev_x_label, elev_y_label, elev_title, legend_map_date, legend_modern_date, header)
 
 if __name__ == '__main__':

@@ -1,0 +1,116 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="DataType">Generic</MDI>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Description>Layer_1</Description>
+    <GDALRasterAttributeTable>
+      <FieldDefn index="0">
+        <Name>Rowid</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="1">
+        <Name>VALUE</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <FieldDefn index="2">
+        <Name>COUNT</Name>
+        <Type>0</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <Row index="0">
+        <F>0</F>
+        <F>550</F>
+        <F>8</F>
+      </Row>
+      <Row index="1">
+        <F>1</F>
+        <F>600</F>
+        <F>21</F>
+      </Row>
+      <Row index="2">
+        <F>2</F>
+        <F>650</F>
+        <F>33</F>
+      </Row>
+      <Row index="3">
+        <F>3</F>
+        <F>700</F>
+        <F>41</F>
+      </Row>
+      <Row index="4">
+        <F>4</F>
+        <F>750</F>
+        <F>42</F>
+      </Row>
+      <Row index="5">
+        <F>5</F>
+        <F>800</F>
+        <F>65</F>
+      </Row>
+      <Row index="6">
+        <F>6</F>
+        <F>850</F>
+        <F>64</F>
+      </Row>
+      <Row index="7">
+        <F>7</F>
+        <F>900</F>
+        <F>92</F>
+      </Row>
+      <Row index="8">
+        <F>8</F>
+        <F>950</F>
+        <F>142</F>
+      </Row>
+      <Row index="9">
+        <F>9</F>
+        <F>1000</F>
+        <F>131</F>
+      </Row>
+      <Row index="10">
+        <F>10</F>
+        <F>1050</F>
+        <F>142</F>
+      </Row>
+      <Row index="11">
+        <F>11</F>
+        <F>1100</F>
+        <F>132</F>
+      </Row>
+      <Row index="12">
+        <F>12</F>
+        <F>1150</F>
+        <F>131</F>
+      </Row>
+      <Row index="13">
+        <F>13</F>
+        <F>1200</F>
+        <F>82</F>
+      </Row>
+      <Row index="14">
+        <F>14</F>
+        <F>1250</F>
+        <F>46</F>
+      </Row>
+      <Row index="15">
+        <F>15</F>
+        <F>1300</F>
+        <F>19</F>
+      </Row>
+    </GDALRasterAttributeTable>
+    <Metadata domain="IMAGE_STRUCTURE">
+      <MDI key="COMPRESSION">RLE</MDI>
+    </Metadata>
+    <Metadata>
+      <MDI key="LAYER_TYPE">athematic</MDI>
+      <MDI key="STATISTICS_MINIMUM">550</MDI>
+      <MDI key="STATISTICS_MAXIMUM">1300</MDI>
+      <MDI key="STATISTICS_MEAN">990.17632241814</MDI>
+      <MDI key="STATISTICS_STDDEV">166.5897768719</MDI>
+      <MDI key="STATISTICS_COVARIANCES">27752.1537582287</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

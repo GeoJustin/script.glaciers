@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/Alaska/Workspace
+INPUT_FILE = STRING = A:/Desktop/RGI40/FinishedFiles/17_RGI40_SouthernAndes.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -25,7 +25,7 @@ OUTPUT_FOLDER = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5/Working/RGI40_Southern_Andes.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/Asia/RGI40_Central_Asia_DH.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -37,7 +37,7 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 0
+GLIMSIDS = BOOLEAN = 1
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
@@ -45,11 +45,11 @@ RGIIDS = BOOLEAN = 1
 RGIIDS (Default) = BOOLEAN = False
 #
 #	RGI Version Number
-RGIVERSION = STRING = 40
+RGIVERSION = STRING = 30
 RGIVERSION (Default) = STRING = 10
 #
 #	RGI Region Number
-RGIREGION = STRING = 01
+RGIREGION = STRING = 17
 RGIREGION (Default) = STRING = 01
 #
 #	Output centerlines to file

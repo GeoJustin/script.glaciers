@@ -105,8 +105,8 @@ class rgi_process ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI40\FinishedFiles'
-    output_folder = r'A:\Desktop\RGI40\Temp'
+    input_folder = r'B:\Projects_GlaciersTotal\RGI31'
+    output_folder = r'A:\Desktop\RGI31_To_Justin\RGI32'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

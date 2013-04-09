@@ -86,7 +86,7 @@ class Populate_GLIMS_GUI (object):
             
                 # Write variables to .var file
                 VAR.set_variable("INPUT_FILE", "STRING", self.__input_string.get())
-                VAR.set_variable("INPUT_FILE", "STRING", self.__workspace_string.get())
+                VAR.set_variable("WORKSPACE", "STRING", self.__workspace_string.get())
                 
                 # Remove GUI window and destroy it.
                 try: master.destroy()
@@ -141,12 +141,12 @@ class Populate_GLIMS_GUI (object):
 
         # Callback to get new input file and rebuild options based on it
         def __callback_select_workspace ():
-            setup.get_directory (workspace_string, 'REQUIRED')
+            setup.get_directory (workspace_string, VAR.read_variable("WORKSPACE"))
             self.__workspace_string = workspace_string # Set new workspace folder
         workspace_string = TK.StringVar()
         workspace_entry = TK.Entry (input_frame, textvariable = workspace_string, width = 50)
         workspace_entry.grid(row=1, column = 1, padx = 6)
-        workspace_string.set('REQUIRED')
+        workspace_string.set(VAR.read_variable("WORKSPACE"))
 
         workspace_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_select_workspace)
         workspace_file.grid(row=1, column = 2, padx = (0,6), pady = (0,6))

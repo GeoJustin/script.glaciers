@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI40/FinishedFiles/17_RGI40_SouthernAndes.shp
+INPUT_FILE = STRING = A:/Desktop/ServerOutput/Missing_format.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -17,16 +17,20 @@ INPUT_FOLDER = STRING = Required
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = 
+DEM = STRING = A:/Desktop/ServerOutput/ck_dem.img
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/RGI5/WorkingFiles/RGI20_SA5
+OUTPUT_FOLDER = STRING = A:/Desktop/ServerOutput
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI5/WorkingFiles/Asia/RGI40_Central_Asia_DH.shp
+OUTPUT_FILE = STRING = A:/Desktop/ServerOutput/Missing_format.shp
 OUTPUT_FILE (Default) = STRING = Required
+#
+#	Scratch Workspace
+WORKSPACE = STRING = A:/Desktop/RGI31_To_Justin/Output1/scratch
+WORKSPACE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
 SCALING = INTEGER = 1000
@@ -37,7 +41,7 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 1
+GLIMSIDS = BOOLEAN = 0
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
@@ -49,7 +53,7 @@ RGIVERSION = STRING = 30
 RGIVERSION (Default) = STRING = 10
 #
 #	RGI Region Number
-RGIREGION = STRING = 17
+RGIREGION = STRING = 18
 RGIREGION (Default) = STRING = 01
 #
 #	Output centerlines to file
@@ -57,7 +61,7 @@ CENTERLINES = BOOLEAN = 0
 CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 0
+HYPSOMETRY = BOOLEAN = 1
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope

@@ -43,13 +43,13 @@ def generate_GLIMSIDs (input_file, workspace):
     
         # Format the E and N/S values appropriately. 
         if X < 0: X = str((360000 + X) ) + "E"                  # Values 180-360
-        elif X >= 0 and X < 10000: X = str(00) + str(X) + "E"   # Values 0 - 10
-        elif X >= 10000 and X < 100000: X = str(0) + str(X) + "E"  # Values 10 - 100
+        elif X >= 0 and X < 10000: X = "00" + str(X) + "E"   # Values 0 - 10
+        elif X >= 10000 and X < 100000: X = "0" + str(X) + "E"  # Values 10 - 100
         else: X = str(X) + "E" # Values Greater then or equal to 100
 
-        if Y < 0 and Y > -10000: Y = str (0) + str(-1 * Y) + "S"     # Values 0--10
+        if Y < 0 and Y > -10000: Y = "0" + str(-1 * Y) + "S"     # Values 0--10
         elif Y <= -10000: Y = str(-1 * Y) + "S" #Values less then or equal to -10
-        elif Y >= 0 and Y < 10000: str(0) + str(Y) + "N" #Values 0-10 including 0
+        elif Y >= 0 and Y < 10000: "0" + str(Y) + "N" #Values 0-10 including 0
         else: Y = str(Y) + "N" # Values greater then or equal to 10
        
         glims_values.append(str("G"+ X + Y)) # Append value to list of values

@@ -178,7 +178,7 @@ class Populate_GLIMS_GUI (object):
 
 def driver():
     main = TK.Tk()
-    main.title ('Populate RGI - v.1.0')
+    main.title ('Populate GLIMS ID - v.1.0')
     Populate_GLIMS_GUI (main)
     main.mainloop()
 

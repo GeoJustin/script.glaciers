@@ -26,6 +26,7 @@ sys.path.append (os.path.dirname(os.path.dirname(__file__)))
 import glob
 import arcpy as ARCPY                                        #@UnresolvedImport
 import glacier_utilities.functions.data_prep as DP
+import glacier_utilities.functions.data_checks as CHECK
 import glacier_utilities.general_utilities.environment as ENV
 
 class rgi_process ():
@@ -49,9 +50,15 @@ class rgi_process ():
         __Log.print_line('   ' + str(check_header))
         __Log.print_break()
         
+        tracking_list = [["File Name", "Tot.", "M-P", "Area km2", "% Diff.", "Topology Errors"]] # A list to hold tracking information
+        
         # For each feature class within the input folder...
         for shapefile in glob.glob (os.path.join (input_folder, '*.shp')):
+            tracking_info = [] # A list to hold individual tracking information
+            
             __Log.print_line(os.path.basename(shapefile))
+            tracking_info.append(os.path.basename(shapefile)[0:12])
+            tracking_info.append(str(ARCPY.GetCount_management(shapefile)))
                     
             # Copy feature to workspace (output folder)
             working_shapefile = output_folder + '\\' + os.path.basename(shapefile)
@@ -75,20 +82,52 @@ class rgi_process ():
             # so, prompt the user to stop and correct. Print to log file.
             multipart = DP.check_multipart(working_shapefile, workspace) # Check for multi-part Polygons
             __Log.print_line('    Multi-Part Polygons - ' + multipart + ' found')
+            tracking_info.append(str(multipart))
             
             # Check to see if the area from the AREA column matches the actual area
             # calculated. If not signal the user to correct. Print results to log.
             area = DP.check_area(working_shapefile, workspace)
             __Log.print_line('    Area - ' + area[2] + ' difference')
             __Log.print_line('        Original area: ' + area[0] + ' , Final area: ' + area[1], True)
+            tracking_info.append(area [0])
+            tracking_info.append(str(round(( (float(area[0])/float(area[1])) *100.0) -100.0, 2)))
             
             # Check to see if there are any topology errors in the input file. If there 
             # are signal the user to correct before moving forward. Print to log.
             topology = DP.check_topology(working_shapefile, workspace)
             __Log.print_line('    Topology - ' + topology[0] + ' errors on ' + topology[1] + ' features')
             __Log.print_line('        Rule set - Must Not Overlap (Area)', True)
+            tracking_info.append(str(topology[0]))
+            
+            # Check to see if the fix column lengths such as RGIID, GLIMSID, GLACTYPE
+            # are consistent with what is expected.      
+            __Log.print_line('    Field Length Check:')
+            RGI_length = CHECK.check_attribute_length(working_shapefile, 'RGIID')
+            GLIMS_length = CHECK.check_attribute_length(working_shapefile, 'GLIMSID')
+            GLACTYPE_Length = CHECK.check_attribute_length(working_shapefile, 'GLACTYPE')
+            BGNDATE_Length = CHECK.check_attribute_length(working_shapefile, 'BGNDATE')
+            ENDDATE_Length = CHECK.check_attribute_length(working_shapefile, 'ENDDATE')
+            __Log.print_line('        Expected: 14 - Actual Length(s): ' + ','.join(RGI_length), True)
+            __Log.print_line('        Expected: 14 - Actual Length(s): ' + ','.join(GLIMS_length), True)
+            __Log.print_line('        Expected:  4 - Actual Length(s): ' + ','.join(GLACTYPE_Length), True)
+            __Log.print_line('        Expected:  8 - Actual Length(s): ' + ','.join(BGNDATE_Length), True)
+            __Log.print_line('        Expected:  8 - Actual Length(s): ' + ','.join(ENDDATE_Length), True)
+           
+            # Check to see if the values in the RGIFLAG column has values that are expected
+            RGIFLAG = CHECK.check_attributes(working_shapefile, 'RGIFLAG')
+            GLACTYPE = CHECK.check_attributes(working_shapefile, 'GLACTYPE')
+            __Log.print_line('    RGIFLAG Entries: ' + ','.join(RGIFLAG))
+            __Log.print_line('    GLACTYPE Entries: ' + ','.join(GLACTYPE))
+           
            
             __Log.print_break() # Break for next section in the log file.
+            tracking_list.append(tracking_info)
+            
+        # Print Tracking Info Lists
+        __Log.print_line('Summary')
+        __Log.print_line('-' * 80, True)
+        for tracking in tracking_list:
+            __Log.print_line('\t'.join(tracking), True)
             
         # Script Complete. Try and delete workspace   
         removed = environment.remove_workspace()
@@ -105,8 +144,8 @@ class rgi_process ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'B:\Projects_GlaciersTotal\RGI31'
-    output_folder = r'A:\Desktop\RGI31_To_Justin\RGI32'
+    input_folder = r'A:\Desktop\RGI40\Workspace'
+    output_folder = r'A:\Desktop\RGI40\Workspace\Workspace'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

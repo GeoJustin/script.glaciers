@@ -107,11 +107,11 @@ class rgi_process ():
             GLACTYPE_Length = CHECK.check_attribute_length(working_shapefile, 'GLACTYPE')
             BGNDATE_Length = CHECK.check_attribute_length(working_shapefile, 'BGNDATE')
             ENDDATE_Length = CHECK.check_attribute_length(working_shapefile, 'ENDDATE')
-            __Log.print_line('        Expected: 14 - Actual Length(s): ' + ','.join(RGI_length), True)
-            __Log.print_line('        Expected: 14 - Actual Length(s): ' + ','.join(GLIMS_length), True)
-            __Log.print_line('        Expected:  4 - Actual Length(s): ' + ','.join(GLACTYPE_Length), True)
-            __Log.print_line('        Expected:  8 - Actual Length(s): ' + ','.join(BGNDATE_Length), True)
-            __Log.print_line('        Expected:  8 - Actual Length(s): ' + ','.join(ENDDATE_Length), True)
+            __Log.print_line('        RGID Expected: 14 - Actual Length(s): ' + ','.join(RGI_length), True)
+            __Log.print_line('        GLID Expected: 14 - Actual Length(s): ' + ','.join(GLIMS_length), True)
+            __Log.print_line('        GLAC Expected:  4 - Actual Length(s): ' + ','.join(GLACTYPE_Length), True)
+            __Log.print_line('        BGND Expected:  8 - Actual Length(s): ' + ','.join(BGNDATE_Length), True)
+            __Log.print_line('        ENDD Expected:  8 - Actual Length(s): ' + ','.join(ENDDATE_Length), True)
            
             # Check to see if the values in the RGIFLAG column has values that are expected
             RGIFLAG = CHECK.check_attributes(working_shapefile, 'RGIFLAG')
@@ -144,8 +144,8 @@ class rgi_process ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI40\Workspace'
-    output_folder = r'A:\Desktop\RGI40\Workspace\Workspace'
+    input_folder = r'A:\Desktop\RGI40'
+    output_folder = r'A:\Desktop\RGI40\Workspace\TestRun'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

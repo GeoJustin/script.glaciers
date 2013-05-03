@@ -1,6 +1,6 @@
 """****************************************************************************
- Name:         arcgis_entrypoints.arcgis_gen_rgiid
- Purpose:     entry point for ArcGIS to run gen_rgiid
+ Name:         arcgis_entrypoints.arcgis_gen_glimsid
+ Purpose:     entry point for ArcGIS to run gen_glimsid
  
 Created:         May 3, 2013
 Author:          Justin Rich (justin.rich@gi.alaska.edu)
@@ -26,22 +26,18 @@ import glacier_utilities.functions.data_pop as DP
 import arcpy as ARCPY                                        #@UnresolvedImport
 
 # Read parameter values from ArcGIS tool input
-# 1 - The file RGI ID values will be added to. File must have a 'rgiid' field.
-# 2 - The RGI version
-# 3 - The RGI region
+# 1 - The file RGI ID values will be added to. File must have a 'glimsid' field.
+# 2 - A workspace to re-project data to. 
 
-try: rgi_file = ARCPY.GetParameterAsText(0)
-except: ARCPY.AddError('RGI Input File Error')
+try: glims_file = ARCPY.GetParameterAsText(0)
+except: ARCPY.AddError('GLIMS Input File Error')
 
-try: rgi_version = ARCPY.GetParameterAsText(1)
-except: ARCPY.AddError('RGI Version Information Error')
+try: glims_workspace = ARCPY.GetParameterAsText(1)
+except: ARCPY.AddError('GLIMS Version Information Error')
 
-try:rgi_region = ARCPY.GetParameterAsText(2)
-except: ARCPY.AddError('RGI Version Information Error')
-
-# Run the Generate RGI ID function
+# Run the Generate GLIMS ID function
 try:
-    DP.generate_RGIIDs(rgi_file, rgi_version, rgi_region)
+    DP.generate_GLIMSIDs(glims_file, glims_workspace)
 except:
     ARCPY.AddError('Errors generated during function execution')
 

@@ -145,7 +145,7 @@ class rgi_process ():
 
 def driver():
     input_folder = r'A:\Desktop\RGI40'
-    output_folder = r'A:\Desktop\RGI40\Workspace\TestRun'
+    output_folder = r'A:\Desktop\RGI40\Workspace\Analysis'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

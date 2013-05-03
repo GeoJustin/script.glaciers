@@ -9,7 +9,7 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI40/15_rgi31_SouthAsiaEast.shp
+INPUT_FILE = STRING = A:/Desktop/RGI40/19_rgi31_AntarcticSubantarctic.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
@@ -21,11 +21,11 @@ DEM = STRING =
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/Caucasus/Post_Processing
+OUTPUT_FOLDER = STRING = A:/Desktop/New folder
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI40/Workspace/15_rgi31_SouthAsiaEast.shp
+OUTPUT_FILE = STRING = A:/Desktop/New folder/16_RGI31_LowLatB.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Scratch Workspace
@@ -53,7 +53,7 @@ RGIVERSION = STRING = 31
 RGIVERSION (Default) = STRING = 10
 #
 #	RGI Region Number
-RGIREGION = STRING = 02
+RGIREGION = STRING = 19
 RGIREGION (Default) = STRING = 01
 #
 #	Output centerlines to file

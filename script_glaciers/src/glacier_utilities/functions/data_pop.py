@@ -52,7 +52,7 @@ def generate_GLIMSIDs (input_file, workspace):
         elif Y >= 0 and Y < 10000: "0" + str(Y) + "N" #Values 0-10 including 0
         else: Y = str(Y) + "N" # Values greater then or equal to 10
        
-        glims_values.append(str("G"+ X + Y)) # Append value to list of values
+        glims_values.append("G"+ str(X) + str(Y)) # Append value to list of values
     
     ARCPY.Delete_management(output_wgs84) # Delete temporary re-projected file
     del row     #Delete cursors and remove locks
@@ -81,12 +81,15 @@ def generate_RGIIDs (input_file, version, region):
     rows = ARCPY.UpdateCursor (input_file)
     for row in rows:
         row_value = row.FID + 1
-        if row_value < 10: row.RGIID = rgi_starter + '0000' + str(row_value)
-        if row_value >= 10 and row_value < 100: row.RGIID = rgi_starter + '000' + str(row_value)
-        if row_value >= 100 and row_value < 1000: row.RGIID = rgi_starter + '00' + str(row_value)
-        if row_value >= 1000 and row_value < 10000: row.RGIID = rgi_starter + '0' + str(row_value)
-        if row_value >= 10000 and row_value < 100000: row.RGIID = rgi_starter + '' + str(row_value)
-        rows.updateRow(row) # Update the new entry
+        try:
+            if row_value < 10: row.RGIID = rgi_starter + '0000' + str(row_value)
+            if row_value >= 10 and row_value < 100: row.RGIID = rgi_starter + '000' + str(row_value)
+            if row_value >= 100 and row_value < 1000: row.RGIID = rgi_starter + '00' + str(row_value)
+            if row_value >= 1000 and row_value < 10000: row.RGIID = rgi_starter + '0' + str(row_value)
+            if row_value >= 10000 and row_value < 100000: row.RGIID = rgi_starter + '' + str(row_value)
+            rows.updateRow(row) # Update the new entry
+        except:
+            pass
         id_count += 1
     del row, rows #Delete cursors and remove locks
     del row_value, rgi_starter # Delete variables not need

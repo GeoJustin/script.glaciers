@@ -1,6 +1,6 @@
 """****************************************************************************
- Name:         arcgis_entrypoints.arcgis_anz_rgi
- Purpose:      Analyze RGI layers for errors.
+ Name:         arcgis_entrypoints.arcgis_frm_rgi
+ Purpose:     
  
 Created:         May 6, 2013
 Author:          Justin Rich (justin.rich@gi.alaska.edu)
@@ -22,27 +22,20 @@ License:     Although this application has been produced and tested
 import sys, os
 sys.path.append (os.path.dirname(os.path.dirname(__file__)))
 
-import glacier_scripts.rgi_analyze as rgi_analyze
-import glacier_utilities.general_utilities.variables as VAR
+import glacier_interfaces.ui_rgi_format as FORMAT
+import Tkinter as TK
 import arcpy as ARCPY                                      #@UnresolvedImport
 
 # Read parameter values from ArcGIS tool input
-# 1 - The folder containing RGI layers to be analyzed
-# 2 - The output folder where processed files are placed
-# 3 - Start the variables object
+# 1 - none
 
-try: rgi_folder = ARCPY.GetParameterAsText(0)
-except: ARCPY.AddError('RGI Input File Error')
-
-try: rgi_output = ARCPY.GetParameterAsText(1)
-except: ARCPY.AddError('RGI Output Folder Error')
-
-try: variables = VAR.Variables()
-except: ARCPY.AddError('Could Not Initialize Variables')
-
-# Run the analysis on rgi layers
+# Try and start the user interface window. There are currently
+# no input parameters other then the window itself.
 try:
-    rgi_analyze.rgi_analysis(rgi_folder, rgi_output, variables)
+    main = TK.Tk()
+    main.title ('Format RGI - v.1.0')
+    FORMAT.format_RGI_GUI(main)
+    main.mainloop()
 except:
     ARCPY.AddError('Errors generated during function execution')
 

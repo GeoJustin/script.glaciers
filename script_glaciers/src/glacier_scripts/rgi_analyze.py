@@ -29,7 +29,7 @@ import glacier_utilities.functions.data_prep as DP
 import glacier_utilities.functions.data_checks as CHECK
 import glacier_utilities.general_utilities.environment as ENV
 
-class rgi_process ():
+class rgi_analysis ():
     
     def __init__ (self, input_folder, output_folder, variables):
         
@@ -144,13 +144,13 @@ class rgi_process ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI40'
-    output_folder = r'A:\Desktop\RGI40\Workspace\Analysis'
+    input_folder = r'A:\Desktop\RGI31'
+    output_folder = r'A:\Desktop\RGI31\Analyze'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()
         
-    rgi_process (input_folder, output_folder, VAR)
+    rgi_analysis (input_folder, output_folder, VAR)
 
 if __name__ == '__main__':
     driver()

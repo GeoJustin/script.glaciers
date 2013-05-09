@@ -28,7 +28,7 @@ import glacier_utilities.general_utilities.variables as variables
 import glacier_utilities.functions.ui_setup as setup
 
 class format_RGI_GUI (object):
-    """classdocs: Creates a graphich user interface for setting up inputs to
+    """classdocs: Creates a graphical user interface for setting up inputs to
     the format rgi class. This includes input file, output file and field
     mappings."""
 

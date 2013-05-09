@@ -51,6 +51,7 @@ class Log (object):
         if supress_ts == False: # No suppression of time stamp.
             self.__content = self.__content + str(self.__clock.get_elapsed_time()) + ' - ' + text + '\n'
             print text
+            
         if supress_ts == True: # Time stamp suppressed. Used in 'print_break'
             self.__content = self.__content + text + '\n'
             print text

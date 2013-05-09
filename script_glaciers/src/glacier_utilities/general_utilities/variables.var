@@ -25,7 +25,7 @@ OUTPUT_FOLDER = STRING = A:/Desktop/New folder
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/New folder/16_RGI31_LowLatB.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI31/19_rgi31_AntarcticSubantarctic.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Scratch Workspace
@@ -100,8 +100,8 @@ POWER = INTEGER = 8
 POWER (Default) = INTEGER = 8
 #
 #	Header Specifications - RGI Header specification for creating fields
-RGI_SPEC = LISTS = (RGIID;TEXT;;;14),(GLIMSID;TEXT;;;14),(RGIFLAG;TEXT;;;14),(BGNDATE;TEXT;;;8),(ENDDATE;TEXT;;;8),(CENLON;FLOAT;;;),(CENLAT;FLOAT;;;),(O1REGION;SHORT;;;),(O2REGION;SHORT;;;),(AREA;DOUBLE;10;3;),(GLACTYPE;TEXT;;;4),(NAME;TEXT;;;25)
-RGI_SPEC (Default) = LISTS = (RGIID; TEXT; ; ; 14), (GLIMSID; TEXT; ; ; 14), (RGIFLAG; TEXT; ; ; 14), (BGNDATE; TEXT; ; ; 8), (ENDDATE; TEXT; ; ; 8), (CENLON; FLOAT; ; ; ), (CENLAT; FLOAT; ; ; ), (O1REGION; SHORT; ; ; ), (O2REGION; SHORT; ; ; ), (AREA; DOUBLE; 10; 3; ), (GLACTYPE; TEXT; ; ; 4), (NAME; TEXT; ; ; 25) 
+RGI_SPEC = LISTS = (RGIID;TEXT;;;14),(GLIMSID;TEXT;;;14),(RGIFLAG;TEXT;;;14),(BGNDATE;TEXT;;;8),(ENDDATE;TEXT;;;8),(CENLON;FLOAT;;;),(CENLAT;FLOAT;;;),(O1REGION;SHORT;;;),(O2REGION;SHORT;;;),(AREA;DOUBLE;10;3;),(GLACTYPE;TEXT;;;4),(NAME;TEXT;;;50)
+RGI_SPEC (Default) = LISTS = (RGIID; TEXT; ; ; 14), (GLIMSID; TEXT; ; ; 14), (RGIFLAG; TEXT; ; ; 14), (BGNDATE; TEXT; ; ; 8), (ENDDATE; TEXT; ; ; 8), (CENLON; FLOAT; ; ; ), (CENLAT; FLOAT; ; ; ), (O1REGION; SHORT; ; ; ), (O2REGION; SHORT; ; ; ), (AREA; DOUBLE; 10; 3; ), (GLACTYPE; TEXT; ; ; 4), (NAME; TEXT; ; ; 50) 
 #
 #	Header Information - RGI Compatible Table Headers for Attributes
 ATTABLE = LIST = GLIMSID,NAME,GLACTYPE,BGNDATE,ENDDATE,CENLON,CENLAT,AREA

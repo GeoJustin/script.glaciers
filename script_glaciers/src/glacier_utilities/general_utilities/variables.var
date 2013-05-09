@@ -13,7 +13,7 @@ INPUT_FILE = STRING = A:/Desktop/RGI40/19_rgi31_AntarcticSubantarctic.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
-INPUT_FOLDER = STRING = Required
+INPUT_FOLDER = STRING = B:/Projects_RGI/RGI301
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster

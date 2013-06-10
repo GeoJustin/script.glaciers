@@ -22,6 +22,7 @@ License:     Although this application has been produced and tested
  or contained herein.
 ****************************************************************************"""
 import arcpy as ARCPY                                        #@UnresolvedImport
+from arcpy import sa as spatial
 import math
 import random
 

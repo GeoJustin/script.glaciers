@@ -50,7 +50,7 @@ class rgi_analysis ():
         __Log.print_line('   ' + str(check_header))
         __Log.print_break()
         
-        tracking_list = [["File Name", "Tot.", "M-P", "Area km2", "% Diff.", "Topology Errors"]] # A list to hold tracking information
+        tracking_list = [["File Name", "Tot.", "GM", "M-P", "Area km2", "% Diff.", "Topology Errors"]] # A list to hold tracking information
         
         # For each feature class within the input folder...
         for shapefile in glob.glob (os.path.join (input_folder, '*.shp')):
@@ -77,6 +77,7 @@ class rgi_analysis ():
             # results to the log file
             repair = DP.repair_geometry(working_shapefile)
             __Log.print_line('    Geometry - ' + repair[0] + ' errors found (Repaired ' + repair[1] + ')')
+            tracking_info.append(str(repair[0]))
                
             # Check to see if there are any multi-part polygons in the input file. If
             # so, prompt the user to stop and correct. Print to log file.
@@ -90,7 +91,7 @@ class rgi_analysis ():
             __Log.print_line('    Area - ' + area[2] + ' difference')
             __Log.print_line('        Original area: ' + area[0] + ' , Final area: ' + area[1], True)
             tracking_info.append(area [0])
-            tracking_info.append(str(round(( (float(area[0])/float(area[1])) *100.0) -100.0, 2)))
+            tracking_info.append(str(round(( (float(area[0])/float(area[1])) *100.0) -100.0, 1)))
             
             # Check to see if there are any topology errors in the input file. If there 
             # are signal the user to correct before moving forward. Print to log.
@@ -126,9 +127,11 @@ class rgi_analysis ():
         # Print Tracking Info Lists
         __Log.print_line('Summary')
         __Log.print_line('-' * 80, True)
+        __Log.print_line('<table align="center" width="700em" border="1" cellpadding="5em">', True)
         for tracking in tracking_list:
-            __Log.print_line('\t'.join(tracking), True)
-            
+            __Log.print_line('<tr><td>' + ('</td><td>'.join(tracking)) + '</td></tr>', True)
+        __Log.print_line('</Table>', True)
+        
         # Script Complete. Try and delete workspace   
         removed = environment.remove_workspace()
         if removed == True:
@@ -144,8 +147,8 @@ class rgi_analysis ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI31'
-    output_folder = r'A:\Desktop\RGI31\Analyze'
+    input_folder = r'A:\Desktop\RGI32\Analysis'
+    output_folder = r'A:\Desktop\RGI32\Final'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

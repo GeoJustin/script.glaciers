@@ -105,11 +105,12 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
     try: 
         # Setup extents / environments for the current feature
         ARCPY.env.extent = feature.shape.extent
-        XMin_new = ARCPY.env.extent.XMin - 200
-        YMin_new = ARCPY.env.extent.YMin - 200
-        XMax_new = ARCPY.env.extent.XMax + 200
-        YMax_new = ARCPY.env.extent.YMax + 200
-        ARCPY.env.extent = ARCPY.arcpy.Extent(XMin_new, YMin_new, XMax_new, YMax_new)
+        desc = ARCPY.Describe(feature)
+        XMin_new = desc.extent.XMin - 200
+        YMin_new = desc.extent.YMin - 200
+        XMax_new = desc.extent.XMax + 200
+        YMax_new = desc.extent.YMax + 200
+        ARCPY.env.extent = ARCPY.Extent(XMin_new, YMin_new, XMax_new, YMax_new)
     
         ARCPY.env.overwriteOutput = True
         ARCPY.env.cellSize = eu_cell_size
@@ -118,13 +119,13 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         
         # Get minimum and maximum points
         resample = ARCPY.Resample_management (dem, 'in_memory\\sample', eu_cell_size)
-        masked_dem = ARCPY.sa.ExtractByMask (resample, feature.shape)
+        masked_dem = spatial.ExtractByMask (resample, feature.shape)
     
     
         # Find the maximum elevation value in the feature, convert them to
         # points and then remove all but one.
         maximum = get_properties (masked_dem, 'MAXIMUM') 
-        maximum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + maximum)
+        maximum_raster = spatial.SetNull(masked_dem, masked_dem, 'VALUE <> ' + maximum)
         maximum_point = ARCPY.RasterToPoint_conversion(maximum_raster, 'in_memory\\max_point')
         rows = ARCPY.UpdateCursor (maximum_point)
         for row in rows:
@@ -135,7 +136,7 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         # Find the minimum elevation value in the feature, convert them to
         # points and then remove all but one.
         minimum = get_properties (masked_dem, 'MINIMUM')
-        minimum_raster = ARCPY.sa.SetNull(masked_dem, masked_dem, 'VALUE <> ' + minimum)
+        minimum_raster = spatial.SetNull(masked_dem, masked_dem, 'VALUE <> ' + minimum)
         minimum_point = ARCPY.RasterToPoint_conversion(minimum_raster, 'in_memory\\min_point')
         rows = ARCPY.UpdateCursor (minimum_point)
         for row in rows:
@@ -145,9 +146,9 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         
         # Calculate euclidean Distance to boundary line for input DEM cells.
         polyline = ARCPY.PolygonToLine_management(feature.shape, 'in_memory\\polyline')
-        eucdist = ARCPY.sa.EucDistance(polyline, "", eu_cell_size, '')
+        eucdist =spatial.EucDistance(polyline, "", eu_cell_size, '')
          
-        masked_eucdist = ARCPY.sa.ExtractByMask (eucdist, feature.shape)
+        masked_eucdist = spatial.ExtractByMask (eucdist, feature.shape)
         
         # Calculate the cost raster by inverting the euclidean distance results,
         # and raising it to the power of x to exaggerate the least expensive route.
@@ -158,9 +159,9 @@ def get_centerline (feature, dem, workspace, power = 5, eu_cell_size = 10):
         # so all values equal 1 (different path segments have different values)
         # and convert the raster line to a poly-line.
         backlink = 'in_memory\\backlink'
-        cost_distance = ARCPY.sa.CostDistance(minimum_point, cost_raster, '', backlink) 
-        cost_path = ARCPY.sa.CostPath(maximum_point, cost_distance, backlink, 'EACH_CELL', '')
-        cost_path_ones = ARCPY.sa.Con(cost_path, 1, '', 'VALUE > ' + str(-1)) # Set all resulting pixels to 1
+        cost_distance = spatial.CostDistance(minimum_point, cost_raster, '', backlink) 
+        cost_path = spatial.CostPath(maximum_point, cost_distance, backlink, 'EACH_CELL', '')
+        cost_path_ones = spatial.Con(cost_path, 1, '', 'VALUE > ' + str(-1)) # Set all resulting pixels to 1
         r_to_p = ARCPY.RasterToPolyline_conversion (cost_path_ones, 'in_memory\\raster_to_polygon')
         
         
@@ -275,7 +276,7 @@ def get_hypsometry (feature, dem, workspace, raster_scaling = 1000, max_bin = 88
     
         # Reclassify the DEM based on bins
         reclassify =  workspace + '\\' + 'Reclassify_Raster_' + str(feature.GLIMSID) + '.img'
-        reclass_raster = ARCPY.sa.Reclassify (dem, "Value", reclassify_range, "NODATA")
+        reclass_raster = spatial.Reclassify (dem, "Value", reclassify_range, "NODATA")
         reclass_raster.save(reclassify)
         
         # Create a clipped feature from the input raster.
@@ -422,7 +423,7 @@ def subset (feature, raster, workspace, buffer_scale = 2):
         mask = ARCPY.Buffer_analysis(feature.shape, ARCPY.Geometry(), cellsize)
         
         # Extract by mask using the buffered feature geometry
-        extract = ARCPY.sa.ExtractByMask (raster, mask[0])
+        extract = spatial.ExtractByMask (raster, mask[0])
         extract.save(subset) # Save extracted mask as subset
         
         return subset, False # Return path to subset location in the workspace
@@ -440,7 +441,7 @@ def raster_to_polygon (feature, raster, workspace, raster_scaling = 1000):
     # This is no good reason for this VAT error.
     rand_id = str(random.randrange(10000, 999999))
     subset_name = workspace + '\\raster_to_poly_' + rand_id + '.img'
-    subset = ARCPY.sa.Int(ARCPY.sa.Raster(raster) * raster_scaling + 0.5)
+    subset = spatial.Int(spatial.Raster(raster) * raster_scaling + 0.5)
     subset.save(subset_name)
 
     polygon = ARCPY.RasterToPolygon_conversion(subset, subset_name, "NO_SIMPLIFY")

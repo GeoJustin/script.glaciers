@@ -96,6 +96,36 @@ def generate_RGIIDs (input_file, version, region):
     return str(id_count)
 
 
+def auto_generate_RGIIDs (input_file, version):
+    """Generate RGI ID's automatically. This function uses the 'Gennerate
+    RGIIDs' function and is made to simply parse out the region number."""
+    rows = ARCPY.SearchCursor(input_file)
+    for row in rows:
+        region_number = str(row.getValue('O1REGION'))
+        break
+    
+    if len(region_number) == 1: 
+        region_number = '0' + region_number
+    
+    generate_RGIIDs (input_file, version, region_number)
+    return True
+
+
+def generate_centroid (input_file):
+    """Generate RGI Glacier Centroids. Requires the data to be in a geographic
+    projection and both a 'CENLON' and 'CENLAT' field."""
+    rows = ARCPY.UpdateCursor(input_file)
+    for row in rows:
+        #Find the Centroid Point
+        featureCenter = row.getValue(ARCPY.Describe(input_file).shapeFieldName)
+        row.setValue('CENLON', featureCenter.centroid.X)
+        row.setValue('CENLAT', featureCenter.centroid.Y)
+        
+        rows.updateRow(row) # Update the new entry
+    del row, rows
+    return True
+
+
 def driver():
     input_file = r'A:\Desktop\RGI5\FinishedFiles\17_RGI40_Southern_Andes.shp'
     

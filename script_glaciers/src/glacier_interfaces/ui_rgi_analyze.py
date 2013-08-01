@@ -43,9 +43,10 @@ class Analyze_RGI (object):
         self.get_menubar(master, master) # Setup menu bar items
         
         # Setup file / folder input output dialog boxes
-        input_string, output_string = self.get_io (master, master, VAR)
+        input_string, output_string, ver_string = self.get_io (master, master, VAR)
         self.__input_string = input_string
         self.__output_string = output_string
+        self.__rgi_version = ver_string
 
         # Setup Module checks
         arcpy_found = setup.check_arcpy(master, 4, 0, 3, 0, 6)
@@ -97,7 +98,18 @@ class Analyze_RGI (object):
         output_file = TK.Button(input_frame, text = 'Select', height = 1, width = 8, command = __callback_select_output)
         output_file.grid(row=1, column = 2, padx = (0,6), pady = (0,6))
         
-        return input_string, output_string
+        rgi_frame = TK.Frame (input_frame)
+        rgi_frame.grid (row =2, column = 1)
+                   
+        label_version = TK.Label(rgi_frame, text='RGI Version ')
+        label_version.grid (row =0, column=0, padx = (10,0), sticky = TK.W)
+        
+        ver_string = TK.StringVar()
+        ver_entry = TK.Entry (rgi_frame, textvariable = ver_string, width = 6, justify = TK.CENTER)
+        ver_entry.grid (row =0, column=1, padx = (0,10), sticky = TK.W)
+        ver_string.set(VAR.read_variable("RGIVERSION"))
+        
+        return input_string, output_string, ver_string
             
             
     def get_buttons (self, master, frame, VAR):
@@ -130,6 +142,7 @@ class Analyze_RGI (object):
                 # Write variables to .var file
                 VAR.set_variable("INPUT_FOLDER", "STRING", self.__input_string.get())
                 VAR.set_variable("OUTPUT_FOLDER", "STRING", self.__output_string.get())
+                VAR.set_variable("RGIVERSION", "STRING", self.__rgi_version.get())
                 
                 # Remove GUI window and destroy it.
                 try: master.destroy()
@@ -141,7 +154,7 @@ class Analyze_RGI (object):
                 try: # Import needs to be here in case ARCPY not found. Crashes on import if not
                     print 'STARTING RGI ANALYSIS'
                     import glacier_scripts.rgi_analyze as ANALYZE  
-                    ANALYZE.rgi_analysis(self.__input_string.get(), self.__output_string.get(), VAR)
+                    ANALYZE.rgi_analysis(VAR)
                     print 'FINISHED RGI ANALYSIS'
                 except:
                     tkMessageBox.showwarning ('Warning', 'Could NOT Analyze Folder. Check folder paths.')

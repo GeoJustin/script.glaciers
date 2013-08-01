@@ -9,11 +9,11 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI40/19_rgi31_AntarcticSubantarctic.shp
+INPUT_FILE = STRING = A:/Desktop/RGI32/Final/05_rgi32_GreenlandPeriphery.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
-INPUT_FOLDER = STRING = B:/Projects_RGI/RGI301
+INPUT_FOLDER = STRING = A:\Desktop\RGI32\RGI32RAW
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
@@ -21,15 +21,15 @@ DEM = STRING =
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:/Desktop/New folder
+OUTPUT_FOLDER = STRING = A:\Desktop\RGI32\Analysis
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI31/19_rgi31_AntarcticSubantarctic.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI32/Final/05_rgi32_GreenlandPeriphery_Projected.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Scratch Workspace
-WORKSPACE = STRING = A:/Desktop/RGI40/Workspace
+WORKSPACE = STRING = A:/Desktop/RGI32/Analysis
 WORKSPACE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -49,11 +49,11 @@ RGIIDS = BOOLEAN = 1
 RGIIDS (Default) = BOOLEAN = False
 #
 #	RGI Version Number
-RGIVERSION = STRING = 31
+RGIVERSION = STRING = 32
 RGIVERSION (Default) = STRING = 10
 #
 #	RGI Region Number
-RGIREGION = STRING = 19
+RGIREGION = STRING = 05
 RGIREGION (Default) = STRING = 01
 #
 #	Output centerlines to file

@@ -26,23 +26,25 @@ sys.path.append (os.path.dirname(os.path.dirname(__file__)))
 import glob
 import arcpy as ARCPY                                        #@UnresolvedImport
 import glacier_utilities.functions.data_prep as DP
+import glacier_utilities.functions.data_pop as POP
 import glacier_utilities.functions.data_checks as CHECK
 import glacier_utilities.general_utilities.environment as ENV
 
 class rgi_analysis ():
     
-    def __init__ (self, input_folder, output_folder, variables):
+    def __init__ (self, variables):
         
+        # Read variables
+        input_folder = variables.read_variable('INPUT_FOLDER')
+        output_folder = variables.read_variable('OUTPUT_FOLDER')
+        check_header = variables.read_variable('RGI_SPEC')
+        version = variables.read_variable('RGIVERSION')
+
         # Setup working environment
         environment = ENV.setup_arcgis(output_folder)
         workspace = environment.workspace
         __Log = environment.log
         
-        print workspace
-        
-        # Read variables
-        check_header = variables.read_variable('RGI_SPEC')
-
         # Print run time parameters
         __Log.print_line("Input File: " + input_folder)
         __Log.print_line('Output Folder: ' + output_folder)
@@ -50,7 +52,7 @@ class rgi_analysis ():
         __Log.print_line('   ' + str(check_header))
         __Log.print_break()
         
-        tracking_list = [["File Name", "Tot.", "GM", "M-P", "Area km2", "% Diff.", "Topology Errors"]] # A list to hold tracking information
+        tracking_list = [["File Name", "Tot.", "GM", "M-P", "Area km2", "% Diff.", "Topology Errors", "Date Error", "Format Error", "Case Error", "Small"]] # A list to hold tracking information
         
         # For each feature class within the input folder...
         for shapefile in glob.glob (os.path.join (input_folder, '*.shp')):
@@ -76,15 +78,15 @@ class rgi_analysis ():
             # Check geometries. If there are errors, correct them and print the
             # results to the log file
             repair = DP.repair_geometry(working_shapefile)
-            __Log.print_line('    Geometry - ' + repair[0] + ' errors found (Repaired ' + repair[1] + ')')
+            __Log.print_line('    Geometry - ' + repair[0] + ' errors found (Repaired ' + str(int(repair [0]) - int(repair[1])) + ')')
             tracking_info.append(str(repair[0]))
-               
+                
             # Check to see if there are any multi-part polygons in the input file. If
             # so, prompt the user to stop and correct. Print to log file.
             multipart = DP.check_multipart(working_shapefile, workspace) # Check for multi-part Polygons
             __Log.print_line('    Multi-Part Polygons - ' + multipart + ' found')
             tracking_info.append(str(multipart))
-            
+             
             # Check to see if the area from the AREA column matches the actual area
             # calculated. If not signal the user to correct. Print results to log.
             area = DP.check_area(working_shapefile, workspace)
@@ -92,14 +94,14 @@ class rgi_analysis ():
             __Log.print_line('        Original area: ' + area[0] + ' , Final area: ' + area[1], True)
             tracking_info.append(area [0])
             tracking_info.append(str(round(( (float(area[0])/float(area[1])) *100.0) -100.0, 1)))
-            
+             
             # Check to see if there are any topology errors in the input file. If there 
             # are signal the user to correct before moving forward. Print to log.
             topology = DP.check_topology(working_shapefile, workspace)
             __Log.print_line('    Topology - ' + topology[0] + ' errors on ' + topology[1] + ' features')
             __Log.print_line('        Rule set - Must Not Overlap (Area)', True)
             tracking_info.append(str(topology[0]))
-            
+             
             # Check to see if the fix column lengths such as RGIID, GLIMSID, GLACTYPE
             # are consistent with what is expected.      
             __Log.print_line('    Field Length Check:')
@@ -113,13 +115,47 @@ class rgi_analysis ():
             __Log.print_line('        GLAC Expected:  4 - Actual Length(s): ' + ','.join(GLACTYPE_Length), True)
             __Log.print_line('        BGND Expected:  8 - Actual Length(s): ' + ','.join(BGNDATE_Length), True)
             __Log.print_line('        ENDD Expected:  8 - Actual Length(s): ' + ','.join(ENDDATE_Length), True)
-           
+            
             # Check to see if the values in the RGIFLAG column has values that are expected
             RGIFLAG = CHECK.check_attributes(working_shapefile, 'RGIFLAG')
             GLACTYPE = CHECK.check_attributes(working_shapefile, 'GLACTYPE')
             __Log.print_line('    RGIFLAG Entries: ' + ','.join(RGIFLAG))
             __Log.print_line('    GLACTYPE Entries: ' + ','.join(GLACTYPE))
+             
+            # Check no data date values are 9's and not 0's
+            nodata_bgndate = CHECK.check_nodata_data (working_shapefile, 'BGNDATE')
+            __Log.print_line('    Start Date Format 9 and not 0: ' + str(nodata_bgndate))
+            nodata_enddate = CHECK.check_nodata_data (working_shapefile, 'ENDDATE')
+            __Log.print_line('    End Date Format 9 and not 0: ' + str(nodata_enddate))
+            tracking_info.append(str(sum(nodata_bgndate.values()) + sum(nodata_enddate.values())))
            
+            # Check the date format. Dates should be 'YYYYMMDD'
+            format_error = CHECK.check_date_format (working_shapefile, 'BGNDATE', 'ENDDATE')
+            __Log.print_line('    Date Format Errors: ' + str(format_error))
+            tracking_info.append(str(format_error))
+           
+           
+            # Check for case errors in fields. Should be first letter upper case, 
+            # lower case everything else.
+            case_errors = CHECK.check_is_uppercase(working_shapefile, 'RGIFLAG')
+            __Log.print_line('    RGIFLAG Case Errors: ' + str(case_errors))
+            tracking_info.append(str(case_errors))
+            
+            # Check the number of glaciers that do not meet the threshold
+            threshold_error = CHECK.check_area(working_shapefile, 0.001, 'AREA')
+            __Log.print_line('    Threshold (0.001 km2) Errors: ' + str(threshold_error))
+            tracking_info.append(str(threshold_error))
+           
+            # Regenerate basic stats.
+            POP.auto_generate_RGIIDs (working_shapefile, version)
+            __Log.print_line ('    Recalculated RGI IDs')
+            
+            POP.generate_GLIMSIDs(working_shapefile, workspace)
+            __Log.print_line ('    Recalculated GLIMS IDs')
+            
+            POP.generate_centroid(working_shapefile)
+            __Log.print_line ('    Recalculated CENLAT and CENLON')
+            
            
             __Log.print_break() # Break for next section in the log file.
             tracking_list.append(tracking_info)
@@ -147,13 +183,16 @@ class rgi_analysis ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI32\Analysis'
-    output_folder = r'A:\Desktop\RGI32\Final'
+    input_folder = r'A:\Desktop\RGI32\RGI32RAW'
+    output_folder = r'A:\Desktop\RGI32\Analysis'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()
+    
+    VAR.set_variable('INPUT_FOLDER', 'STRING', input_folder)
+    VAR.set_variable('OUTPUT_FOLDER', 'STRING', output_folder)
         
-    rgi_analysis (input_folder, output_folder, VAR)
+    rgi_analysis (VAR)
 
 if __name__ == '__main__':
     driver()

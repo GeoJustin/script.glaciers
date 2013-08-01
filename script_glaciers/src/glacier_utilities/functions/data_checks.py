@@ -35,8 +35,8 @@ def check_attributes (input_file, *columns):
             if any(field.name == col for col in columns): # If the field matches input column
                 entry = str(row.getValue(field.name)) # Get length of attribute value
                 
-                if str(entry) not in column_attributes: # If length isn't in list
-                    column_attributes.append(str(entry))# Add length to list
+                if str(entry) not in column_attributes: # If attribute isn't in list
+                    column_attributes.append(str(entry))# Add attribute to list
     del row, rows    
     return column_attributes # Return the list of lengths
 
@@ -62,13 +62,83 @@ def check_attribute_length (input_file, *columns):
     return column_lengths # Return the list of lengths
         
         
-        
+def check_nodata_data(input_file, *columns):
+    """Returns the number of incorrectly labeled dates. This functions primary 
+    purpose is to look for no data values that are set to '00' or '0000' 
+    instead of '99' or '9999'."""
+    
+    nodata = {'YEAR': 0, 'MONTH': 0, 'DAY': 0}
+    field_names = ARCPY.ListFields(input_file) # Input field names
+    
+    rows = ARCPY.SearchCursor(input_file) # Open search cursor
+    for row in rows:
+        for field in field_names:
+            if any(field.name == col for col in columns): # If the field matches input column
+                date = row.getValue(field.name)
+                if date[0:4] == '0000': nodata['YEAR'] = nodata['YEAR'] + 1
+                if date[4:6] == '00': nodata['MONTH'] = nodata['MONTH'] + 1
+                if date[6:8] == '00': nodata['DAY'] = nodata['DAY'] + 1
+    del row, rows  
+    return nodata # Return the list of lengths
+
+
+def check_date_format (input_file, *columns):
+    """Check the date format is in the correct order of 'YYYYMMDD'."""
+    format_warning = 0
+    field_names = ARCPY.ListFields(input_file) # Input field names
+    
+    rows = ARCPY.SearchCursor(input_file) # Open search cursor
+    for row in rows:
+        for field in field_names:
+            if any(field.name == col for col in columns): # If the field matches input column
+                date = row.getValue(field.name)
+                if date[0:2] not in ('19', '20', '-9'): format_warning += 1
+    del row, rows
+    return format_warning
+                
+
+def check_is_uppercase (input_file, *columns):
+    """Returns the number of records in a table contain all upper case letters. 
+    If all letters in a column are upper case it is considered True, else False"""
+    case_error = 0
+    field_names = ARCPY.ListFields(input_file) # Input field names
+    
+    rows = ARCPY.SearchCursor(input_file) # Open search cursor
+    for row in rows:
+        for field in field_names:
+            if any(field.name == col for col in columns): # If the field matches input column
+                
+                for word in row.getValue(field.name).split(' '):
+                    try:
+                        if word[0].islower(): case_error += 1
+                        if word[1:].isupper(): case_error += 1
+                    except:
+                        case_error += 1
+    return case_error
+
+
+def check_area (input_file, threshold = 0.001, column = 'AREA'):
+    """Returns the number of polygons which are less then a specified threshold."""
+    threshold_error = 0
+    rows = ARCPY.SearchCursor(input_file) # Open search cursor
+    for row in rows:
+        if float(row.getValue(column)) < threshold: threshold_error += 1
+    del row, rows
+    return threshold_error
+    
+    
+
 #_______________________________________________________________________________
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !
 def driver():
-    returned = check_attribute_length ('A:\\Desktop\\RGI40\Workspace\\06_rgi30_Iceland.shp', 'GLIMSID', 'RGIID', 'AREA', 'GLACTYPE')
+    returned = check_date_format ('A:\\Desktop\\RGI32\\RGI32RAW\\01_rgi32_Alaska.shp', 'BGNDATE', 'ENDDATE')
     print returned
+
     
 if __name__ == '__main__':
     driver()
+
+
+
+

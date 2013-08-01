@@ -86,7 +86,7 @@ def check_area (input_file, workspace):
     ARCPY.Delete_management(reprojected) # Delete multi-part .shp part results.
     ARCPY.Delete_management(area_shapefile) # Delete Area Statistics .shp part results.
     
-    return [str(original_sum), str(final_sum), str(original_sum-final_sum)]
+    return [str(round(original_sum, 3)), str(round(final_sum, 3)), str(round(original_sum-final_sum, 3))]
 
 
 def check_topology (input_file, workspace):

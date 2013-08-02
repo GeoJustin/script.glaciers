@@ -52,7 +52,7 @@ class rgi_analysis ():
         __Log.print_line('   ' + str(check_header))
         __Log.print_break()
         
-        tracking_list = [["File Name", "Tot.", "GM", "M-P", "Area km2", "% Diff.", "Topology Errors", "Date Error", "Format Error", "Case Error", "Small"]] # A list to hold tracking information
+        tracking_list = [["File Name", "Tot.", "GM", "M-P", "Area km2", "% Diff.", "Topology Errors", "Date Error", "Format Error", "Case Error", "Sliver Error"]] # A list to hold tracking information
         
         # For each feature class within the input folder...
         for shapefile in glob.glob (os.path.join (input_folder, '*.shp')):
@@ -183,8 +183,8 @@ class rgi_analysis ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI32\RGI32RAW'
-    output_folder = r'A:\Desktop\RGI32\Analysis'
+    input_folder = r'A:\Desktop\RGI32\Workspace'
+    output_folder = r'A:\Desktop\RGI32\RGI32Final'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

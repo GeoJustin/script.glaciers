@@ -9,11 +9,11 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI32/Final/05_rgi32_GreenlandPeriphery.shp
+INPUT_FILE = STRING = A:/Desktop/RGI32/Workspace/01_RGI32_Alaska.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
-INPUT_FOLDER = STRING = A:\Desktop\RGI32\RGI32RAW
+INPUT_FOLDER = STRING = A:\Desktop\RGI32\Workspace
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
@@ -21,11 +21,11 @@ DEM = STRING =
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:\Desktop\RGI32\Analysis
+OUTPUT_FOLDER = STRING = A:\Desktop\RGI32\RGI32Final
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI32/Final/05_rgi32_GreenlandPeriphery_Projected.shp
+OUTPUT_FILE = STRING = A:/Desktop/RGI32/RGI32Final/01_RGI32_Alaska.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Scratch Workspace

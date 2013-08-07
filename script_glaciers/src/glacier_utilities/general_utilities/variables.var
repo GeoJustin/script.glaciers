@@ -9,27 +9,27 @@
 #
 # VARIABLES:
 #	Input file
-INPUT_FILE = STRING = A:/Desktop/RGI32/Workspace/01_RGI32_Alaska.shp
+INPUT_FILE = STRING = A:/Project_Database/Database_Alaska_Mapdate/Data/Alaska_Glaciers_Mapdate.shp
 INPUT_FILE (Default) = STRING = Required
 #
 #	Input folder
-INPUT_FOLDER = STRING = A:\Desktop\RGI32\Workspace
+INPUT_FOLDER = STRING = A:\Desktop\Mapdate
 INPUT_FOLDER (Default) = STRING = Required
 #
 #	Input DEM raster
-DEM = STRING = 
+DEM = STRING = Required
 DEM (Default) = STRING = Required
 #
 #	Output Folder for results
-OUTPUT_FOLDER = STRING = A:\Desktop\RGI32\RGI32Final
+OUTPUT_FOLDER = STRING = A:\Desktop\Mapdate\Test
 OUTPUT_FOLDER (Default) = STRING = Required
 #
 #	Output file for results
-OUTPUT_FILE = STRING = A:/Desktop/RGI32/RGI32Final/01_RGI32_Alaska.shp
+OUTPUT_FILE = STRING = A:/Desktop/Mapdate/Glaciers_Mapdate.shp
 OUTPUT_FILE (Default) = STRING = Required
 #
 #	Scratch Workspace
-WORKSPACE = STRING = A:/Desktop/RGI32/Analysis
+WORKSPACE = STRING = Required
 WORKSPACE (Default) = STRING = Required
 #
 #	Raster Scaling Factor
@@ -41,35 +41,35 @@ ZVALUE = FLOAT = 1.0
 ZVALUE (Default) = FLOAT = 1.0
 #
 #	Generate GLIMS ID's
-GLIMSIDS = BOOLEAN = 1
+GLIMSIDS = BOOLEAN = False
 GLIMSIDS (Default) = BOOLEAN = True
 #
 #	Generate RGI ID's
-RGIIDS = BOOLEAN = 1
+RGIIDS = BOOLEAN = False
 RGIIDS (Default) = BOOLEAN = False
 #
 #	RGI Version Number
-RGIVERSION = STRING = 32
+RGIVERSION = STRING = 10
 RGIVERSION (Default) = STRING = 10
 #
 #	RGI Region Number
-RGIREGION = STRING = 05
+RGIREGION = STRING = 01
 RGIREGION (Default) = STRING = 01
 #
 #	Output centerlines to file
-CENTERLINES = BOOLEAN = 0
+CENTERLINES = BOOLEAN = False
 CENTERLINES (Default) = BOOLEAN = False
 #
 #	Process Hypsometry
-HYPSOMETRY = BOOLEAN = 0
+HYPSOMETRY = BOOLEAN = True
 HYPSOMETRY (Default) = BOOLEAN = True
 #
 #	Process Slope
-SLOPE = BOOLEAN = 0
+SLOPE = BOOLEAN = False
 SLOPE (Default) = BOOLEAN = False
 #
 #	Process Aspect
-ASPECT = BOOLEAN = 0
+ASPECT = BOOLEAN = False
 ASPECT (Default) = BOOLEAN = False
 #
 #	Bins - Bin size based on DEM elevation units

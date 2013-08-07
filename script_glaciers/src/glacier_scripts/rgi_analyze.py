@@ -183,8 +183,8 @@ class rgi_analysis ():
 # HARD CODE INPUTS HERE !
 
 def driver():
-    input_folder = r'A:\Desktop\RGI32\Workspace'
-    output_folder = r'A:\Desktop\RGI32\RGI32Final'
+    input_folder = r'A:\Desktop\Mapdate'
+    output_folder = r'A:\Desktop\Mapdate\Test'
 
     import glacier_utilities.general_utilities.variables  as variables
     VAR = variables.Variables()

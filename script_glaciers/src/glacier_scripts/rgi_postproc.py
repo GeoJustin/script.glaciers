@@ -292,9 +292,9 @@ class process (object):
 #***  DRIVER *******************************************************************
 # HARD CODE INPUTS HERE !
 def driver():
-    Input = r'A:\Desktop\TestDataPrep\TestGlacier_Single.shp'
-    Output = r'A:\Desktop\TestDataPrep\Output'
-    DEM = r'A:\Desktop\TestDataPrep\Test_DEM.img'
+    Input = r'A:\Desktop\Mapdate\Glaciers_Mapdate.shp'
+    Output = r'A:\Desktop\Mapdate\Output'
+    DEM = r'A:\Desktop\Mapdate\NED_mixed.img'
     
     #Variables - WARNING: Use caution manually changing variables.
     import glacier_utilities.general_utilities.variables  as variables
